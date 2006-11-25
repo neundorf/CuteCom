@@ -1,0 +1,81 @@
+0.14.1, Nov 22nd, 2006
+-added patch by Bernhard Schiffner <bernhard AT schiffner-limbach DOT de>
+which flushes the device when it's opened
+-CuteCom can now also be built using CMake (http://www.cmake.org)
+
+0.14.0, Jul 16th, 2006
+-added log-to-file feature
+-save the directory used for sendFile()
+
+0.13.2, Jun 9th, 2005
+-by default give the output view more room than the input history
+-even higher repetition rate for Ctrl-C
+
+0.13.1, Feb 2nd, 2005
+-added CR line end
+-use the character delay also for sending files in "Plain" mode
+-use a slightly bigger delay after potential line ends when sending files in "Plain" or "Script" mode
+
+0.13.0, Jan 29th, 2005
+-different input modes (LF line end, LF-CR line end, no line end, hex input)
+-hex output
+-adjustable character delay
+
+0.12.0, Nov 09th, 2004
+-major performance improvement of the output view
+-increased repetition rate for Ctrl-C
+
+0.11.0, Oct 13th, 2004
+-NEW FEATURE: receive Ctrl+C, Ctrl+Q and Ctrl+S key presses and send them 
+ over the serial line
+-added shortcut keys to some buttons
+-increased history from 20 to 50 lines
+
+0.10.2, Oct 10th, 2004
+-removed negative logic for "Apply settings"
+-output view: removed tooltip and now it's always enabled
+-BUGFIX: use the correct port settings for x/y/z modem transfer
+-BUGFIX: division by zero crash
+
+0.10.1
+-added checkbox "Dont apply settings when opening" - if checked, the selected
+ settings won't be applied to the terminal device, useful e.g. when 
+ another program is running and already working with this device (e.g. gdb)
+-fixed read-only opening of the device file
+
+0.10.0
+-first stable release
+-NEW FEATURE: add checkboxes to select whether to open the device
+ read/write, read-only, write-only (write-only is especially useful when
+ debugging with gdb over a serial line and you need a terminaal to enter commands)
+
+0.0.8
+-BUGFIX: make the output view really actually work as expected
+-make xmodem, ymodem and zmodem transfers actually work
+-removed the "Exec file" button and added a "Script" protocol to "Send file"
+  -> it will be interpreted line by line, everything after a "#" will be ignored
+-improved focus and history handling
+-the file dialog now remembers the dir where it was closed the last time
+
+0.0.7
+-BUGFIX: make the output view actually work as expected
+
+0.0.6
+-save the last 20 history entries
+-only add a history entry if it differs from the previous one
+-maximum line count of the output view is 1000 lines
+-maximum history line count is 50
+-sending of an empty string (\n) when pressing enter 
+
+0.0.5
+-the device combobox is now editable
+-added some tooltips
+
+0.0.4
+-first published version, state: beta
+-serial communication works basically
+-GUI polishing still needed
+-no translations
+
+Alexander Neundorf
+<neundorf@kde.org>

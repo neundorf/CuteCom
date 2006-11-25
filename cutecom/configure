@@ -1,0 +1,17 @@
+#!/bin/sh
+
+print_error()
+{
+   echo "Could not execute qmake, which comes with the Qt library (www.trolltech.com)"
+   echo "So go and install it :-)"
+   echo
+   exit
+}
+
+echo
+echo "Executing qmake..."
+
+qmake > /dev/null || print_error
+
+echo "Succeeded, now enter make to build cutecom"
+echo

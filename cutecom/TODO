@@ -1,0 +1,6 @@
+-port to Qt4
+-add function to search for text in the output view (Ctrl+F and RMB menu of
+the output view)
+-make font of the output view configurable (RMB menu of the output view)
+
+Alexander Neundorf <neundorf@kde.org>

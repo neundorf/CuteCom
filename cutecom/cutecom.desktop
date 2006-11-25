@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+BinaryPattern=
+Name=CuteCom
+MimeType=
+GenericName=Serial Terminal
+Exec=cutecom
+Icon=openterm
+TerminalOptions=
+Path=
+Type=Application
+Terminal=0
+X-KDE-StartupNotify=false
