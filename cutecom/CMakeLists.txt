@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.4.3 FATAL_ERROR )
 
+project(CuteCom)
+
 find_package(Qt3 REQUIRED)
 
 include_directories(${QT_INCLUDE_DIR} ${CMAKE_BINARY_DIR})
@@ -15,7 +17,7 @@ target_link_libraries(cutecom ${QT_LIBRARIES})
 
 install(TARGETS cutecom DESTINATION bin )
 
-
+install(FILES cutecom.1 DESTINATION man/man1 )
 
 find_program(KDECONFIG_EXECUTABLE NAMES kde-config )
 

@@ -1,0 +1,41 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH CUTECOM 1 "November 24, 2006"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+cutecom \- graphical serial terminal.
+.SH SYNOPSIS
+.B cutecom
+.SH DESCRIPTION
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+\fBCuteCom\fP is a graphical serial terminal, like \fBminicom\fP.
+It is aimed mainly at hardware developers or other people who need a
+terminal to talk to their devices. It features a lineoriented interface
+instead of character-oriented, xmodem, ymodem, zmodem support
+(requires the lrzsz package) and hexadecimal input and output among
+other things.
+.SH OPTIONS
+\fBCuteCom\fP doesn't really have any command-line options.
+.SH SEE ALSO
+.BR minicom (1),
+.BR sz (1).
+.SH AUTHOR
+CuteCom was written by Alexander Neundorf <neundorf@kde.org>.
+.PP
+This manual page was written by Roman I Khimov <roman@khimov.ru>,
+for the Debian project (but may be used by others).

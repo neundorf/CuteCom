@@ -38,7 +38,8 @@
 #include <qregexp.h>
 #include <qspinbox.h>
 
-#include <iostream.h>
+#include <iostream>
+using namespace std;
 
 #include <errno.h>
 #include <unistd.h>
@@ -194,7 +195,7 @@ void QCPPDialogImpl::saveSettings()
       historyCount=50;
 
    QStringList saveHist;
-   for (int i=m_oldCmdsLb->count()-historyCount; i<m_oldCmdsLb->count(); i++)
+   for (unsigned int i=m_oldCmdsLb->count()-historyCount; i<m_oldCmdsLb->count(); i++)
       saveHist<< m_oldCmdsLb->text(i);
    settings.writeEntry("/cutecom/History", saveHist);
 }
