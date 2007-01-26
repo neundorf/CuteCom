@@ -639,6 +639,11 @@
                                 </item>
                                 <item>
                                     <property name="text">
+                                        <string>1kXModem</string>
+                                    </property>
+                                </item>
+                                <item>
+                                    <property name="text">
                                         <string>Script</string>
                                     </property>
                                 </item>

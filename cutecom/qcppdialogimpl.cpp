@@ -253,7 +253,7 @@ void QCPPDialogImpl::readSettings()
 
 void QCPPDialogImpl::showAboutMsg()
 {
-   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.14.0<br>(c)2004-2006 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
+   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.14.2<br>(c)2004-2006 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
 }
 
 void QCPPDialogImpl::sendFile()
@@ -341,7 +341,8 @@ void QCPPDialogImpl::sendFile()
    }
    else if ((m_protoPb->currentText()=="XModem")
             || (m_protoPb->currentText()=="YModem")
-            || (m_protoPb->currentText()=="ZModem"))
+            || (m_protoPb->currentText()=="ZModem")
+            || (m_protoPb->currentText()=="1kXModem"))
    {
 //      QProcess sx(this);
       disconnectTTYRestore(false);
@@ -356,6 +357,9 @@ void QCPPDialogImpl::sendFile()
          tmp+="--ymodem ";
       else if (m_protoPb->currentText()=="ZModem")
          tmp+="--zmodem ";
+      else if (m_protoPb->currentText()=="1kXModem")
+         tmp+="--xmodem --1k ";
+      
       tmp=tmp+"-vv \""+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
       m_sz->addArgument(tmp);
       m_sz->setCommunication(QProcess::Stderr);
