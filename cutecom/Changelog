@@ -1,6 +1,7 @@
 0.14.2, Jan 26th, 2007
 -support for the 1k xmodem protocl, patch by yoann <ydiruzza AT free DOT fr>
 -a cutecom man page, patch from Roman I Khimov <roman AT khimov.ru>
+-there is now a cvs repository for CuteCom: http://cutecom.cvs.sourceforge.net/cutecom/cutecom/
 
 0.14.1, Nov 22nd, 2006
 -added patch by Bernhard Schiffner <bernhard AT schiffner-limbach DOT de>
