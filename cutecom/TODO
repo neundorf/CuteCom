@@ -1,6 +1,7 @@
--port to Qt4
+-get rid of Qt3Support
 -add function to search for text in the output view (Ctrl+F and RMB menu of
 the output view)
 -make font of the output view configurable (RMB menu of the output view)
+-add something to measure time between outputs
 
 Alexander Neundorf <neundorf@kde.org>
