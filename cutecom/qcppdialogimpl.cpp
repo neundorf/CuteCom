@@ -21,8 +21,8 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-#include <qtextbrowser.h>
-#include <qlistbox.h>
+#include <q3textbrowser.h>
+#include <qlistwidget.h>
 #include <qlineedit.h>
 #include <qfiledialog.h>
 #include <qdir.h>
@@ -30,13 +30,17 @@
 #include <qmessagebox.h>
 #include <qsettings.h>
 #include <qevent.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 #include <qprogressdialog.h>
 #include <qapplication.h>
-#include <qprocess.h>
+#include <q3process.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
 #include <qspinbox.h>
+//Added by qt3to4:
+#include <QKeyEvent>
+#include <QResizeEvent>
+#include <Q3TextStream>
 
 #include <iostream>
 using namespace std;
@@ -63,7 +67,7 @@ void millisleep(int ms)
 }
 
 QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
-:CuteCommDlg(parent)
+:QWidget(parent)
 ,m_isConnected(false)
 ,m_fd(-1)
 ,m_cmdBufIndex(0)
@@ -78,6 +82,7 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
 //,m_firstRep(true)
 ,m_hexBytes(0)
 {
+   this->setupUi(this);
    connect(m_connectPb, SIGNAL(clicked()), this, SLOT(connectTTY()));
    connect(m_closePb, SIGNAL(clicked()), this, SLOT(disconnectTTY()));
    connect(m_clearOutputPb, SIGNAL(clicked()), m_outputView, SLOT(clear()));
@@ -89,8 +94,8 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    connect(m_aboutPb, SIGNAL(clicked()), this, SLOT(showAboutMsg()));
    connect(m_quitPb, SIGNAL(clicked()), this, SLOT(close()));
 
-   connect(m_oldCmdsLb, SIGNAL(clicked(QListBoxItem*)), this, SLOT(oldCmdClicked(QListBoxItem*)));
-   connect(m_oldCmdsLb, SIGNAL(doubleClicked(QListBoxItem*)), this, SLOT(execCmd()));
+   connect(m_oldCmdsLb, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(oldCmdClicked(QListWidgetItem*)));
+   connect(m_oldCmdsLb, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(execCmd()));
 
    connect(m_hexOutputCb, SIGNAL(toggled(bool)), this, SLOT(hexOutputClicked(bool)));
 
@@ -120,8 +125,8 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    connect(m_enableLoggingCb, SIGNAL(toggled(bool)), this, SLOT(enableLogging(bool)));
 //   connect(m_enableLoggingCb, SIGNAL(toggled(bool)), this, SLOT(enableLogging(bool)));
 
-   m_outputView->setWrapPolicy(QTextEdit::Anywhere);
-   m_outputView->setWordWrap(QTextEdit::WidgetWidth);
+   m_outputView->setWrapPolicy(Q3TextEdit::Anywhere);
+   m_outputView->setWordWrap(Q3TextEdit::WidgetWidth);
 
 /*   QAccel* accel=new QAccel(this);
    accel->insertItem(CTRL+Key_C, 3);
@@ -196,7 +201,9 @@ void QCPPDialogImpl::saveSettings()
 
    QStringList saveHist;
    for (unsigned int i=m_oldCmdsLb->count()-historyCount; i<m_oldCmdsLb->count(); i++)
-      saveHist<< m_oldCmdsLb->text(i);
+   {
+      saveHist << m_oldCmdsLb->item(i)->text();
+   }
    settings.writeEntry("/cutecom/History", saveHist);
 }
 
@@ -244,9 +251,9 @@ void QCPPDialogImpl::readSettings()
 
    if (!history.empty())
    {
-      m_oldCmdsLb->insertStringList(history);
-      m_oldCmdsLb->setCurrentItem(m_oldCmdsLb->count()-1);
-      m_oldCmdsLb->ensureCurrentVisible();
+      m_oldCmdsLb->addItems(history);
+      m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-1);
+      m_oldCmdsLb->scrollToItem(m_oldCmdsLb->currentItem());
       m_oldCmdsLb->clearSelection();
    }
 }
@@ -260,7 +267,8 @@ void QCPPDialogImpl::sendFile()
 {
    if (m_fileDlg==0)
    {
-      m_fileDlg=new QFileDialog(m_sendFileDialogStartDir);
+      m_fileDlg=new QFileDialog();
+      m_fileDlg->setDirectory(m_sendFileDialogStartDir);
       m_fileDlg->setMode(QFileDialog::ExistingFile);
    }
 
@@ -268,7 +276,7 @@ void QCPPDialogImpl::sendFile()
    if ( m_fileDlg->exec() == QDialog::Accepted )
    {
       filename = m_fileDlg->selectedFile();
-      m_sendFileDialogStartDir=m_fileDlg->dirPath();
+      m_sendFileDialogStartDir=m_fileDlg->directory().absolutePath();
       saveSettings();
    }
    else
@@ -280,13 +288,13 @@ void QCPPDialogImpl::sendFile()
    if (m_protoPb->currentText()=="Script")
    {
       QFile file(filename);
-      if (!file.open(IO_ReadOnly))
+      if (!file.open(QIODevice::ReadOnly))
       {
          QMessageBox::information(this, tr("Opening file failed"), tr("Could not open file %1").arg(filename));
          return;
       }
 
-      QTextStream stream(&file);
+      Q3TextStream stream(&file);
       while (!stream.atEnd())
       {
          QString nextLine=stream.readLine();
@@ -305,23 +313,23 @@ void QCPPDialogImpl::sendFile()
    else if (m_protoPb->currentText()=="Plain")
    {
       QFile file(filename);
-      if (!file.open(IO_ReadOnly))
+      if (!file.open(QIODevice::ReadOnly))
       {
          QMessageBox::information(this, tr("Opening file failed"), tr("Could not open file %1").arg(filename));
          return;
       }
       QByteArray data=file.readAll();
       delete m_progress;
-      m_progress=new QProgressDialog(tr("Sending file..."), tr("Cancel"), 100, this, "progress", TRUE);
+      m_progress=new QProgressDialog(tr("Sending file..."), tr("Cancel"), 0, 100, this);
       m_progress->setMinimumDuration(100);
       unsigned int step=data.size()/100;
       if (step<1)
          step=1;
-      for (unsigned int i=0; i<data.size(); i++)
+      for (int i=0; i<data.size(); i++)
       {
          if ((i%step)==0)
          {
-            m_progress->setProgress(i/step);
+            m_progress->setValue(i/step);
             qApp->processEvents();
          }
          sendByte(data.data()[i], charDelay);
@@ -333,7 +341,7 @@ void QCPPDialogImpl::sendFile()
             QMessageBox::information(this, tr("Comm error"), tr("Sending failed (%1/%2").arg(i).arg(data.count()));
             break;
          }
-         if ( m_progress->wasCancelled() )
+         if ( m_progress->wasCanceled() )
             break;
       }
       delete m_progress;
@@ -346,7 +354,7 @@ void QCPPDialogImpl::sendFile()
    {
 //      QProcess sx(this);
       disconnectTTYRestore(false);
-      m_sz=new QProcess(this);
+      m_sz=new Q3Process(this);
       m_sz->addArgument("sh");
       m_sz->addArgument("-c");
 //      QString tmp=QString("sx -vv \"")+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
@@ -362,7 +370,7 @@ void QCPPDialogImpl::sendFile()
       
       tmp=tmp+"-vv \""+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
       m_sz->addArgument(tmp);
-      m_sz->setCommunication(QProcess::Stderr);
+      m_sz->setCommunication(Q3Process::Stderr);
 
       connect(m_sz, SIGNAL(readyReadStderr()), this, SLOT(readFromStderr()));
 /*      m_sz->addArgument("sx");
@@ -381,21 +389,21 @@ void QCPPDialogImpl::sendFile()
          connectTTY();
          return;
       }
-      m_progress=new QProgressDialog(tr("Sending file via xmodem..."), tr("Cancel"), 100, this, "progress", TRUE);
+      m_progress=new QProgressDialog(tr("Sending file via xmodem..."), tr("Cancel"), 0, 100, this);
       connect(m_progress, SIGNAL(cancelled()), this, SLOT(killSz()));
       m_progress->setMinimumDuration(100);
       QFileInfo fi(filename);
       m_progressStepSize=fi.size()/1024/100;
       if (m_progressStepSize<1)
          m_progressStepSize=1;
-//    cerr<<"while(isRunning)"<<endl;
-      m_progress->setProgress(0);
+//    cerr<<"while(isRunning)"<<std::endl;
+      m_progress->setValue(0);
       while (m_sz->isRunning())
       {
          qApp->processEvents();
          millisleep(10);
       }
-//      cerr<<"----------------- sx done"<<endl;
+//      cerr<<"----------------- sx done"<<std::endl;
 
       delete m_sz;
       m_sz=0;
@@ -419,7 +427,7 @@ void QCPPDialogImpl::killSz()
 void QCPPDialogImpl::readFromStdout()
 {
    QByteArray ba=m_sz->readStdout();
-//   cerr<<"readFromStdout() "<<ba.count()<<endl;
+//   cerr<<"readFromStdout() "<<ba.count()<<std::endl;
    unsigned int bytesToWrite=ba.count();
    char* src=ba.data();
    while (bytesToWrite>0)
@@ -427,7 +435,7 @@ void QCPPDialogImpl::readFromStdout()
       int bytesWritten=::write(m_fd, src, (bytesToWrite>CUTECOMM_BUFSIZE?CUTECOMM_BUFSIZE:bytesToWrite));
       if (bytesWritten<0)
       {
-//         cerr<<"readFromStdout() error "<<bytesWritten<<" , "<<bytesToWrite<<" left"<<endl;
+//         cerr<<"readFromStdout() error "<<bytesWritten<<" , "<<bytesToWrite<<" left"<<std::endl;
          return;
       }
       src+=bytesWritten;
@@ -439,7 +447,7 @@ void QCPPDialogImpl::readFromStdout()
 void QCPPDialogImpl::readFromStderr()
 {
    QByteArray ba=m_sz->readStderr();
-//   cerr<<"readFromStderr() "<<ba.count()<<endl;
+//   cerr<<"readFromStderr() "<<ba.count()<<std::endl;
    if (m_progress==0)
       return;
    QString s(ba);
@@ -448,17 +456,17 @@ void QCPPDialogImpl::readFromStderr()
    if (pos>-1)
    {
       QString captured=regex.cap(1);
-//      cerr<<"captured kb: -"<<captured.latin1()<<"-"<<endl;
+//      cerr<<"captured kb: -"<<captured.latin1()<<"-"<<std::endl;
       int kb=captured.toUInt();
       if ((kb%m_progressStepSize)==0)
       {
          int p=kb/m_progressStepSize;
          if (p<100)
-            m_progress->setProgress(p);
+            m_progress->setValue(p);
       }
    }
 //   else
-//      cerr<<"--------"<<s.latin1()<<"-"<<endl;
+//      cerr<<"--------"<<s.latin1()<<"-"<<std::endl;
 /*   for (unsigned int i=0; i<ba.count(); i++)
    {
       char c=ba.data()[i];
@@ -472,7 +480,7 @@ void QCPPDialogImpl::readFromStderr()
 
 void QCPPDialogImpl::sendDone()
 {
-   cerr<<"sx exited"<<endl;
+   std::cerr<<"sx exited"<<std::endl;
 }
 
 bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
@@ -483,37 +491,37 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
    {
       if (ke->state()==0)
       {
-         if (ke->key()==Key_Up)
+         if (ke->key()==Qt::Key_Up)
          {
             prevCmd();
             return true;
          }
-         else if (ke->key()==Key_Down)
+         else if (ke->key()==Qt::Key_Down)
          {
             nextCmd();
             return true;
          }
       }
-      else if (ke->state()==ControlButton)
+      else if (ke->state()==Qt::ControlButton)
       {
-         if (ke->key()==Key_C)
+         if (ke->key()==Qt::Key_C)
          {
-//            cerr<<"c";
+//            std::cerr<<"c";
             m_keyCode=3;
             sendByte(m_keyCode, 0);
 //            if (m_firstRep)
                m_keyRepeatTimer.start(0, false);
             return true;
          }
-         else if (ke->key()==Key_Q)
+         else if (ke->key()==Qt::Key_Q)
          {
-//            cerr<<"#";
+//            std::cerr<<"#";
             m_keyCode=17;
             sendByte(m_keyCode, 0);
 //            m_keyRepeatTimer.start(200, true);
             return true;
          }
-         else if (ke->key()==Key_S)
+         else if (ke->key()==Qt::Key_S)
          {
             m_keyCode=19;
             sendByte(m_keyCode, 0);
@@ -534,7 +542,7 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
 
 void QCPPDialogImpl::sendKey()
 {
-//   cerr<<"-";
+//   std::cerr<<"-";
    sendByte(m_keyCode, 0);
 /*   if (m_firstRep)
    {
@@ -543,11 +551,11 @@ void QCPPDialogImpl::sendKey()
    }*/
 }
 
-void QCPPDialogImpl::oldCmdClicked(QListBoxItem* item)
+void QCPPDialogImpl::oldCmdClicked(QListWidgetItem* item)
 {
    if (item==0)
       return;
-   int index=m_oldCmdsLb->index(item);
+   int index=m_oldCmdsLb->row(item);
    m_cmdLe->setText(item->text());
    m_cmdBufIndex=m_oldCmdsLb->count()-index;
    m_cmdLe->setFocus();
@@ -557,13 +565,14 @@ void QCPPDialogImpl::prevCmd()
 {
    if (m_oldCmdsLb->count()<=m_cmdBufIndex)
       return;
-//   cerr<<"prevCmd() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<
+//   std::cerr<<"prevCmd() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<
    m_cmdBufIndex++;
-   m_oldCmdsLb->setCurrentItem(m_oldCmdsLb->count()-m_cmdBufIndex);
-   m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), true);
-   m_cmdLe->setText(m_oldCmdsLb->currentText());
+   m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-m_cmdBufIndex);
+#warning setSelected() disabled for now   
+//   m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), true);
+   m_cmdLe->setText(m_oldCmdsLb->currentItem()->text());
 
-//   cerr<<"prev() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<endl;
+//   std::cerr<<"prev() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<std::endl;
 }
 
 void QCPPDialogImpl::nextCmd()
@@ -574,14 +583,15 @@ void QCPPDialogImpl::nextCmd()
    if (m_cmdBufIndex==0)
    {
       m_cmdLe->clear();
-      m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), false);
+#warning setSelected() disabled for now   
+//      m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), false);
    }
    else
    {
-      m_oldCmdsLb->setCurrentItem(m_oldCmdsLb->count()-m_cmdBufIndex);
-      m_cmdLe->setText(m_oldCmdsLb->currentText());
+      m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-m_cmdBufIndex);
+      m_cmdLe->setText(m_oldCmdsLb->currentItem()->text());
    }
-//   cerr<<"next() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<endl;
+//   std::cerr<<"next() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<std::endl;
 }
 
 void QCPPDialogImpl::execCmd()
@@ -591,13 +601,13 @@ void QCPPDialogImpl::execCmd()
    m_cmdLe->clear();
    if (!cmd.isEmpty())
    {
-      if ((m_oldCmdsLb->count()<1) || (m_oldCmdsLb->text(m_oldCmdsLb->count()-1)!=cmd))
+      if ((m_oldCmdsLb->count()<1) || (m_oldCmdsLb->item(m_oldCmdsLb->count()-1)->text()!=cmd))
       {
-         m_oldCmdsLb->insertItem(cmd);
-         m_oldCmdsLb->setCurrentItem(m_oldCmdsLb->count()-1);
+         m_oldCmdsLb->addItem(cmd);
+         m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-1);
 //       m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), false);
          if (m_oldCmdsLb->count()>50)
-            m_oldCmdsLb->removeItem(0);
+            m_oldCmdsLb->removeItemWidget(m_oldCmdsLb->item(0));
          saveSettings();
       }
    }
@@ -607,7 +617,7 @@ void QCPPDialogImpl::execCmd()
 
    sendString(cmd);
 
-/*   cerr<<"paras: "<<m_outputView->paragraphs()<<endl;
+/*   std::cerr<<"paras: "<<m_outputView->paragraphs()<<std::endl;
    if (m_outputView->paragraphs()>1100)
    {
       m_outputView->setUpdatesEnabled(false);
@@ -645,7 +655,7 @@ bool QCPPDialogImpl::sendString(const QString& s)
       if (hex.length()%2 != 0)
          hex="0"+hex;
 
-      for (unsigned int i=0; i<hex.length()/2; i++)
+      for (int i=0; i<hex.length()/2; i++)
       {
          QString nextByte=hex.mid(i*2, 2);
          bool ok=true;
@@ -657,7 +667,7 @@ bool QCPPDialogImpl::sendString(const QString& s)
          }
       }
 
-      for (unsigned int i=0; i<hex.length()/2; i++)
+      for (int i=0; i<hex.length()/2; i++)
       {
          QString nextByte=hex.mid(i*2, 2);
          unsigned int byte=nextByte.toUInt(0, 16);
@@ -668,7 +678,7 @@ bool QCPPDialogImpl::sendString(const QString& s)
    }
 
    const char *bytes=s.latin1();
-   for (unsigned int i=0; i<s.length(); i++)
+   for (int i=0; i<s.length(); i++)
    {
       if (!sendByte(*bytes, charDelay))
          return false;
@@ -701,16 +711,16 @@ bool QCPPDialogImpl::sendByte(char c, unsigned int delay)
       return false;
 //   c=c&0xff;
    int res=::write(m_fd, &c, 1);
-//   cerr<<"wrote "<<(unsigned int)(c)<<endl;
+//   std::cerr<<"wrote "<<(unsigned int)(c)<<std::endl;
    if (res<1)
    {
-      cerr<<"write returned "<<res<<" errno: "<<errno<<endl;
+      std::cerr<<"write returned "<<res<<" errno: "<<errno<<std::endl;
       perror("write\n");
       return false;
    }
    millisleep(delay);
 //   else
-//      cerr<<" \""<<c<<"\"; ";
+//      std::cerr<<" \""<<c<<"\"; ";
    return true;
 }
 
@@ -750,7 +760,7 @@ void QCPPDialogImpl::connectTTY()
    m_fd=open(dev.latin1(), flags | O_NDELAY);
    if (m_fd<0)
    {
-      cerr<<"opening failed"<<endl;
+      std::cerr<<"opening failed"<<std::endl;
       m_fd=-1;
       QMessageBox::information(this, tr("Error"), tr("Could not open %1").arg(dev));
       return;
@@ -765,7 +775,7 @@ void QCPPDialogImpl::connectTTY()
       fcntl(m_fd, F_SETFL, n & ~O_NDELAY);
 
       if (tcgetattr(m_fd, &m_oldtio)!=0)
-         cerr<<"tcgetattr() 2 failed"<<endl;
+         std::cerr<<"tcgetattr() 2 failed"<<std::endl;
 
       setNewOptions(baudrate, dataBits, parity, stop, softwareHandshake, hardwareHandshake);
    }
@@ -816,7 +826,7 @@ void QCPPDialogImpl::disconnectTTYRestore(bool restoreSettings)
    m_outputTimer.stop();
    m_outputBuffer="";
 
-//   cerr<<"closing "<<m_fd<<endl;
+//   std::cerr<<"closing "<<m_fd<<std::endl;
    if (m_fd!=-1)
    {
       if (restoreSettings)
@@ -856,7 +866,7 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    struct termios newtio;
 //   memset(&newtio, 0, sizeof(newtio));
    if (tcgetattr(m_fd, &newtio)!=0)
-   cerr<<"tcgetattr() 3 failed"<<endl;
+   std::cerr<<"tcgetattr() 3 failed"<<std::endl;
 
    /*{
       unsigned int i;
@@ -996,7 +1006,7 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
 
 //   tcflush(m_fd, TCIFLUSH);
    if (tcsetattr(m_fd, TCSANOW, &newtio)!=0)
-      cerr<<"tcsetattr() 1 failed"<<endl;
+      std::cerr<<"tcsetattr() 1 failed"<<std::endl;
 
    int mcs=0;
 //   ioctl(m_fd, TIOCMODG, &mcs);
@@ -1005,7 +1015,7 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    ioctl(m_fd, TIOCMSET, &mcs);
 
    if (tcgetattr(m_fd, &newtio)!=0)
-      cerr<<"tcgetattr() 4 failed"<<endl;
+      std::cerr<<"tcgetattr() 4 failed"<<std::endl;
    //hardware handshake
    if (hardwareHandshake)
       newtio.c_cflag |= CRTSCTS;
@@ -1016,7 +1026,7 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
   else
      newtio.c_cflag &= ~CRTSCTS;*/
    if (tcsetattr(m_fd, TCSANOW, &newtio)!=0)
-      cerr<<"tcsetattr() 2 failed"<<endl;
+      std::cerr<<"tcsetattr() 2 failed"<<std::endl;
 
    /*{
       unsigned int i;
@@ -1042,7 +1052,7 @@ void QCPPDialogImpl::readData(int fd)
 
    if (bytesRead<0)
    {
-      cerr<<"read result: "<<bytesRead<<endl;
+      std::cerr<<"read result: "<<bytesRead<<std::endl;
       perror("read: \n");
       return;
    }
@@ -1050,7 +1060,7 @@ void QCPPDialogImpl::readData(int fd)
    const char* c=m_buf;
    if (m_sz!=0)
    {
-//      cerr<<"readData() "<<bytesRead<<endl;
+//      std::cerr<<"readData() "<<bytesRead<<std::endl;
       QByteArray ba;
       ba.duplicate(m_buf, bytesRead);
 //      ba.setRawData(m_buf, bytesRead);
@@ -1146,7 +1156,7 @@ void QCPPDialogImpl::doOutput()
 {
    if (m_outputBuffer.isEmpty())
       return;
-//   cerr<<"*";
+//   std::cerr<<"*";
    int pNumber=m_outputView->paragraphs();
    if (pNumber>1100)
    {
@@ -1166,7 +1176,7 @@ void QCPPDialogImpl::doOutput()
    m_outputBuffer="";
 }
 
-void QCPPDialogImpl::hexOutputClicked(bool on)
+void QCPPDialogImpl::hexOutputClicked(bool /* on */)
 {
    addOutput("\n");
    m_hexBytes=0;
@@ -1180,14 +1190,14 @@ void QCPPDialogImpl::enableLogging(bool on)
    if (on)
    {
       m_logFile.setName(m_logFileLe->text());
-      int mode=IO_ReadWrite;
+      QIODevice::OpenMode mode=QIODevice::ReadWrite;
       if (m_logAppendCb->currentItem()==0)
       {
-         mode=mode | IO_Truncate;
+         mode=mode | QIODevice::Truncate;
       }
       else
       {
-         mode=mode | IO_Append;
+         mode=mode | QIODevice::Append;
       }
 
       if (!m_logFile.open(mode))

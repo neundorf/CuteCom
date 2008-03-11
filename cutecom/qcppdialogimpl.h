@@ -19,7 +19,7 @@
 #ifndef QCPPIALOGIMPL_H
 #define QCPPIALOGIMPL_H
 
-#include "cutecommdlg.h"
+#include "ui_cutecommdlg.h"
 
 #include <termios.h>
 
@@ -27,16 +27,20 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qfile.h>
+//Added by qt3to4:
+#include <QResizeEvent>
+#include <QEvent>
+#include <QWidget>
 
 #define CUTECOMM_BUFSIZE (4096)
 
-class QListBoxItem;
+class QListWidgetItem;
 class QResizeEvent;
-class QProcess;
+class Q3Process;
 class QProgressDialog;
 class QFileDialog;
 
-class QCPPDialogImpl:public CuteCommDlg
+class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
 {
    Q_OBJECT
    public:
@@ -48,7 +52,7 @@ class QCPPDialogImpl:public CuteCommDlg
       void sendFile();
       void showAboutMsg();
 
-      void oldCmdClicked(QListBoxItem* item);
+      void oldCmdClicked(QListWidgetItem* item);
       void saveSettings();
       void readFromStdout();
       void readFromStderr();
@@ -79,7 +83,7 @@ class QCPPDialogImpl:public CuteCommDlg
       unsigned int m_cmdBufIndex;
       QSocketNotifier *m_notifier;
       char m_buf[CUTECOMM_BUFSIZE];
-      QProcess *m_sz;
+      Q3Process *m_sz;
       QProgressDialog *m_progress;
       int m_progressStepSize;
 

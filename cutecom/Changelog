@@ -1,3 +1,7 @@
+0.20.0, Mar 11th, 2008
+-ported to Qt4, using the patches from Federico Fuga and Michael G. Hansen
+-same features as 0.14.2 otherwise
+
 0.14.2, Jan 26th, 2007
 -support for the 1k xmodem protocl, patch by yoann <ydiruzza AT free DOT fr>
 -a cutecom man page, patch from Roman I Khimov <roman AT khimov.ru>
