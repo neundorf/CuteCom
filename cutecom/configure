@@ -1,17 +1,12 @@
 #!/bin/sh
 
-print_error()
-{
-   echo "Could not execute qmake, which comes with the Qt library (www.trolltech.com)"
-   echo "So go and install it :-)"
-   echo
-   exit
-}
-
 echo
-echo "Executing qmake..."
-
-qmake > /dev/null || print_error
-
-echo "Succeeded, now enter make to build cutecom"
+echo "CuteCom uses the CMake build system, at least version 2.4.3 is required."
+echo "If there is no package for your distribution, you can "
+echo "get it from http://www.cmake.org/HTML/Download.html"
 echo
+echo "So instead of running ./configure, you need to run cmake:"
+echo "$ cmake ."
+echo
+
+
