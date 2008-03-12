@@ -1,4 +1,4 @@
-/*  Copyright (C) 2004-2005 Alexander Neundorf <neundorf@kde.org>
+/*  Copyright (C) 2004-2008 Alexander Neundorf <neundorf@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
-#include <q3textbrowser.h>
 #include <qlistwidget.h>
 #include <qlineedit.h>
 #include <qfiledialog.h>
@@ -30,17 +29,20 @@
 #include <qmessagebox.h>
 #include <qsettings.h>
 #include <qevent.h>
-#include <q3cstring.h>
 #include <qprogressdialog.h>
 #include <qapplication.h>
-#include <q3process.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
 #include <qspinbox.h>
 //Added by qt3to4:
 #include <QKeyEvent>
 #include <QResizeEvent>
+
+#include <q3textbrowser.h>
+#include <q3process.h>
+#include <q3cstring.h>
 #include <Q3TextStream>
+
 
 #include <iostream>
 using namespace std;
@@ -260,7 +262,7 @@ void QCPPDialogImpl::readSettings()
 
 void QCPPDialogImpl::showAboutMsg()
 {
-   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.14.2<br>(c)2004-2006 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
+   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.20.0<br>(c)2004-2008 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
 }
 
 void QCPPDialogImpl::sendFile()
@@ -567,11 +569,12 @@ void QCPPDialogImpl::prevCmd()
       return;
 //   std::cerr<<"prevCmd() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<
    m_cmdBufIndex++;
-   m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-m_cmdBufIndex);
-#warning setSelected() disabled for now   
-//   m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), true);
-   m_cmdLe->setText(m_oldCmdsLb->currentItem()->text());
-
+   QListWidgetItem* item=m_oldCmdsLb->item(m_oldCmdsLb->count()-m_cmdBufIndex);
+   if (item!=0)
+   {
+      m_oldCmdsLb->setCurrentItem(item);
+      m_cmdLe->setText(item->text());
+   }
 //   std::cerr<<"prev() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<std::endl;
 }
 
@@ -583,13 +586,14 @@ void QCPPDialogImpl::nextCmd()
    if (m_cmdBufIndex==0)
    {
       m_cmdLe->clear();
+      m_oldCmdsLb->setCurrentItem(0);
 #warning setSelected() disabled for now   
-//      m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), false);
    }
    else
    {
-      m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-m_cmdBufIndex);
-      m_cmdLe->setText(m_oldCmdsLb->currentItem()->text());
+      QListWidgetItem* it=m_oldCmdsLb->item(m_oldCmdsLb->count()-m_cmdBufIndex);
+      m_oldCmdsLb->setCurrentItem(it);
+      m_cmdLe->setText(it->text());
    }
 //   std::cerr<<"next() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<m_cmdBufIndex<<std::endl;
 }
