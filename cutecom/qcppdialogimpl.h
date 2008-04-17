@@ -96,8 +96,8 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
 
       QTimer m_keyRepeatTimer;
       char m_keyCode;
-//    bool m_firstRep;
       unsigned int m_hexBytes;
+      char m_previousChar;
 
       QFile m_logFile;
 

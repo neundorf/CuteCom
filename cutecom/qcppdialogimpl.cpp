@@ -81,8 +81,8 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
 ,m_outputTimer(this)
 ,m_keyRepeatTimer(this)
 ,m_keyCode(0)
-//,m_firstRep(true)
 ,m_hexBytes(0)
+,m_previousChar('\0')
 {
    this->setupUi(this);
    connect(m_connectPb, SIGNAL(clicked()), this, SLOT(connectTTY()));
@@ -587,7 +587,6 @@ void QCPPDialogImpl::nextCmd()
    {
       m_cmdLe->clear();
       m_oldCmdsLb->setCurrentItem(0);
-#warning setSelected() disabled for now   
    }
    else
    {
@@ -713,7 +712,6 @@ bool QCPPDialogImpl::sendByte(char c, unsigned int delay)
 {
    if (m_fd==-1)
       return false;
-//   c=c&0xff;
    int res=::write(m_fd, &c, 1);
 //   std::cerr<<"wrote "<<(unsigned int)(c)<<std::endl;
    if (res<1)
@@ -723,18 +721,9 @@ bool QCPPDialogImpl::sendByte(char c, unsigned int delay)
       return false;
    }
    millisleep(delay);
-//   else
-//      std::cerr<<" \""<<c<<"\"; ";
    return true;
 }
 
-/*void QCPPDialogImpl::connectOrDisconnectTTY()
-{
-   if (m_fd==-1)
-      connectTTY();
-   else
-      disconnectTTY();
-}*/
 
 void QCPPDialogImpl::connectTTY()
 {
@@ -746,8 +735,6 @@ void QCPPDialogImpl::connectTTY()
    bool softwareHandshake=m_softwareCb->isChecked();
    bool hardwareHandshake=m_hardwareCb->isChecked();
 
-//  m_fd=open(dev.latin1(), O_RDWR | O_NOCTTY | O_NONBLOCK);
-// m_fd=open(dev.latin1(), O_RDWR | O_NOCTTY);
    int flags=0;
    if (m_readCb->isChecked() && m_writeCb->isChecked())
       flags=O_RDWR;
@@ -808,6 +795,8 @@ void QCPPDialogImpl::connectTTY()
    m_closePb->setEnabled(true);
 
    m_cmdLe->setFocus();
+   
+   m_previousChar = '\0';
 }
 
 void QCPPDialogImpl::enableSettingWidgets(bool enable)
@@ -1101,10 +1090,26 @@ void QCPPDialogImpl::readData(int fd)
       }
       else
       {
+         // also print a newline for \r, and print only one newline for \r\n
          if ((isprint(*c)) || (*c=='\n') || (*c=='\r'))
          {
-            if (*c!='\r')
+            if (*c=='\r')
+            {
+               text+='\n';
+            }
+            else if (*c=='\n')
+            {
+               if (m_previousChar != '\r')
+               {
+                  text+='\n';
+               }
+            }
+            else
+            {
                text+=(*c);
+            }
+
+            m_previousChar = *c;
          }
          else
          {
