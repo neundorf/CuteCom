@@ -16,7 +16,7 @@
 
 */
 
-#include <qapplication.h>
+#include <QApplication>
 
 #include "qcppdialogimpl.h"
 

@@ -358,7 +358,7 @@
      <property name="orientation" >
       <enum>Qt::Vertical</enum>
      </property>
-     <widget class="Q3Frame" name="frame3" >
+     <widget class="QFrame" name="frame3" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
         <horstretch>0</horstretch>
@@ -373,17 +373,11 @@
       </property>
       <layout class="QVBoxLayout" >
        <item>
-        <widget class="Q3TextBrowser" name="m_outputView" >
+        <widget class="QTextBrowser" name="m_outputView" >
          <property name="font" >
           <font>
            <family>Courier</family>
           </font>
-         </property>
-         <property name="textFormat" >
-          <enum>Qt::PlainText</enum>
-         </property>
-         <property name="wrapPolicy" >
-          <enum>Q3TextEdit::AtWhiteSpace</enum>
          </property>
         </widget>
        </item>
@@ -475,7 +469,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="Q3Frame" name="frame4" >
+     <widget class="QFrame" name="frame4" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
         <horstretch>0</horstretch>
@@ -652,19 +646,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11" />
  <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
- <customwidgets>
-  <customwidget>
-   <class>Q3Frame</class>
-   <extends>QFrame</extends>
-   <header>Qt3Support/Q3Frame</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Q3TextBrowser</class>
-   <extends>Q3TextEdit</extends>
-   <header>Qt3Support/Q3TextBrowser</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>m_connectPb</tabstop>
   <tabstop>m_closePb</tabstop>

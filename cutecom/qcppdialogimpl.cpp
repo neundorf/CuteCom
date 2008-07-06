@@ -37,11 +37,11 @@
 //Added by qt3to4:
 #include <QKeyEvent>
 #include <QResizeEvent>
+#include <qtextbrowser.h>
+#include <qtextstream.h>
 
-#include <q3textbrowser.h>
 #include <q3process.h>
 #include <q3cstring.h>
-#include <Q3TextStream>
 
 
 #include <iostream>
@@ -102,7 +102,7 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    connect(m_hexOutputCb, SIGNAL(toggled(bool)), this, SLOT(hexOutputClicked(bool)));
 
    connect(m_connectPb, SIGNAL(clicked()), this, SLOT(saveSettings()));
-//   connect(m_deviceCb, SIGNAL(activated(int)), this, SLOT(saveSettings()));
+   connect(m_deviceCb, SIGNAL(activated(int)), this, SLOT(saveSettings()));
    connect(m_baudCb, SIGNAL(activated(int)), this, SLOT(saveSettings()));
    connect(m_dataBitsCb, SIGNAL(activated(int)), this, SLOT(saveSettings()));
    connect(m_parityCb, SIGNAL(activated(int)), this, SLOT(saveSettings()));
@@ -127,8 +127,9 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    connect(m_enableLoggingCb, SIGNAL(toggled(bool)), this, SLOT(enableLogging(bool)));
 //   connect(m_enableLoggingCb, SIGNAL(toggled(bool)), this, SLOT(enableLogging(bool)));
 
-   m_outputView->setWrapPolicy(Q3TextEdit::Anywhere);
-   m_outputView->setWordWrap(Q3TextEdit::WidgetWidth);
+   m_outputView->setWordWrapMode(QTextOption::WrapAnywhere); 
+   m_outputView->document()->setMaximumBlockCount(500);
+//  TODO ? m_outputView->setWordWrap(Q3TextEdit::WidgetWidth);
 
 /*   QAccel* accel=new QAccel(this);
    accel->insertItem(CTRL+Key_C, 3);
@@ -154,102 +155,117 @@ void QCPPDialogImpl::resizeEvent(QResizeEvent *e)
 void QCPPDialogImpl::saveSettings()
 {
    QSettings settings;
-   settings.writeEntry("/cutecom/HardwareHandshake", m_hardwareCb->isChecked());
-   settings.writeEntry("/cutecom/SoftwareHandshake", m_softwareCb->isChecked());
+   settings.setValue("/cutecom/HardwareHandshake", m_hardwareCb->isChecked());
+   settings.setValue("/cutecom/SoftwareHandshake", m_softwareCb->isChecked());
 
-   settings.writeEntry("/cutecom/OpenForReading", m_readCb->isChecked());
-   settings.writeEntry("/cutecom/OpenForWriting", m_writeCb->isChecked());
-   settings.writeEntry("/cutecom/DontApplySettings", !m_applyCb->isChecked());
+   settings.setValue("/cutecom/OpenForReading", m_readCb->isChecked());
+   settings.setValue("/cutecom/OpenForWriting", m_writeCb->isChecked());
+   settings.setValue("/cutecom/DontApplySettings", !m_applyCb->isChecked());
 
-   //   settings.writeEntry("/cutecom/Device", m_deviceCb->currentItem());
-   settings.writeEntry("/cutecom/Baud", m_baudCb->currentItem());
-   settings.writeEntry("/cutecom/Databits", m_dataBitsCb->currentItem());
-   settings.writeEntry("/cutecom/Parity", m_parityCb->currentItem());
-   settings.writeEntry("/cutecom/Stopbits", m_stopCb->currentItem());
-   settings.writeEntry("/cutecom/Protocol", m_protoPb->currentItem());
-   settings.writeEntry("/cutecom/width", width());
-   settings.writeEntry("/cutecom/height", height());
+   settings.setValue("/cutecom/Device", m_deviceCb->currentText());
+   settings.setValue("/cutecom/Baud", m_baudCb->currentItem());
+   settings.setValue("/cutecom/Databits", m_dataBitsCb->currentItem());
+   settings.setValue("/cutecom/Parity", m_parityCb->currentItem());
+   settings.setValue("/cutecom/Stopbits", m_stopCb->currentItem());
+   settings.setValue("/cutecom/Protocol", m_protoPb->currentItem());
+   settings.setValue("/cutecom/width", width());
+   settings.setValue("/cutecom/height", height());
 
-   settings.writeEntry("/cutecom/LineMode", m_inputModeCb->currentItem());
-   settings.writeEntry("/cutecom/HexOutput", m_hexOutputCb->isChecked());
-   settings.writeEntry("/cutecom/CharDelay", m_charDelaySb->value());
+   settings.setValue("/cutecom/LineMode", m_inputModeCb->currentItem());
+   settings.setValue("/cutecom/HexOutput", m_hexOutputCb->isChecked());
+   settings.setValue("/cutecom/CharDelay", m_charDelaySb->value());
 
-   settings.writeEntry("/cutecom/SendFileDialogStartDir", m_sendFileDialogStartDir);
-   settings.writeEntry("/cutecom/LogFileName", m_logFileLe->text());
+   settings.setValue("/cutecom/SendFileDialogStartDir", m_sendFileDialogStartDir);
+   settings.setValue("/cutecom/LogFileName", m_logFileLe->text());
 
-   settings.writeEntry("/cutecom/AppendToLogFile", m_logAppendCb->currentItem());
+   settings.setValue("/cutecom/AppendToLogFile", m_logAppendCb->currentItem());
 
 
    QString currentDevice=m_deviceCb->currentText();
-   settings.writeEntry("/cutecom/CurrentDevice", currentDevice);
+   settings.setValue("/cutecom/CurrentDevice", currentDevice);
    bool currentDeviceIsInList=false;
    QStringList devices;
    for (int i=0; i<m_deviceCb->count(); i++)
    {
-      QString s=m_deviceCb->text(i);
+      QString s=m_deviceCb->itemText(i);
       devices<<s;
       if (s==currentDevice)
+      {
          currentDeviceIsInList=true;
+      }
    }
 
    if (!currentDeviceIsInList)
+   {
       devices<<currentDevice;
+   }
 
-   settings.writeEntry("/cutecom/AllDevices", devices);
+   settings.setValue("/cutecom/AllDevices", devices);
 
    int historyCount=m_oldCmdsLb->count();
    if (historyCount>50)
+   {
       historyCount=50;
+   }
 
    QStringList saveHist;
    for (unsigned int i=m_oldCmdsLb->count()-historyCount; i<m_oldCmdsLb->count(); i++)
    {
       saveHist << m_oldCmdsLb->item(i)->text();
    }
-   settings.writeEntry("/cutecom/History", saveHist);
+   settings.setValue("/cutecom/History", saveHist);
 }
 
 void QCPPDialogImpl::readSettings()
 {
    QSettings settings;
-   m_hardwareCb->setChecked(settings.readBoolEntry("/cutecom/HardwareHandshake", false));
-   m_softwareCb->setChecked(settings.readBoolEntry("/cutecom/SoftwareHandshake", false));
-   m_readCb->setChecked(settings.readBoolEntry("/cutecom/OpenForReading", true));
-   m_writeCb->setChecked(settings.readBoolEntry("/cutecom/OpenForWriting", true));
+   m_hardwareCb->setChecked(settings.value("/cutecom/HardwareHandshake", false).toBool());
+   m_softwareCb->setChecked(settings.value("/cutecom/SoftwareHandshake", false).toBool());
+   m_readCb->setChecked(settings.value("/cutecom/OpenForReading", true).toBool());
+   m_writeCb->setChecked(settings.value("/cutecom/OpenForWriting", true).toBool());
 
-   m_applyCb->setChecked(!settings.readBoolEntry("/cutecom/DontApplySettings", false));
+   m_applyCb->setChecked(!settings.value("/cutecom/DontApplySettings", false).toBool());
    enableSettingWidgets(m_applyCb->isChecked());
 
-   m_baudCb->setCurrentItem(settings.readNumEntry("/cutecom/Baud", 7));
-   m_dataBitsCb->setCurrentItem(settings.readNumEntry("/cutecom/Databits", 3));
-   m_parityCb->setCurrentItem(settings.readNumEntry("/cutecom/Parity", 0));
-   m_stopCb->setCurrentItem(settings.readNumEntry("/cutecom/Stopbits", 0));
-   m_protoPb->setCurrentItem(settings.readNumEntry("/cutecom/Protocol", 0));
+   m_baudCb->setCurrentIndex(settings.value("/cutecom/Baud", 7).toInt());
+   m_dataBitsCb->setCurrentIndex(settings.value("/cutecom/Databits", 3).toInt());
+   m_parityCb->setCurrentIndex(settings.value("/cutecom/Parity", 0).toInt());
+   m_stopCb->setCurrentIndex(settings.value("/cutecom/Stopbits", 0).toInt());
+   m_protoPb->setCurrentIndex(settings.value("/cutecom/Protocol", 0).toInt());
 
-   m_inputModeCb->setCurrentItem(settings.readNumEntry("/cutecom/LineMode", 0));
-   m_hexOutputCb->setChecked(settings.readBoolEntry("/cutecom/HexOutput", false));
-   m_charDelaySb->setValue(settings.readNumEntry("/cutecom/CharDelay", 1));
+   m_inputModeCb->setCurrentIndex(settings.value("/cutecom/LineMode", 0).toInt());
+   m_hexOutputCb->setChecked(settings.value("/cutecom/HexOutput", false).toBool());
+   m_charDelaySb->setValue(settings.value("/cutecom/CharDelay", 1).toInt());
 
-   m_sendFileDialogStartDir=settings.readEntry("/cutecom/SendFileDialogStartDir", QDir::homeDirPath());
-   m_logFileLe->setText(settings.readEntry("/cutecom/LogFileName", QDir::homeDirPath()+"/cutecom.log"));
+   m_sendFileDialogStartDir=settings.value("/cutecom/SendFileDialogStartDir", QDir::homePath()).toString();
+   m_logFileLe->setText(settings.value("/cutecom/LogFileName", QDir::homePath()+"/cutecom.log").toString());
 
-   m_logAppendCb->setCurrentItem(settings.readNumEntry("/cutecom/AppendToLogFile", 0));
+   m_logAppendCb->setCurrentIndex(settings.value("/cutecom/AppendToLogFile", 0).toInt());
 
-   int x=settings.readNumEntry("/cutecom/width", -1);
-   int y=settings.readNumEntry("/cutecom/height", -1);
+   int x=settings.value("/cutecom/width", -1).toInt();
+   int y=settings.value("/cutecom/height", -1).toInt();
    if ((x>100) && (y>100))
+   {
       resize(x,y);
+   }
 
-   bool entryFound=false;
-   QStringList devices=settings.readListEntry("/cutecom/AllDevices", &entryFound);
+   bool entryFound = settings.contains("/cutecom/AllDevices");
+   QStringList devices=settings.value("/cutecom/AllDevices").toStringList();
    if (!entryFound)
+   {
       devices<<"/dev/ttyS0"<<"/dev/ttyS1"<<"/dev/ttyS2"<<"/dev/ttyS3";
+   }
 
-   m_deviceCb->insertStringList(devices);
+   m_deviceCb->insertItems(0, devices);
 
-   m_deviceCb->setCurrentText(settings.readEntry("/cutecom/CurrentDevice", "/dev/ttyS0"));
+   int indexOfCurrentDevice = devices.indexOf(settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString());
+   fprintf(stderr, "currentDEev: -%s - index: %d\n", settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString().toLatin1().constData(), indexOfCurrentDevice);
+   if (indexOfCurrentDevice!=-1)
+   {
+       m_deviceCb->setCurrentIndex(indexOfCurrentDevice);
+   }
 
-   QStringList history=settings.readListEntry("/cutecom/History");
+   QStringList history=settings.value("/cutecom/History").toStringList();
 
    if (!history.empty())
    {
@@ -271,13 +287,17 @@ void QCPPDialogImpl::sendFile()
    {
       m_fileDlg=new QFileDialog();
       m_fileDlg->setDirectory(m_sendFileDialogStartDir);
-      m_fileDlg->setMode(QFileDialog::ExistingFile);
+      m_fileDlg->setFileMode(QFileDialog::ExistingFile);
    }
 
    QString filename;
    if ( m_fileDlg->exec() == QDialog::Accepted )
    {
-      filename = m_fileDlg->selectedFile();
+      QStringList fn = m_fileDlg->selectedFiles();
+      if(!fn.isEmpty())
+      {
+          filename = fn[0];
+      }
       m_sendFileDialogStartDir=m_fileDlg->directory().absolutePath();
       saveSettings();
    }
@@ -296,11 +316,11 @@ void QCPPDialogImpl::sendFile()
          return;
       }
 
-      Q3TextStream stream(&file);
+      QTextStream stream(&file);
       while (!stream.atEnd())
       {
          QString nextLine=stream.readLine();
-         nextLine=nextLine.left((unsigned int)nextLine.find('#'));
+         nextLine=nextLine.left((unsigned int)nextLine.indexOf('#'));
          if (nextLine.isEmpty())
             continue;
 
@@ -454,7 +474,7 @@ void QCPPDialogImpl::readFromStderr()
       return;
    QString s(ba);
    QRegExp regex(".+\\d+/ *(\\d+)k.*");
-   int pos=regex.search(s);
+   int pos=regex.indexIn(s);
    if (pos>-1)
    {
       QString captured=regex.cap(1);
@@ -491,7 +511,7 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
    if ((watched==m_cmdLe)
        && (e->type()==QEvent::KeyPress))
    {
-      if (ke->state()==0)
+      if (ke->state()==Qt::NoModifier)
       {
          if (ke->key()==Qt::Key_Up)
          {
@@ -504,15 +524,15 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
             return true;
          }
       }
-      else if (ke->state()==Qt::ControlButton)
+      else if (ke->modifiers()==Qt::ControlModifier)
       {
          if (ke->key()==Qt::Key_C)
          {
 //            std::cerr<<"c";
             m_keyCode=3;
             sendByte(m_keyCode, 0);
-//            if (m_firstRep)
-               m_keyRepeatTimer.start(0, false);
+            m_keyRepeatTimer.setSingleShot(false); 
+            m_keyRepeatTimer.start(0);
             return true;
          }
          else if (ke->key()==Qt::Key_Q)
@@ -587,6 +607,7 @@ void QCPPDialogImpl::nextCmd()
    {
       m_cmdLe->clear();
       m_oldCmdsLb->setCurrentItem(0);
+//    TODO ?  m_oldCmdsLb->setCurrentIndex(0);
    }
    else
    {
@@ -600,7 +621,7 @@ void QCPPDialogImpl::nextCmd()
 void QCPPDialogImpl::execCmd()
 {
    m_cmdBufIndex=0;
-   QString cmd=m_cmdLe->text().stripWhiteSpace();
+   QString cmd=m_cmdLe->text().trimmed();
    m_cmdLe->clear();
    if (!cmd.isEmpty())
    {
@@ -608,9 +629,10 @@ void QCPPDialogImpl::execCmd()
       {
          m_oldCmdsLb->addItem(cmd);
          m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-1);
-//       m_oldCmdsLb->setSelected(m_oldCmdsLb->currentItem(), false);
          if (m_oldCmdsLb->count()>50)
+         {
             m_oldCmdsLb->removeItemWidget(m_oldCmdsLb->item(0));
+         }
          saveSettings();
       }
    }
@@ -645,7 +667,7 @@ void QCPPDialogImpl::execCmd()
 
 bool QCPPDialogImpl::sendString(const QString& s)
 {
-   unsigned int lineMode=m_inputModeCb->currentItem();
+   unsigned int lineMode=m_inputModeCb->currentIndex();
    unsigned int charDelay=m_charDelaySb->value();
 
    if (lineMode==4) // hex
@@ -653,10 +675,14 @@ bool QCPPDialogImpl::sendString(const QString& s)
       QString hex=s;
       hex.remove(QRegExp("\\s"));
       if ((hex.startsWith("0x")) || (hex.startsWith("0X")))
+      {
          hex=hex.mid(2);
+      }
 
       if (hex.length()%2 != 0)
+      {
          hex="0"+hex;
+      }
 
       for (int i=0; i<hex.length()/2; i++)
       {
@@ -680,7 +706,7 @@ bool QCPPDialogImpl::sendString(const QString& s)
       return true;
    }
 
-   const char *bytes=s.latin1();
+   const char *bytes=s.toLatin1();
    for (int i=0; i<s.length(); i++)
    {
       if (!sendByte(*bytes, charDelay))
@@ -748,7 +774,7 @@ void QCPPDialogImpl::connectTTY()
       return;
    }
 
-   m_fd=open(dev.latin1(), flags | O_NDELAY);
+   m_fd=open(dev.toLatin1(), flags | O_NDELAY);
    if (m_fd<0)
    {
       std::cerr<<"opening failed"<<std::endl;
@@ -795,7 +821,7 @@ void QCPPDialogImpl::connectTTY()
    m_closePb->setEnabled(true);
 
    m_cmdLe->setFocus();
-   
+
    m_previousChar = '\0';
 }
 
@@ -1054,8 +1080,7 @@ void QCPPDialogImpl::readData(int fd)
    if (m_sz!=0)
    {
 //      std::cerr<<"readData() "<<bytesRead<<std::endl;
-      QByteArray ba;
-      ba.duplicate(m_buf, bytesRead);
+      QByteArray ba(m_buf, bytesRead);
 //      ba.setRawData(m_buf, bytesRead);
       m_sz->writeToStdin(ba);
 //      ba.resetRawData(m_buf, bytesRead);
@@ -1064,7 +1089,7 @@ void QCPPDialogImpl::readData(int fd)
 
    if (m_logFile.isOpen())
    {
-      m_logFile.writeBlock(m_buf, bytesRead);
+      m_logFile.write(m_buf, bytesRead);
    }
 
    QString text;
@@ -1147,7 +1172,8 @@ void QCPPDialogImpl::addOutput(const QString& text)
    {
       doOutput();
       m_outputTimerStart.restart();
-      m_outputTimer.start(50, true);
+      m_outputTimer.setSingleShot(true); 
+      m_outputTimer.start(50);
    }
    else
    {
@@ -1157,7 +1183,8 @@ void QCPPDialogImpl::addOutput(const QString& text)
          doOutput();
          m_outputTimerStart.restart();
       }
-      m_outputTimer.start(50, true);
+      m_outputTimer.setSingleShot(true); 
+      m_outputTimer.start(50);
    }
 }
 
@@ -1165,24 +1192,8 @@ void QCPPDialogImpl::doOutput()
 {
    if (m_outputBuffer.isEmpty())
       return;
-//   std::cerr<<"*";
-   int pNumber=m_outputView->paragraphs();
-   if (pNumber>1100)
-   {
-      m_outputView->setUpdatesEnabled(false);
-      m_outputView->setSelection(0, 0, pNumber-1000, 0);
-      m_outputView->removeSelectedText();
-      m_outputView->scrollToBottom();
-      m_outputView->setCursorPosition(m_outputView->paragraphs()-1, m_outputView->paragraphLength(m_outputView->paragraphs()-1));
-      m_outputView->insert(m_outputBuffer);
-      m_outputView->setUpdatesEnabled(true);
-   }
-   else
-   {
-      m_outputView->setCursorPosition(m_outputView->paragraphs()-1, m_outputView->paragraphLength(m_outputView->paragraphs()-1));
-      m_outputView->insert(m_outputBuffer);
-   }
-   m_outputBuffer="";
+   m_outputView->append(m_outputBuffer); 
+   m_outputBuffer.clear();
 }
 
 void QCPPDialogImpl::hexOutputClicked(bool /* on */)
@@ -1198,9 +1209,9 @@ void QCPPDialogImpl::enableLogging(bool on)
 
    if (on)
    {
-      m_logFile.setName(m_logFileLe->text());
+      m_logFile.setFileName(m_logFileLe->text());
       QIODevice::OpenMode mode=QIODevice::ReadWrite;
-      if (m_logAppendCb->currentItem()==0)
+      if (m_logAppendCb->currentIndex()==0)
       {
          mode=mode | QIODevice::Truncate;
       }
@@ -1237,7 +1248,7 @@ void QCPPDialogImpl::enableLogging(bool on)
 
 void QCPPDialogImpl::chooseLogFile()
 {
-   QString logFile=QFileDialog::getSaveFileName(m_logFileLe->text());
+   QString logFile=QFileDialog::getSaveFileName(this, tr("Save log file ..."), m_logFileLe->text());
    if (!logFile.isEmpty())
    {
       m_logFileLe->setText(logFile);
