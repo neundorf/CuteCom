@@ -322,7 +322,9 @@ void QCPPDialogImpl::sendFile()
          QString nextLine=stream.readLine();
          nextLine=nextLine.left((unsigned int)nextLine.indexOf('#'));
          if (nextLine.isEmpty())
+         {
             continue;
+         }
 
          if (!sendString(nextLine))
          {
@@ -346,7 +348,9 @@ void QCPPDialogImpl::sendFile()
       m_progress->setMinimumDuration(100);
       unsigned int step=data.size()/100;
       if (step<1)
+      {
          step=1;
+      }
       for (int i=0; i<data.size(); i++)
       {
          if ((i%step)==0)
@@ -356,7 +360,9 @@ void QCPPDialogImpl::sendFile()
          }
          sendByte(data.data()[i], charDelay);
          if ((data.data()[i]=='\n') || (data.data()[i]=='\r')) //wait twice as long after bytes which might be line ends (helps some uCs)
+         {
             millisleep(charDelay);
+         }
 //         if (!sendByte(data.data()[i]))
          if (0)
          {
@@ -364,7 +370,9 @@ void QCPPDialogImpl::sendFile()
             break;
          }
          if ( m_progress->wasCanceled() )
+         {
             break;
+         }
       }
       delete m_progress;
       m_progress=0;
@@ -382,14 +390,22 @@ void QCPPDialogImpl::sendFile()
 //      QString tmp=QString("sx -vv \"")+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
       QString tmp=QString("sz ");
       if (m_protoPb->currentText()=="XModem")
+      {
          tmp+="--xmodem ";
+      }
       else if (m_protoPb->currentText()=="YModem")
+      {
          tmp+="--ymodem ";
+      }
       else if (m_protoPb->currentText()=="ZModem")
+      {
          tmp+="--zmodem ";
+      }
       else if (m_protoPb->currentText()=="1kXModem")
+      {
          tmp+="--xmodem --1k ";
-      
+      }
+
       tmp=tmp+"-vv \""+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
       m_sz->addArgument(tmp);
       m_sz->setCommunication(Q3Process::Stderr);
@@ -417,7 +433,9 @@ void QCPPDialogImpl::sendFile()
       QFileInfo fi(filename);
       m_progressStepSize=fi.size()/1024/100;
       if (m_progressStepSize<1)
+      {
          m_progressStepSize=1;
+      }
 //    cerr<<"while(isRunning)"<<std::endl;
       m_progress->setValue(0);
       while (m_sz->isRunning())
@@ -442,7 +460,9 @@ void QCPPDialogImpl::sendFile()
 void QCPPDialogImpl::killSz()
 {
    if (m_sz==0)
+   {
       return;
+   }
    m_sz->tryTerminate();
 }
 
@@ -471,7 +491,9 @@ void QCPPDialogImpl::readFromStderr()
    QByteArray ba=m_sz->readStderr();
 //   cerr<<"readFromStderr() "<<ba.count()<<std::endl;
    if (m_progress==0)
+   {
       return;
+   }
    QString s(ba);
    QRegExp regex(".+\\d+/ *(\\d+)k.*");
    int pos=regex.indexIn(s);
@@ -484,7 +506,9 @@ void QCPPDialogImpl::readFromStderr()
       {
          int p=kb/m_progressStepSize;
          if (p<100)
+         {
             m_progress->setValue(p);
+         }
       }
    }
 //   else
@@ -540,23 +564,19 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
 //            std::cerr<<"#";
             m_keyCode=17;
             sendByte(m_keyCode, 0);
-//            m_keyRepeatTimer.start(200, true);
             return true;
          }
          else if (ke->key()==Qt::Key_S)
          {
             m_keyCode=19;
             sendByte(m_keyCode, 0);
-//            m_keyRepeatTimer.start(200, true);
             return true;
          }
       }
    }
-//   else if ((watched==m_cmdLe) && (e->type()==QEvent::KeyRelease) && (ke->key()==Key_Control))
    else if ((watched==m_cmdLe) && (e->type()==QEvent::KeyRelease))
    {
       m_keyRepeatTimer.stop();
-//      m_firstRep=true;
    }
 
    return false;
@@ -566,17 +586,14 @@ void QCPPDialogImpl::sendKey()
 {
 //   std::cerr<<"-";
    sendByte(m_keyCode, 0);
-/*   if (m_firstRep)
-   {
-      m_firstRep=false;
-      m_keyRepeatTimer.start(1, false);
-   }*/
 }
 
 void QCPPDialogImpl::oldCmdClicked(QListWidgetItem* item)
 {
    if (item==0)
+   {
       return;
+   }
    int index=m_oldCmdsLb->row(item);
    m_cmdLe->setText(item->text());
    m_cmdBufIndex=m_oldCmdsLb->count()-index;
@@ -586,7 +603,10 @@ void QCPPDialogImpl::oldCmdClicked(QListWidgetItem* item)
 void QCPPDialogImpl::prevCmd()
 {
    if (m_oldCmdsLb->count()<=m_cmdBufIndex)
+   {
       return;
+   }
+
 //   std::cerr<<"prevCmd() count: "<<m_oldCmdsLb->count()<<" bufIndex: "<<
    m_cmdBufIndex++;
    QListWidgetItem* item=m_oldCmdsLb->item(m_oldCmdsLb->count()-m_cmdBufIndex);
@@ -601,7 +621,10 @@ void QCPPDialogImpl::prevCmd()
 void QCPPDialogImpl::nextCmd()
 {
    if (m_cmdBufIndex==0)
+   {
       return;
+   }
+
    m_cmdBufIndex--;
    if (m_cmdBufIndex==0)
    {
@@ -638,7 +661,9 @@ void QCPPDialogImpl::execCmd()
    }
    m_oldCmdsLb->clearSelection();
    if (m_fd==-1)
+   {
       return;
+   }
 
    sendString(cmd);
 
@@ -710,26 +735,36 @@ bool QCPPDialogImpl::sendString(const QString& s)
    for (int i=0; i<s.length(); i++)
    {
       if (!sendByte(*bytes, charDelay))
+      {
          return false;
+      }
       bytes++;
    }
 
    if (lineMode==0)
    {
       if (!sendByte('\n', charDelay))
+      {
          return false;
+      }
    }
    else if (lineMode==1)
    {
       if (!sendByte('\r', charDelay))
+      {
          return false;
+      }
    }
    else if (lineMode==2)
    {
       if (!sendByte('\r', charDelay))
+      {
          return false;
+      }
       if (!sendByte('\n', charDelay))
+      {
          return false;
+      }
    }
    return true;
 }
@@ -737,7 +772,9 @@ bool QCPPDialogImpl::sendString(const QString& s)
 bool QCPPDialogImpl::sendByte(char c, unsigned int delay)
 {
    if (m_fd==-1)
+   {
       return false;
+   }
    int res=::write(m_fd, &c, 1);
 //   std::cerr<<"wrote "<<(unsigned int)(c)<<std::endl;
    if (res<1)
@@ -763,11 +800,17 @@ void QCPPDialogImpl::connectTTY()
 
    int flags=0;
    if (m_readCb->isChecked() && m_writeCb->isChecked())
+   {
       flags=O_RDWR;
+   }
    else if (!m_readCb->isChecked() && m_writeCb->isChecked())
+   {
       flags=O_WRONLY;
+   }
    else if (m_readCb->isChecked() && !m_writeCb->isChecked())
+   {
       flags=O_RDONLY;
+   }
    else
    {
       QMessageBox::information(this, tr("Error"), tr("Opening the device neither for reading nor writing doesn't seem to make much sense ;-)"));
@@ -792,7 +835,9 @@ void QCPPDialogImpl::connectTTY()
       fcntl(m_fd, F_SETFL, n & ~O_NDELAY);
 
       if (tcgetattr(m_fd, &m_oldtio)!=0)
+      {
          std::cerr<<"tcgetattr() 2 failed"<<std::endl;
+      }
 
       setNewOptions(baudrate, dataBits, parity, stop, softwareHandshake, hardwareHandshake);
    }
@@ -849,7 +894,9 @@ void QCPPDialogImpl::disconnectTTYRestore(bool restoreSettings)
    if (m_fd!=-1)
    {
       if (restoreSettings)
+      {
          tcsetattr(m_fd, TCSANOW, &m_oldtio);
+      }
       ::close(m_fd);
    }
    m_fd=-1;
@@ -857,7 +904,9 @@ void QCPPDialogImpl::disconnectTTYRestore(bool restoreSettings)
    m_deviceCb->setEnabled(true);
 
    if (m_applyCb->isChecked())
+   {
       enableSettingWidgets(true);
+   }
 
    m_applyCb->setEnabled(true);
    m_readCb->setEnabled(true);
@@ -885,7 +934,9 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    struct termios newtio;
 //   memset(&newtio, 0, sizeof(newtio));
    if (tcgetattr(m_fd, &newtio)!=0)
-   std::cerr<<"tcgetattr() 3 failed"<<std::endl;
+   {
+      std::cerr<<"tcgetattr() 3 failed"<<std::endl;
+   }
 
    /*{
       unsigned int i;
@@ -966,7 +1017,9 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
 
    /* We generate mark and space parity ourself. */
    if (databits == 7 && (parity=="Mark" || parity == "Space"))
+   {
       databits = 8;
+   }
    switch (databits)
    {
    case 5:
@@ -988,9 +1041,13 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    //parity
    newtio.c_cflag &= ~(PARENB | PARODD);
    if (parity == "Even")
+   {
       newtio.c_cflag |= PARENB;
+   }
    else if (parity== "Odd")
+   {
       newtio.c_cflag |= (PARENB | PARODD);
+   }
 
    //hardware handshake
 /*   if (hardwareHandshake)
@@ -1001,51 +1058,67 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
 
    //stopbits
    if (stop=="2")
+   {
       newtio.c_cflag |= CSTOPB;
+   }
    else
+   {
       newtio.c_cflag &= ~CSTOPB;
+   }
 
 //   newtio.c_iflag=IGNPAR | IGNBRK;
-    newtio.c_iflag=IGNBRK;
+   newtio.c_iflag=IGNBRK;
 //   newtio.c_iflag=IGNPAR;
 
    //software handshake
    if (softwareHandshake)
+   {
       newtio.c_iflag |= IXON | IXOFF;
+   }
    else
+   {
       newtio.c_iflag &= ~(IXON|IXOFF|IXANY);
+   }
 
    newtio.c_lflag=0;
-
    newtio.c_oflag=0;
-
 
    newtio.c_cc[VTIME]=1;
    newtio.c_cc[VMIN]=60;
 
 //   tcflush(m_fd, TCIFLUSH);
    if (tcsetattr(m_fd, TCSANOW, &newtio)!=0)
+   {
       std::cerr<<"tcsetattr() 1 failed"<<std::endl;
+   }
 
    int mcs=0;
-//   ioctl(m_fd, TIOCMODG, &mcs);
    ioctl(m_fd, TIOCMGET, &mcs);
    mcs |= TIOCM_RTS;
    ioctl(m_fd, TIOCMSET, &mcs);
 
    if (tcgetattr(m_fd, &newtio)!=0)
+   {
       std::cerr<<"tcgetattr() 4 failed"<<std::endl;
+   }
+
    //hardware handshake
    if (hardwareHandshake)
+   {
       newtio.c_cflag |= CRTSCTS;
+   }
    else
+   {
       newtio.c_cflag &= ~CRTSCTS;
+   }
 /*  if (on)
      newtio.c_cflag |= CRTSCTS;
   else
      newtio.c_cflag &= ~CRTSCTS;*/
    if (tcsetattr(m_fd, TCSANOW, &newtio)!=0)
+   {
       std::cerr<<"tcsetattr() 2 failed"<<std::endl;
+   }
 
    /*{
       unsigned int i;
@@ -1066,7 +1139,10 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
 void QCPPDialogImpl::readData(int fd)
 {
    if (fd!=m_fd)
+   {
       return;
+   }
+
    int bytesRead=::read(m_fd, m_buf, CUTECOMM_BUFSIZE);
 
    if (bytesRead<0)
@@ -1109,9 +1185,13 @@ void QCPPDialogImpl::readData(int fd)
 
          m_hexBytes++;
          if ((m_hexBytes % 16)==0)
+         {
             text+="\n";
+         }
          else if ((m_hexBytes % 8)==0)
+         {
             text+="  ";
+         }
       }
       else
       {
@@ -1191,7 +1271,10 @@ void QCPPDialogImpl::addOutput(const QString& text)
 void QCPPDialogImpl::doOutput()
 {
    if (m_outputBuffer.isEmpty())
+   {
       return;
+   }
+
    m_outputView->append(m_outputBuffer); 
    m_outputBuffer.clear();
 }
@@ -1205,7 +1288,9 @@ void QCPPDialogImpl::hexOutputClicked(bool /* on */)
 void QCPPDialogImpl::enableLogging(bool on)
 {
    if (m_logFile.isOpen()==on)
+   {
       return;
+   }
 
    if (on)
    {
