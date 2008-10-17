@@ -66,6 +66,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       void hexOutputClicked(bool on);
       void enableLogging(bool on);
       void chooseLogFile();
+      void clearOutput();
    protected:
       void addOutput(const QString& text);
       bool sendByte(char c, unsigned int delay);

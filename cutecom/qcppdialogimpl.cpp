@@ -87,7 +87,7 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    this->setupUi(this);
    connect(m_connectPb, SIGNAL(clicked()), this, SLOT(connectTTY()));
    connect(m_closePb, SIGNAL(clicked()), this, SLOT(disconnectTTY()));
-   connect(m_clearOutputPb, SIGNAL(clicked()), m_outputView, SLOT(clear()));
+   connect(m_clearOutputPb, SIGNAL(clicked()), this, SLOT(clearOutput()));
 //   connect(m_clearInputPb, SIGNAL(clicked()), m_oldCmdsLb, SLOT(clear()));
 
    connect(m_cmdLe, SIGNAL(returnPressed()), this, SLOT(execCmd()));
@@ -868,6 +868,7 @@ void QCPPDialogImpl::connectTTY()
    m_cmdLe->setFocus();
 
    m_previousChar = '\0';
+   m_hexBytes=0;
 }
 
 void QCPPDialogImpl::enableSettingWidgets(bool enable)
@@ -1282,6 +1283,12 @@ void QCPPDialogImpl::doOutput()
 void QCPPDialogImpl::hexOutputClicked(bool /* on */)
 {
    addOutput("\n");
+   m_hexBytes=0;
+}
+
+void QCPPDialogImpl::clearOutput()
+{
+   m_outputView->clear();
    m_hexBytes=0;
 }
 
