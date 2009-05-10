@@ -1,4 +1,4 @@
-/*  Copyright (C) 2004-2008 Alexander Neundorf <neundorf@kde.org>
+/*  Copyright (C) 2004-2009 Alexander Neundorf <neundorf@kde.org>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -259,7 +259,7 @@ void QCPPDialogImpl::readSettings()
    m_deviceCb->insertItems(0, devices);
 
    int indexOfCurrentDevice = devices.indexOf(settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString());
-   fprintf(stderr, "currentDEev: -%s - index: %d\n", settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString().toLatin1().constData(), indexOfCurrentDevice);
+   // fprintf(stderr, "currentDEev: -%s - index: %d\n", settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString().toLatin1().constData(), indexOfCurrentDevice);
    if (indexOfCurrentDevice!=-1)
    {
        m_deviceCb->setCurrentIndex(indexOfCurrentDevice);
@@ -726,7 +726,7 @@ bool QCPPDialogImpl::sendString(const QString& s)
          QString nextByte=hex.mid(i*2, 2);
          unsigned int byte=nextByte.toUInt(0, 16);
          sendByte(byte & 0xff, charDelay);
-         fprintf(stderr, " 0x%x d:%d ", byte & 0xff, charDelay);
+         // fprintf(stderr, " 0x%x d:%d ", byte & 0xff, charDelay);
       }
       return true;
    }
@@ -857,7 +857,6 @@ void QCPPDialogImpl::connectTTY()
    {
       m_notifier=new QSocketNotifier(m_fd, QSocketNotifier::Read, this);
       connect(m_notifier, SIGNAL(activated(int)), this, SLOT(readData(int)));
-//      m_outputView->setEnabled(true);
    }
    m_oldCmdsLb->setEnabled(true);
    m_cmdLe->setEnabled(true);
@@ -913,7 +912,6 @@ void QCPPDialogImpl::disconnectTTYRestore(bool restoreSettings)
    m_readCb->setEnabled(true);
    m_writeCb->setEnabled(true);
 
-//   m_outputView->setEnabled(false);
    m_oldCmdsLb->setEnabled(false);
    m_cmdLe->setEnabled(false);
    m_sendPb->setEnabled(false);
@@ -938,21 +936,6 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    {
       std::cerr<<"tcgetattr() 3 failed"<<std::endl;
    }
-
-   /*{
-      unsigned int i;
-      char *c =(char*)&newtio;
-      fprintf(stderr,"*****************\n");
-      for (i=0; i<sizeof(newtio); i++)
-      {
-         unsigned int t=*c;
-         if (i%8 == 0)
-            fprintf(stderr,"\n");
-         fprintf(stderr, " 0x%02x", t&0xff);
-         c++;
-      }
-   }*/
-
 
    speed_t _baud=0;
    switch (baudrate)
@@ -1121,20 +1104,6 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
       std::cerr<<"tcsetattr() 2 failed"<<std::endl;
    }
 
-   /*{
-      unsigned int i;
-      char *c =(char*)&newtio;
-      fprintf(stderr,"-----------------\n");
-      tcgetattr(m_fd, &newtio);
-      for (i=0; i<sizeof(newtio); i++)
-      {
-         unsigned int t=*c;
-         if (i%8 == 0)
-            fprintf(stderr,"\n");
-         fprintf(stderr, " 0x%02x", t&0xff);
-         c++;
-      }
-   }*/
 }
 
 void QCPPDialogImpl::readData(int fd)
@@ -1158,9 +1127,7 @@ void QCPPDialogImpl::readData(int fd)
    {
 //      std::cerr<<"readData() "<<bytesRead<<std::endl;
       QByteArray ba(m_buf, bytesRead);
-//      ba.setRawData(m_buf, bytesRead);
       m_sz->writeToStdin(ba);
-//      ba.resetRawData(m_buf, bytesRead);
       return;
    }
 
@@ -1228,21 +1195,6 @@ void QCPPDialogImpl::readData(int fd)
    }
 
    addOutput(text);
-/*   if (m_outputView->paragraphs()>1100)
-   {
-      m_outputView->setUpdatesEnabled(false);
-      m_outputView->setSelection(0, 0, 100, 0);
-      m_outputView->removeSelectedText();
-      m_outputView->scrollToBottom();
-      m_outputView->setCursorPosition(m_outputView->paragraphs()-1, m_outputView->paragraphLength(m_outputView->paragraphs()-1));
-      m_outputView->insert(text);
-      m_outputView->setUpdatesEnabled(true);
-   }
-   else
-   {
-      m_outputView->setCursorPosition(m_outputView->paragraphs()-1, m_outputView->paragraphLength(m_outputView->paragraphs()-1));
-      m_outputView->insert(text);
-   }*/
 }
 
 void QCPPDialogImpl::addOutput(const QString& text)
