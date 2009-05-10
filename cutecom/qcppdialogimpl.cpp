@@ -278,7 +278,7 @@ void QCPPDialogImpl::readSettings()
 
 void QCPPDialogImpl::showAboutMsg()
 {
-   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.20.0<br>(c)2004-2008 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
+   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.21.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
 }
 
 void QCPPDialogImpl::sendFile()
@@ -1119,6 +1119,12 @@ void QCPPDialogImpl::readData(int fd)
    {
       std::cerr<<"read result: "<<bytesRead<<std::endl;
       perror("read: \n");
+      return;
+   }
+   // if the device "disappeared", e.g. from USB, we get a read event for 0 bytes
+   else if (bytesRead==0)
+   {
+      disconnectTTY();
       return;
    }
 

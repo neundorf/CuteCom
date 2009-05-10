@@ -1,6 +1,6 @@
-Cutecom 0.20.0, March 11th, 2008
+Cutecom 0.21.0, May 10th, 2009
 
-Cutecom is a graphical serial terminal, like minicom.
+Cutecom is a graphical serial terminal, similar to minicom.
 It is aimed mainly at hardware developers or other people
 who need a terminal to talk to their devices.
 It is free software and distributed under the GNU General
@@ -14,6 +14,9 @@ Enter the source directory and run "cmake ." followed by make and make
 install and you're done. To make sure it can find Qt4, set the PATH so that 
 qmake from Qt4 is in the PATH (and comes before qmake from Qt3 in the PATH), 
 e.g.: export PATH=/opt/qt4/bin:$PATH; cmake .
+
+If you are using CMake >= 2.6.0, adjust the CMAKE_PREFIX_PATH environment variable
+instead of PATH to help CMake finding Qt4, e.g.: export CMAKE_PREFIX_PATH=/opt/qt4; cmake .
 
 To uninstall cutecom simply delete the file "cutecom" and the file 
 "cutecom.desktop" amd your done. The config file is ~/.qt/cutecomrc.
