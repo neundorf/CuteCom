@@ -1,5 +1,5 @@
-0.20.1, May 10th, 2009
--disconnect from the device if it disappears, e.g. from USB, patch by Bjoern Struck
+0.21.0, May 11th, 2009
+-disconnect from the device if it disappears, e.g. from USB, patch by Bjoern Spruck
 -less Qt3Support usage
 
 0.20.0, Mar 12th, 2008
