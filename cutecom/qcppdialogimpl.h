@@ -68,6 +68,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       void chooseLogFile();
       void clearOutput();
    protected:
+      void fillBaudCb();
       void addOutput(const QString& text);
       bool sendByte(char c, unsigned int delay);
       void disconnectTTYRestore(bool restore);

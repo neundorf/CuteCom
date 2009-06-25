@@ -84,7 +84,13 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
 ,m_hexBytes(0)
 ,m_previousChar('\0')
 {
+   QCoreApplication::setOrganizationName("CuteCom");
+//   QCoreApplication::setOrganizationDomain("mysoft.com");
+   QCoreApplication::setApplicationName("CuteCom");
+
    this->setupUi(this);
+   fillBaudCb();
+
    connect(m_connectPb, SIGNAL(clicked()), this, SLOT(connectTTY()));
    connect(m_closePb, SIGNAL(clicked()), this, SLOT(disconnectTTY()));
    connect(m_clearOutputPb, SIGNAL(clicked()), this, SLOT(clearOutput()));
@@ -144,6 +150,94 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
    disconnectTTY();
 
    m_cmdLe->installEventFilter(this);
+}
+
+void QCPPDialogImpl::fillBaudCb()
+{
+#ifdef B0
+   m_baudCb->addItem("0");
+#endif
+   
+#ifdef B50
+   m_baudCb->addItem("50");
+#endif
+#ifdef B75
+   m_baudCb->addItem("75");
+#endif
+#ifdef B110
+   m_baudCb->addItem("110");
+#endif
+#ifdef B134
+   m_baudCb->addItem("134");
+#endif
+#ifdef B150
+   m_baudCb->addItem("150");
+#endif
+#ifdef B200
+   m_baudCb->addItem("200");
+#endif
+#ifdef B300
+   m_baudCb->addItem("300");
+#endif
+#ifdef B600
+   m_baudCb->addItem("600");
+#endif
+#ifdef B1200
+   m_baudCb->addItem("1200");
+#endif
+#ifdef B1800
+   m_baudCb->addItem("1800");
+#endif
+#ifdef B2400
+   m_baudCb->addItem("2400");
+#endif
+#ifdef B4800
+   m_baudCb->addItem("4800");
+#endif
+#ifdef B7200
+   m_baudCb->addItem("7200");
+#endif
+#ifdef B9600
+   m_baudCb->addItem("9600");
+#endif
+#ifdef B14400
+   m_baudCb->addItem("14400");
+#endif
+#ifdef B19200
+   m_baudCb->addItem("19200");
+#endif
+#ifdef B28800
+   m_baudCb->addItem("28800");
+#endif
+#ifdef B38400
+   m_baudCb->addItem("38400");
+#endif
+#ifdef B57600
+   m_baudCb->addItem("57600");
+#endif
+#ifdef B76800
+   m_baudCb->addItem("76800");
+#endif
+
+   // this one is the default (without special reason)
+   m_baudCb->addItem("115200");
+   m_baudCb->setCurrentIndex(m_baudCb->count()-1);
+
+#ifdef B128000
+   m_baudCb->addItem("128000");
+#endif
+#ifdef B230400
+   m_baudCb->addItem("230400");
+#endif
+#ifdef B460800
+   m_baudCb->addItem("460800");
+#endif
+#ifdef B576000
+   m_baudCb->addItem("576000");
+#endif
+#ifdef B921600
+   m_baudCb->addItem("921600");
+#endif
 }
 
 void QCPPDialogImpl::resizeEvent(QResizeEvent *e)
@@ -227,7 +321,11 @@ void QCPPDialogImpl::readSettings()
    m_applyCb->setChecked(!settings.value("/cutecom/DontApplySettings", false).toBool());
    enableSettingWidgets(m_applyCb->isChecked());
 
-   m_baudCb->setCurrentIndex(settings.value("/cutecom/Baud", 7).toInt());
+   int defaultBaud = settings.value("/cutecom/Baud", -1).toInt();
+   if (defaultBaud != -1)
+   {
+      m_baudCb->setCurrentIndex(defaultBaud);
+   }
    m_dataBitsCb->setCurrentIndex(settings.value("/cutecom/Databits", 3).toInt());
    m_parityCb->setCurrentIndex(settings.value("/cutecom/Parity", 0).toInt());
    m_stopCb->setCurrentIndex(settings.value("/cutecom/Stopbits", 0).toInt());
@@ -278,7 +376,7 @@ void QCPPDialogImpl::readSettings()
 
 void QCPPDialogImpl::showAboutMsg()
 {
-   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.21.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
+   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.22.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
 }
 
 void QCPPDialogImpl::sendFile()
@@ -654,7 +752,11 @@ void QCPPDialogImpl::execCmd()
          m_oldCmdsLb->setCurrentRow(m_oldCmdsLb->count()-1);
          if (m_oldCmdsLb->count()>50)
          {
+#if QT_VERSION >= 0x040300
             m_oldCmdsLb->removeItemWidget(m_oldCmdsLb->item(0));
+#else /* QT_VERSION >= 0x030000 */
+            m_oldCmdsLb->setItemWidget(m_oldCmdsLb->item(0), 0);
+#endif /* QT_VERSION >= 0x030000 */
          }
          saveSettings();
       }
@@ -940,57 +1042,88 @@ void QCPPDialogImpl::setNewOptions(int baudrate, int databits, const QString& pa
    speed_t _baud=0;
    switch (baudrate)
    {
-   case 600:
-      _baud=B600;
-      break;
-   case 1200:
-      _baud=B1200;
-      break;
-   case 2400:
-      _baud=B2400;
-      break;
-   case 4800:
-      _baud=B4800;
-      break;
-   case 9600:
-      _baud=B9600;
-      break;
-//   case 14400:
-//      _baud=B14400;
-//      break;
-   case 19200:
-      _baud=B19200;
-      break;
-//   case 28800:
-//      _baud=B28800;
-//      break;
-   case 38400:
-      _baud=B38400;
-      break;
-//   case 56000:
-//      _baud=B56000;
-//      break;
-   case 57600:
-      _baud=B57600;
-      break;
-   case 115200:
-      _baud=B115200;
-      break;
-   case 230400:
-      _baud=B230400;
-      break;
-   case 460800:
-      _baud=B460800;
-      break;
-   case 576000:
-      _baud=B576000;
-      break;
-   case 921600:
-      _baud=B921600;
-      break;
-//   case 128000:
-//      _baud=B128000;
-//      break;
+#ifdef B0
+   case      0: _baud=B0;     break;
+#endif
+   
+#ifdef B50
+   case     50: _baud=B50;    break;
+#endif
+#ifdef B75
+   case     75: _baud=B75;    break;
+#endif
+#ifdef B110
+   case    110: _baud=B110;   break;
+#endif
+#ifdef B134
+   case    134: _baud=B134;   break;
+#endif
+#ifdef B150
+   case    150: _baud=B150;   break;
+#endif
+#ifdef B200
+   case    200: _baud=B200;   break;
+#endif
+#ifdef B300
+   case    300: _baud=B300;   break;
+#endif
+#ifdef B600
+   case    600: _baud=B600;   break;
+#endif
+#ifdef B1200
+   case   1200: _baud=B1200;  break;
+#endif
+#ifdef B1800
+   case   1800: _baud=B1800;  break;
+#endif
+#ifdef B2400
+   case   2400: _baud=B2400;  break;
+#endif
+#ifdef B4800
+   case   4800: _baud=B4800;  break;
+#endif
+#ifdef B7200
+   case   7200: _baud=B7200;  break;
+#endif
+#ifdef B9600
+   case   9600: _baud=B9600;  break;
+#endif
+#ifdef B14400
+   case  14400: _baud=B14400; break;
+#endif
+#ifdef B19200
+   case  19200: _baud=B19200; break;
+#endif
+#ifdef B28800
+   case  28800: _baud=B28800; break;
+#endif
+#ifdef B38400
+   case  38400: _baud=B38400; break;
+#endif
+#ifdef B57600
+   case  57600: _baud=B57600; break;
+#endif
+#ifdef B76800
+   case  76800: _baud=B76800; break;
+#endif
+#ifdef B115200
+   case 115200: _baud=B115200; break;
+#endif
+#ifdef B128000
+   case 128000: _baud=B128000; break;
+#endif
+#ifdef B230400
+   case 230400: _baud=B230400; break;
+#endif
+#ifdef B460800
+   case 460800: _baud=B460800; break;
+#endif
+#ifdef B576000
+   case 576000: _baud=B576000; break;
+#endif
+#ifdef B921600
+   case 921600: _baud=B921600; break;
+#endif
    default:
 //   case 256000:
 //      _baud=B256000;
