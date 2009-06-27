@@ -1,5 +1,5 @@
 0.22.0, June 27th, 2009
--CuteCom now also works on Mac OS X, patch by Olliver Klauke
+-CuteCom now also works on Mac OS X, patch by Oliver Klauke
 -support for more baudrates
 -install man page to <prefix>/share/man/man1 instead to <prefix>/man/man1 
  (seems to be more standard conform)
