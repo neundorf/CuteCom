@@ -27,7 +27,7 @@ if(APPLE)
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtXml.framework/Versions/4/QtXml:/Library/Frameworks/QtXml.framework/Versions/4/QtXml")
 endif(APPLE)
 
-add_executable(cutecom ${exeType} ${cutecomSrcs} ${uiHeaders})
+add_executable(cutecom ${exeType} ${cutecomSrcs})
 target_link_libraries(cutecom ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 
 if (APPLE)
