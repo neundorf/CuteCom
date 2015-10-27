@@ -1,4 +1,5 @@
 /*  Copyright (C) 2004-2005 Alexander Neundorf <neundorf@kde.org>
+    Copyright (C) 2015 Meinhard Ritscher <unreachable@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,14 +18,29 @@
 */
 
 #include <QApplication>
+#include <QCommandLineParser>
 
 #include "qcppdialogimpl.h"
 
 //signal handlers should be installed...
-int main( int argc, char ** argv )
+int main( int argc, char *argv[] )
 {
     QApplication a( argc, argv );
-    QCPPDialogImpl w(0);
+
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("CuteCom - Serial  Terminal");
+    parser.addHelpOption();
+    QCommandLineOption sessionOption(QStringList() << "s" << "session",
+               QCoreApplication::translate("main", "Open a named <session>"),
+               QCoreApplication::translate("main", "session"));
+    parser.addOption(sessionOption);
+
+    // Process the actual command line arguments given by the user
+    parser.process(a);
+    QString session = parser.value(sessionOption);
+
+    QCPPDialogImpl w(0, session);
     w.show();
     a.connect( &a, SIGNAL( lastWindowClosed() ), &a, SLOT( quit() ) );
     return a.exec();

@@ -1,3 +1,7 @@
+0.23.0, October 27th, 2015
+-ported partly to Qt5
+-made named sessions available via command line option (-s)
+
 0.22.0, June 27th, 2009
 -CuteCom now also works on Mac OS X, patch by Oliver Klauke
 -support for more baudrates

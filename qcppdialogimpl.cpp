@@ -1,4 +1,5 @@
 /*  Copyright (C) 2004-2009 Alexander Neundorf <neundorf@kde.org>
+    Copyright (C) 2015 Meinhard Ritscher <unreachable@gmx.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +19,6 @@
 
 #include "qcppdialogimpl.h"
 
-#include <qscrollbar.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
@@ -35,15 +35,13 @@
 #include <qfileinfo.h>
 #include <qregexp.h>
 #include <qspinbox.h>
-//Added by qt3to4:
 #include <QKeyEvent>
 #include <QResizeEvent>
 #include <qtextbrowser.h>
 #include <qtextstream.h>
+#include <QScrollBar>
 
-#include <q3process.h>
-#include <q3cstring.h>
-
+#include <qprocess.h>
 
 #include <iostream>
 using namespace std;
@@ -69,7 +67,7 @@ void millisleep(int ms)
    }
 }
 
-QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
+QCPPDialogImpl::QCPPDialogImpl(QWidget* parent, QString session)
 :QWidget(parent)
 ,m_isConnected(false)
 ,m_fd(-1)
@@ -84,6 +82,7 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
 ,m_keyCode(0)
 ,m_hexBytes(0)
 ,m_previousChar('\0')
+,m_session(session)
 {
    QCoreApplication::setOrganizationName("CuteCom");
 //   QCoreApplication::setOrganizationDomain("mysoft.com");
@@ -247,37 +246,53 @@ void QCPPDialogImpl::resizeEvent(QResizeEvent *e)
    saveSettings();
 }
 
+/**
+ * This function will enable to switch between named session via
+ * a GUI widget. (not implemented yet)
+ * @brief QCPPDialogImpl::switchSession
+ * @param sessionName
+ */
+void QCPPDialogImpl::switchSession(const QString& sessionName)
+{
+    saveSettings();
+    m_session = sessionName;
+    readSettings();
+}
+
+
 void QCPPDialogImpl::saveSettings()
 {
    QSettings settings;
-   settings.setValue("/cutecom/HardwareHandshake", m_hardwareCb->isChecked());
-   settings.setValue("/cutecom/SoftwareHandshake", m_softwareCb->isChecked());
+   settings.setValue("/cutecom/session", m_session);
+   settings.beginGroup("/sessions");
+   settings.setValue(m_session+"/HardwareHandshake", m_hardwareCb->isChecked());
+   settings.setValue(m_session+"/SoftwareHandshake", m_softwareCb->isChecked());
 
-   settings.setValue("/cutecom/OpenForReading", m_readCb->isChecked());
-   settings.setValue("/cutecom/OpenForWriting", m_writeCb->isChecked());
-   settings.setValue("/cutecom/DontApplySettings", !m_applyCb->isChecked());
+   settings.setValue(m_session+"/OpenForReading", m_readCb->isChecked());
+   settings.setValue(m_session+"/OpenForWriting", m_writeCb->isChecked());
+   settings.setValue(m_session+"/DontApplySettings", !m_applyCb->isChecked());
 
-   settings.setValue("/cutecom/Device", m_deviceCb->currentText());
-   settings.setValue("/cutecom/Baud", m_baudCb->currentItem());
-   settings.setValue("/cutecom/Databits", m_dataBitsCb->currentItem());
-   settings.setValue("/cutecom/Parity", m_parityCb->currentItem());
-   settings.setValue("/cutecom/Stopbits", m_stopCb->currentItem());
-   settings.setValue("/cutecom/Protocol", m_protoPb->currentItem());
-   settings.setValue("/cutecom/width", width());
-   settings.setValue("/cutecom/height", height());
+   settings.setValue(m_session+"/Device", m_deviceCb->currentText());
+   settings.setValue(m_session+"/Baud", m_baudCb->currentIndex());
+   settings.setValue(m_session+"/Databits", m_dataBitsCb->currentIndex());
+   settings.setValue(m_session+"/Parity", m_parityCb->currentIndex());
+   settings.setValue(m_session+"/Stopbits", m_stopCb->currentIndex());
+   settings.setValue(m_session+"/Protocol", m_protoPb->currentIndex());
+   settings.setValue(m_session+"/width", width());
+   settings.setValue(m_session+"/height", height());
 
-   settings.setValue("/cutecom/LineMode", m_inputModeCb->currentItem());
-   settings.setValue("/cutecom/HexOutput", m_hexOutputCb->isChecked());
-   settings.setValue("/cutecom/CharDelay", m_charDelaySb->value());
+   settings.setValue(m_session+"/LineMode", m_inputModeCb->currentIndex());
+   settings.setValue(m_session+"/HexOutput", m_hexOutputCb->isChecked());
+   settings.setValue(m_session+"/CharDelay", m_charDelaySb->value());
 
-   settings.setValue("/cutecom/SendFileDialogStartDir", m_sendFileDialogStartDir);
-   settings.setValue("/cutecom/LogFileName", m_logFileLe->text());
+   settings.setValue(m_session+"/SendFileDialogStartDir", m_sendFileDialogStartDir);
+   settings.setValue(m_session+"/LogFileName", m_logFileLe->text());
 
-   settings.setValue("/cutecom/AppendToLogFile", m_logAppendCb->currentItem());
+   settings.setValue(m_session+"/AppendToLogFile", m_logAppendCb->currentIndex());
 
 
    QString currentDevice=m_deviceCb->currentText();
-   settings.setValue("/cutecom/CurrentDevice", currentDevice);
+   settings.setValue(m_session+"/CurrentDevice", currentDevice);
    bool currentDeviceIsInList=false;
    QStringList devices;
    for (int i=0; i<m_deviceCb->count(); i++)
@@ -295,7 +310,7 @@ void QCPPDialogImpl::saveSettings()
       devices<<currentDevice;
    }
 
-   settings.setValue("/cutecom/AllDevices", devices);
+   settings.setValue(m_session+"/AllDevices", devices);
 
    int historyCount=m_oldCmdsLb->count();
    if (historyCount>50)
@@ -308,48 +323,73 @@ void QCPPDialogImpl::saveSettings()
    {
       saveHist << m_oldCmdsLb->item(i)->text();
    }
-   settings.setValue("/cutecom/History", saveHist);
+   settings.setValue(m_session+"/History", saveHist);
+   settings.endGroup(); // sessions
 }
 
 void QCPPDialogImpl::readSettings()
 {
+   bool upgrade = false;
+   QString session_name;
    QSettings settings;
-   m_hardwareCb->setChecked(settings.value("/cutecom/HardwareHandshake", false).toBool());
-   m_softwareCb->setChecked(settings.value("/cutecom/SoftwareHandshake", false).toBool());
-   m_readCb->setChecked(settings.value("/cutecom/OpenForReading", true).toBool());
-   m_writeCb->setChecked(settings.value("/cutecom/OpenForWriting", true).toBool());
+   QStringList groups = settings.childGroups();
+   if(groups.contains("cutecom") && !groups.contains("sessions")){
+       settings.beginGroup("cutecom");
+       //upgrading from an old version
+       session_name = "";
+       // Trying to use the settings last stored for the
+       // default session
+       m_session = "Default";
+       upgrade = true;
+   }else{
+       // no session name specified on command line
+       // reopening the last used session
+       if(m_session.isEmpty()){
+         m_session = settings.value("/cutecom/session", QString("Default")).toString();
+       }
+       settings.beginGroup("sessions");
+       QStringList keys = settings.childGroups();
+       // if no session was provided at the command line the sessions settings are not available
+       // for whatever reason just use the default setting
+       session_name = (keys.contains(m_session))? m_session + "/" : QString("Default/");
+   }
 
-   m_applyCb->setChecked(!settings.value("/cutecom/DontApplySettings", false).toBool());
+   m_hardwareCb->setChecked(settings.value(session_name+"HardwareHandshake", false).toBool());
+   m_softwareCb->setChecked(settings.value(session_name+"SoftwareHandshake", false).toBool());
+   m_readCb->setChecked(settings.value(session_name+"OpenForReading", true).toBool());
+   m_writeCb->setChecked(settings.value(session_name+"OpenForWriting", true).toBool());
+
+   m_applyCb->setChecked(!settings.value(session_name+"DontApplySettings", false).toBool());
    enableSettingWidgets(m_applyCb->isChecked());
 
-   int defaultBaud = settings.value("/cutecom/Baud", -1).toInt();
+   int defaultBaud = settings.value(session_name+"Baud", -1).toInt();
    if (defaultBaud != -1)
    {
       m_baudCb->setCurrentIndex(defaultBaud);
    }
-   m_dataBitsCb->setCurrentIndex(settings.value("/cutecom/Databits", 3).toInt());
-   m_parityCb->setCurrentIndex(settings.value("/cutecom/Parity", 0).toInt());
-   m_stopCb->setCurrentIndex(settings.value("/cutecom/Stopbits", 0).toInt());
-   m_protoPb->setCurrentIndex(settings.value("/cutecom/Protocol", 0).toInt());
+   m_dataBitsCb->setCurrentIndex(settings.value(session_name+"Databits", 3).toInt());
+   m_parityCb->setCurrentIndex(settings.value(session_name+"Parity", 0).toInt());
+   m_stopCb->setCurrentIndex(settings.value(session_name+"Stopbits", 0).toInt());
+   m_protoPb->setCurrentIndex(settings.value(session_name+"Protocol", 0).toInt());
 
-   m_inputModeCb->setCurrentIndex(settings.value("/cutecom/LineMode", 0).toInt());
-   m_hexOutputCb->setChecked(settings.value("/cutecom/HexOutput", false).toBool());
-   m_charDelaySb->setValue(settings.value("/cutecom/CharDelay", 1).toInt());
+   m_inputModeCb->setCurrentIndex(settings.value(session_name+"LineMode", 0).toInt());
+   m_hexOutputCb->setChecked(settings.value(session_name+"HexOutput", false).toBool());
+   m_charDelaySb->setValue(settings.value(session_name+"CharDelay", 1).toInt());
 
-   m_sendFileDialogStartDir=settings.value("/cutecom/SendFileDialogStartDir", QDir::homePath()).toString();
-   m_logFileLe->setText(settings.value("/cutecom/LogFileName", QDir::homePath()+"/cutecom.log").toString());
+   m_sendFileDialogStartDir=settings.value(session_name+"SendFileDialogStartDir", QDir::homePath()).toString();
+   m_logFileLe->setText(settings.value(session_name+"LogFileName", QDir::homePath()+"/cutecom.log").toString());
 
-   m_logAppendCb->setCurrentIndex(settings.value("/cutecom/AppendToLogFile", 0).toInt());
+   m_logAppendCb->setCurrentIndex(settings.value(session_name+"AppendToLogFile", 0).toInt());
 
-   int x=settings.value("/cutecom/width", -1).toInt();
-   int y=settings.value("/cutecom/height", -1).toInt();
+   int x=settings.value(session_name+"width", -1).toInt();
+   int y=settings.value(session_name+"height", -1).toInt();
    if ((x>100) && (y>100))
    {
       resize(x,y);
    }
 
-   bool entryFound = settings.contains("/cutecom/AllDevices");
-   QStringList devices=settings.value("/cutecom/AllDevices").toStringList();
+   bool entryFound = settings.contains(session_name+"AllDevices");
+   QStringList devices=settings.value(session_name+"AllDevices").toStringList();
    if (!entryFound)
    {
       devices<<"/dev/ttyS0"<<"/dev/ttyS1"<<"/dev/ttyS2"<<"/dev/ttyS3";
@@ -357,14 +397,14 @@ void QCPPDialogImpl::readSettings()
 
    m_deviceCb->insertItems(0, devices);
 
-   int indexOfCurrentDevice = devices.indexOf(settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString());
+   int indexOfCurrentDevice = devices.indexOf(settings.value(session_name+"CurrentDevice", "/dev/ttyS0").toString());
    // fprintf(stderr, "currentDEev: -%s - index: %d\n", settings.value("/cutecom/CurrentDevice", "/dev/ttyS0").toString().toLatin1().constData(), indexOfCurrentDevice);
    if (indexOfCurrentDevice!=-1)
    {
        m_deviceCb->setCurrentIndex(indexOfCurrentDevice);
    }
 
-   QStringList history=settings.value("/cutecom/History").toStringList();
+   QStringList history=settings.value(session_name+"History").toStringList();
 
    if (!history.empty())
    {
@@ -373,11 +413,19 @@ void QCPPDialogImpl::readSettings()
       m_oldCmdsLb->scrollToItem(m_oldCmdsLb->currentItem());
       m_oldCmdsLb->clearSelection();
    }
+   settings.endGroup(); // sessions
+   if(upgrade){
+      settings.remove("cutecom");
+      settings.setValue("/cutecom/session", m_session);
+   }
+   this->setWindowTitle("CuteCom - " + m_session);
 }
 
 void QCPPDialogImpl::showAboutMsg()
 {
-   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.22.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;<br>Licensed under the GNU GPL v2"));
+   QMessageBox::about(this, tr("About CuteCom"), tr("This is CuteCom 0.23.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
+                                                    "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;"
+                                                    "<br>Licensed under the GNU GPL version 2 (or any later version)."));
 }
 
 void QCPPDialogImpl::sendFile()
@@ -481,9 +529,10 @@ void QCPPDialogImpl::sendFile()
             || (m_protoPb->currentText()=="ZModem")
             || (m_protoPb->currentText()=="1kXModem"))
    {
+       /* not ported yet
 //      QProcess sx(this);
       disconnectTTYRestore(false);
-      m_sz=new Q3Process(this);
+      m_sz=new QProcess(this);
       m_sz->addArgument("sh");
       m_sz->addArgument("-c");
 //      QString tmp=QString("sx -vv \"")+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
@@ -507,9 +556,10 @@ void QCPPDialogImpl::sendFile()
 
       tmp=tmp+"-vv \""+filename+"\" < "+m_deviceCb->currentText()+" > "+m_deviceCb->currentText();
       m_sz->addArgument(tmp);
-      m_sz->setCommunication(Q3Process::Stderr);
+      m_sz->setCommunication(QProcess::Stderr);
 
       connect(m_sz, SIGNAL(readyReadStderr()), this, SLOT(readFromStderr()));
+      */ //not ported yet
 /*      m_sz->addArgument("sx");
       m_sz->addArgument("-vv");
       m_sz->addArgument(filename);
@@ -517,6 +567,8 @@ void QCPPDialogImpl::sendFile()
 
       connect(m_sz, SIGNAL(readyReadStdout()), this, SLOT(readFromStdout()));
       connect(m_sz, SIGNAL(readyReadStderr()), this, SLOT(readFromStderr()));*/
+
+       /* not ported yet
       connect(m_sz, SIGNAL(processExited()), this, SLOT(sendDone()));
       if (!m_sz->start())
       {
@@ -548,7 +600,8 @@ void QCPPDialogImpl::sendFile()
       m_sz=0;
       delete m_progress;
       m_progress=0;
-      connectTTY();
+      connectTTY(); */ // not ported yet
+       QMessageBox::information(this, tr("Opening file failed"), tr("Protocol %1 not supported yet").arg(m_protoPb->currentText()));
    }
    else
    {
@@ -562,11 +615,12 @@ void QCPPDialogImpl::killSz()
    {
       return;
    }
-   m_sz->tryTerminate();
+// not ported yet   m_sz->tryTerminate();
 }
 
 void QCPPDialogImpl::readFromStdout()
 {
+    /* not ported yet
    QByteArray ba=m_sz->readStdout();
 //   cerr<<"readFromStdout() "<<ba.count()<<std::endl;
    unsigned int bytesToWrite=ba.count();
@@ -583,10 +637,12 @@ void QCPPDialogImpl::readFromStdout()
       bytesToWrite-=bytesWritten;
 
    }
+   */ // not ported yet
 }
 
 void QCPPDialogImpl::readFromStderr()
 {
+    /* not ported yet
    QByteArray ba=m_sz->readStderr();
 //   cerr<<"readFromStderr() "<<ba.count()<<std::endl;
    if (m_progress==0)
@@ -610,6 +666,8 @@ void QCPPDialogImpl::readFromStderr()
          }
       }
    }
+    */ // not ported yet
+
 //   else
 //      cerr<<"--------"<<s.latin1()<<"-"<<std::endl;
 /*   for (unsigned int i=0; i<ba.count(); i++)
@@ -620,7 +678,7 @@ void QCPPDialogImpl::readFromStderr()
          cerr<<c;
       else
          fprintf(stderr, " \\0x%02x ", tmp&0xff);
-   }*/
+   }*/    
 }
 
 void QCPPDialogImpl::sendDone()
@@ -634,7 +692,7 @@ bool QCPPDialogImpl::eventFilter(QObject* watched, QEvent *e)
    if ((watched==m_cmdLe)
        && (e->type()==QEvent::KeyPress))
    {
-      if (ke->state()==Qt::NoModifier)
+      if (ke->modifiers()==Qt::NoModifier)
       {
          if (ke->key()==Qt::Key_Up)
          {
@@ -1263,13 +1321,14 @@ void QCPPDialogImpl::readData(int fd)
    }
 
    const char* c=m_buf;
+/* not ported yet
    if (m_sz!=0)
    {
 //      std::cerr<<"readData() "<<bytesRead<<std::endl;
       QByteArray ba(m_buf, bytesRead);
       m_sz->writeToStdin(ba);
       return;
-   }
+   } */
 
    if (m_logFile.isOpen())
    {
@@ -1362,24 +1421,25 @@ void QCPPDialogImpl::addOutput(const QString& text)
 }
 
 void QCPPDialogImpl::doOutput()
-{
+{   
    QScrollBar* vScrollBar;
    bool scrollWithText;
- 
+
    if (m_outputBuffer.isEmpty())
      return;
-   
+
    vScrollBar = m_outputView->verticalScrollBar();
    scrollWithText = (vScrollBar->value() == vScrollBar->maximum());
-   
+
    QTextCursor cursor(m_outputView->document());
    cursor.movePosition(QTextCursor::End);
    cursor.insertText(m_outputBuffer);
- 
+
    if ((scrollWithText))
      vScrollBar->setValue(vScrollBar->maximum());
- 
+
    m_outputBuffer.clear();
+
 }
 
 void QCPPDialogImpl::hexOutputClicked(bool /* on */)

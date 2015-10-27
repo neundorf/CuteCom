@@ -27,7 +27,6 @@
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qfile.h>
-//Added by qt3to4:
 #include <QResizeEvent>
 #include <QEvent>
 #include <QWidget>
@@ -36,7 +35,7 @@
 
 class QListWidgetItem;
 class QResizeEvent;
-class Q3Process;
+class QProcess;
 class QProgressDialog;
 class QFileDialog;
 
@@ -44,7 +43,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
 {
    Q_OBJECT
    public:
-      QCPPDialogImpl(QWidget* parent);
+      QCPPDialogImpl(QWidget* parent, QString session = "");
       virtual bool eventFilter(QObject* watched, QEvent *e);
    protected slots:
       void execCmd();
@@ -78,6 +77,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       bool sendString(const QString& s);
       void setNewOptions(int baudrate, int databits, const QString& parity, const QString& stop, bool softwareHandshake, bool hardwareHandshake);
       virtual void resizeEvent(QResizeEvent *e);
+      void switchSession(const QString& sessionName);
 
       bool m_isConnected;
       int m_fd;
@@ -85,9 +85,11 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       unsigned int m_cmdBufIndex;
       QSocketNotifier *m_notifier;
       char m_buf[CUTECOMM_BUFSIZE];
-      Q3Process *m_sz;
+      QProcess *m_sz;
       QProgressDialog *m_progress;
       int m_progressStepSize;
+
+      QString m_session;
 
       QFileDialog *m_fileDlg;
       QString m_sendFileDialogStartDir;

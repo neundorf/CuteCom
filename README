@@ -1,4 +1,7 @@
-CuteCom 0.22.0, June 27th, 2009
+CuteCom 0.23.0, October 27th, 2015
+
+Ported to Qt5 and added session support via the -s command line option.
+Meinhard Ritscher
 
 CuteCom is a graphical serial terminal, similar to minicom.
 It is aimed mainly at hardware developers or other people
