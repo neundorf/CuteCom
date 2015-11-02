@@ -18,6 +18,7 @@
 
 #include "qcppdialogimpl.h"
 
+#include <qscrollbar.h>
 #include <qcombobox.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
@@ -1362,12 +1363,22 @@ void QCPPDialogImpl::addOutput(const QString& text)
 
 void QCPPDialogImpl::doOutput()
 {
+   QScrollBar* vScrollBar;
+   bool scrollWithText;
+ 
    if (m_outputBuffer.isEmpty())
-   {
-      return;
-   }
-
-   m_outputView->append(m_outputBuffer); 
+     return;
+   
+   vScrollBar = m_outputView->verticalScrollBar();
+   scrollWithText = (vScrollBar->value() == vScrollBar->maximum());
+   
+   QTextCursor cursor(m_outputView->document());
+   cursor.movePosition(QTextCursor::End);
+   cursor.insertText(m_outputBuffer);
+ 
+   if ((scrollWithText))
+     vScrollBar->setValue(vScrollBar->maximum());
+ 
    m_outputBuffer.clear();
 }
 
