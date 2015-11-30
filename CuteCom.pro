@@ -1,6 +1,14 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-11-02T14:38:15
+# This is the qmake build file mainly provided
+# to ease development with Qt Creator.
+# Since the version number is maintained within
+# the CMakeLists.txt, cmake should have been
+# called at least once.
+# Otherwise the necessary version.h file will
+# not have been generated.
+# If for whatever reason cmake is not an option
+# create the version.h from version.h.in manually
 #
 #-------------------------------------------------
 
