@@ -1,0 +1,104 @@
+/*
+ * Copyright (c) 2015 Meinhard Ritscher <cyc1ingsir@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * For more information on the GPL, please go to:
+ * http://www.gnu.org/copyleft/gpl.html
+ */
+
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include "ui_mainwindow.h"
+#include "controlpanel.h"
+#include "statusbar.h"
+#include "settings.h"
+
+#include <QMainWindow>
+#include <QFont>
+#include <QProgressDialog>
+#include <QPropertyAnimation>
+#include <QtSerialPort/QSerialPort>
+
+class MainWindow : public QMainWindow, public Ui::MainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0, const QString &session = "");
+    ~MainWindow();
+
+protected:
+bool eventFilter(QObject * obj, QEvent * event);
+
+private:
+    void openDevice();
+    void closeDevice();
+    void displayData();
+    void handleError(QSerialPort::SerialPortError);
+    void printDeviceInfo();
+    void showAboutMsg();
+    void setHexOutput(bool checked);
+    void saveCommandHistory();
+
+protected:
+    void prevCmd();
+    void nextCmd();
+    void execCmd();
+    void commandFromHistoryClicked(QListWidgetItem *item);
+    bool sendString(const QString& s);
+    bool sendByte(const char c, unsigned long delay);
+    void sendKey();
+    void sendFile();
+    void readFromStdOut();
+    void readFromStdErr();
+    void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
+    void resizeEvent(QResizeEvent* event);
+
+private:
+    void toggleLogging(bool start);
+    void fillLineTerminationChooser(const Settings::LineTerminator setting = Settings::LF);
+    void fillProtocolChooser(const Settings::Protocol setting = Settings::PLAIN);
+    void killSz();
+
+    ControlPanel *controlPanel;
+    QSerialPort *m_device;
+    StatusBar *m_device_statusbar;
+    Settings *m_settings;
+    QProgressDialog *m_progress;
+    int m_progressStepSize;
+    QProcess *m_sz;
+    bool m_devices_needs_refresh;
+    unsigned int m_hexBytes;
+    char m_previousChar;
+    QFont m_output_font;
+    QTime m_timestamp;
+    QFile m_logFile;
+
+    /**
+     * @brief m_keyRepeatTimer
+     */
+    QTimer m_keyRepeatTimer;
+    char m_keyCode;
+
+    /**
+     * @brief m_cmdBufIndex
+     */
+    int m_cmdBufIndex;
+
+};
+
+#endif // MAINWINDOW_H

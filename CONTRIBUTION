@@ -1,0 +1,60 @@
+I'd like to thank all developers who made improvements to
+CuteCom within the past years. I have tried to scan all 
+repos I could find for additions and improvements  useful 
+for the reincarnation of this fine piece of software originally
+created by Alexander Neundorf
+I have not always copied the code directly but used the idea
+behind. In case I might have used code originally written by
+you but not mentioned you yet, please conctact me. I'll be more
+than happy to add you to the list.
+
+First of all the source of the original CuteCom
+from Alexander Neundorf <neundorf@kde.org> which still
+forms the base and large portions have been used for the
+reimplemented CuteCom
+
+Antoine Calando <acalando@free.fr>
+https://github.com/calandoa/cutecom
+Mainly the option for displaying control characters
+like \n \r and \t
+but also the idea of switching in- and output upside down
+
+Damien R <damienrg@gmail.com>
+https://github.com/damienrg/cutecom.git
+Use QThread::msleep to delay characters
+
+Luca Ottaviano <lottaviano@develer.com>
+https://github.com/asterix24/cutecom.git
+Probably the original source of
+Scroll view only if slider is at bottom.
+Add support for pagUp and pagDown.
+TnoDo check the other commits in more detail
+
+M1cha <sigmaepsilon92@gmail.com>
+https://github.com/M1cha/Cutecom.git
+Could be the original source for
+add support for tabs
+
+Preet Desai <preet.desai@gmail.com>
+https://github.com/preet/cutecom-qt5.git
+Sending files with XYZModem proted to Qt5
+
+Henrik Hautakoski <henrik@tickoff.se> 
+https://github.com/pnx/CuteCom.git
+Option for prefixing each line with a timestamp
+
+
+IDEAS - still a ToDo:
+====================================
+
+Toni Jovanoski <minimoog77@gmail.com>
+https://github.com/minimoog/qcom.git
+Added completer for history commands.
+
+Ivan A-R <ivan@tuxotronic.org>
+https://github.com/plumbum/Cutecom-my.git
+Signals (DTR, RTS, etc) done. Break
+including Hotkeys (disabled when 
+hardware handshake is used)
+portable to QtSerialPort?
+

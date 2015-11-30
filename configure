@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo
-echo "CuteCom uses the CMake build system, at least version 2.4.3 is required."
+echo "CuteCom uses the CMake build system, at least version 2.8.11 is required."
 echo "If there is no package for your distribution, you can "
 echo "get it from http://www.cmake.org/HTML/Download.html"
 echo

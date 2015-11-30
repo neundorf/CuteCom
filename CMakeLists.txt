@@ -1,34 +1,38 @@
-cmake_minimum_required(VERSION 2.4.3 FATAL_ERROR )
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR )
 
 project(CuteCom)
 
-set(QT_MIN_VERSION 4.1.0)
-find_package(Qt4 REQUIRED)
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
-include_directories(${QT_INCLUDES} ${CMAKE_BINARY_DIR})
-add_definitions(-DQT3_SUPPORT)
-set(cutecomSrcs main.cpp qcppdialogimpl.cpp)
+# Find the Qt libraries
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+#find_package(Serialport REQUIRED)
 
-qt4_wrap_cpp(cutecomSrcs qcppdialogimpl.h)
+qt5_wrap_ui(uiHeaders controlpanel.ui  mainwindow.ui statusbar.ui)
+set(cutecomSrcs main.cpp mainwindow.cpp controlpanel.cpp  devicecombo.cpp serialdevicelistmodel.cpp  settings.cpp statusbar.cpp)
 
-qt4_wrap_ui(cutecomSrcs cutecommdlg.ui)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# C++14: set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+#add_definitions("-std=c++11")
 
 set(exeType)
 set(binInstallDir bin )
 
 if(APPLE)
-   # with cmake < 2.6 install(TARGETS ... BUNDLE DESTINATION ... ) doesn't work:
-   cmake_minimum_required(VERSION 2.6 FATAL_ERROR )
    set(exeType MACOSX_BUNDLE)
    set(binInstallDir /Applications )
-   # hint to linker for indirect referenced libs inside qt3support
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtSql.framework/Versions/4/QtSql:/Library/Frameworks/QtSql.framework/Versions/4/QtSql")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtNetwork.framework/Versions/4/QtNetwork:/Library/Frameworks/QtNetwork.framework/Versions/4/QtNetwork")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtXml.framework/Versions/4/QtXml:/Library/Frameworks/QtXml.framework/Versions/4/QtXml")
 endif(APPLE)
 
-add_executable(cutecom ${exeType} ${cutecomSrcs})
-target_link_libraries(cutecom ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
+add_executable(cutecom ${exeType} ${cutecomSrcs} ${uiHeaders} resources.qrc)
+
+
+qt5_use_modules(cutecom Core Gui Widgets SerialPort)
 
 if (APPLE)
    set_target_properties(cutecom PROPERTIES OUTPUT_NAME CuteCom)
@@ -36,12 +40,8 @@ endif (APPLE)
 
 install(TARGETS cutecom DESTINATION ${binInstallDir} )
 
-install(FILES cutecom.1 DESTINATION share/man/man1 )
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+endif()
 
-find_program(KDECONFIG_EXECUTABLE NAMES kde-config )
 
-if (KDECONFIG_EXECUTABLE)
-   # then ask kde-config for the kde data dirs
-   exec_program(${KDECONFIG_EXECUTABLE} ARGS --install apps --expandvars OUTPUT_VARIABLE _apps_DIR )
-   install(FILES cutecom.desktop DESTINATION ${_apps_DIR}/Utilities)
-endif (KDECONFIG_EXECUTABLE)

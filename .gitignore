@@ -10,13 +10,11 @@
 *.dll
 *.dylib
 
-# generated files
-build/
-
 # Qt-es
 
 /.qmake.cache
 /.qmake.stash
+CMakeLists.txt.user
 *.pro.user
 *.pro.user.*
 *.qbs.user
