@@ -1,0 +1,2 @@
+?package(cutecom):needs="X11" section="Applications/System/Hardware"\
+  title="Cutecom" command="/usr/bin/cutecom"

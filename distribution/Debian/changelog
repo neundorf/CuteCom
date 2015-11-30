@@ -1,0 +1,59 @@
+cutecom (0.22.0-2) unstable; urgency=low
+
+  * Add cutecom-0.22.0-nolinebreak.diff (closes: #591666)
+  * Install menu item for simple window managers (was always present in
+    debian dir, but not installed), change deprecated Apps/Tools section
+    to Applications/System/Hardware (nothing more appropriate IMO)
+  * Move .desktop file from /usr/share/applnk to more appropriate
+    /usr/share/applications/kde (should fix Ubuntu bug 379932)
+  * Add cutecom-remove-deprecated-desktop-entries.patch, fixes lintian
+    warnings
+  * Upgrade package to standards 3.9.1
+
+ -- Roman I Khimov <roman@khimov.ru>  Thu, 12 Aug 2010 22:47:38 +0400
+
+cutecom (0.22.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Upgrade package to standards 3.8.2
+
+ -- Roman I Khimov <roman@khimov.ru>  Mon, 13 Jul 2009 00:16:00 +0400
+
+cutecom (0.21.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Upgrade package to standards 3.8.1
+
+ -- Roman I Khimov <roman@khimov.ru>  Wed, 13 May 2009 23:09:09 +0400
+
+cutecom (0.20.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Switch from qt3 to qt4
+  * Upgrade package to standards 3.8.0
+  * Upgrade package to debhelper 7
+  * Rewrite copyright file in machine-interpretable format
+  * Add homepage field in control
+  * Switch from dpatch to quilt for patch management
+  * Remove 01-fix_iostream_include.dpatch and 02-fix_comparison_warning.dpatch
+    patches (moved upstream)
+  * Add fix_pathes_for_debian.patch, changes install path to conform Debian
+    standards
+
+ -- Roman I Khimov <roman@khimov.ru>  Sun, 23 Aug 2008 14:31:40 +0400
+
+cutecom (0.14.1-2) unstable; urgency=low
+
+  * Resolve 'cutecom override disparity' found by Debian Installer, moving
+    package into 'comm' section
+
+ -- Roman I Khimov <roman@khimov.ru>  Fri, 27 Nov 2006 09:27:09 +0300
+
+cutecom (0.14.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #400388)
+  * Change CMakeLists.txt to install cutecom.desktop into fixed (proper for
+    Debian) location.
+  * Add patches to fix compile warnings
+
+ -- Roman I Khimov <roman@khimov.ru>  Fri, 26 Nov 2006 19:15:49 +0300

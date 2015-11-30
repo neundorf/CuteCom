@@ -1,0 +1,20 @@
+Source: cutecom
+Section: comm
+Priority: optional
+Maintainer: Roman I Khimov <roman@khimov.ru>
+Build-Depends: debhelper (>= 7), cmake (>= 2.4.3), libqt4-dev, quilt (>= 0.40)
+Standards-Version: 3.9.1
+Homepage: http://cutecom.sourceforge.net/
+
+Package: cutecom
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Suggests: lrzsz
+Description: Graphical serial terminal, like minicom
+ Cutecom is a graphical serial terminal, like minicom.
+ It is aimed mainly at hardware developers or other people who need a
+ terminal to talk to their devices. It features lineoriented interface
+ instead of character-oriented, xmodem, ymodem, zmodem support
+ (requires the lrzsz package) and hexadecimal input and output among
+ other things.
+ It is written using the Qt library by Trolltech (www.trolltech.com).

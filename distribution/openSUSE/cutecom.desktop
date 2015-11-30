@@ -1,11 +1,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=CuteCom
-MimeType=
 GenericName=Serial Terminal
 Exec=cutecom
-Icon=openterm
-Path=
+Icon=cutecom
 Type=Application
 Terminal=0
 X-KDE-StartupNotify=false
+X-SuSE-translate=false
+Categories=System;TerminalEmulator;
