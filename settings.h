@@ -48,6 +48,7 @@ public:
         ,CharacterDelay
         ,SendStartDir
         ,ProtocolOption
+        ,CurrentSession
     };
 
     struct Session {
@@ -87,6 +88,7 @@ public:
     void readSettings(const QString &session);
 
     const Settings::Session getCurrentSession();
+    QString getCurrentSessionName() const { return m_current_session;}
     void settingChanged(Settings::Options option, QVariant setting);
 
     QRect getWindowGeometry() const;
@@ -100,6 +102,8 @@ public:
     Settings::Protocol getProtocol() const { return m_protocol; }
 
     QString getSendStartDir() const { return m_sendingStartDir; }
+
+    QList<QString> getSessionNames() const;
 
 signals:
     void sessionChanged(const Settings::Session &);

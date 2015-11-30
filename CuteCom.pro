@@ -29,18 +29,21 @@ SOURCES += main.cpp\
     settings.cpp \
     devicecombo.cpp \
     serialdevicelistmodel.cpp \
-    statusbar.cpp
+    statusbar.cpp \
+    sessionmanager.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
     settings.h \
     devicecombo.h \
     serialdevicelistmodel.h \
-    statusbar.h
+    statusbar.h \
+    sessionmanager.h
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \
-    statusbar.ui
+    statusbar.ui \
+    sessionmanager.ui
 
 RESOURCES += \
     resources.qrc

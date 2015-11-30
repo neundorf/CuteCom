@@ -60,9 +60,9 @@
         </property>
         <item>
          <widget class="QListWidget" name="m_command_history">
-           <property name="alternatingRowColors">
-             <bool>true</bool>
-           </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -92,18 +92,18 @@
           </item>
           <item>
            <widget class="QComboBox" name="m_combo_lineterm">
-             <property name="toolTip" >
-               <string>Select the line end termination</string>
-             </property>
+            <property name="toolTip">
+             <string>Select the line end termination</string>
+            </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="m_lb_chardelay">
+            <property name="toolTip">
+             <string>Delay between single characters</string>
+            </property>
             <property name="text">
              <string>Char delay:</string>
-            </property>
-            <property name="toolTip" >
-              <string>Delay between single characters</string>
             </property>
             <property name="wordWrap">
              <bool>false</bool>
@@ -237,11 +237,11 @@
           </item>
           <item>
            <widget class="QCheckBox" name="m_check_logging">
+            <property name="toolTip">
+             <string>Enable logging the data to a file.</string>
+            </property>
             <property name="text">
              <string>Logging to:</string>
-            </property>
-            <property name="toolTip" >
-              <string>Enable logging the data to a file.</string>
             </property>
            </widget>
           </item>
@@ -297,7 +297,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
-    <addaction name="actionSave_as"/>
+    <addaction name="actionManager"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -320,14 +320,18 @@
     <string>Save</string>
    </property>
   </action>
-  <action name="actionSave_as">
+  <action name="actionManager">
    <property name="text">
-    <string>Save as ..</string>
+    <string>Session Manager ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Session Manager</string>
    </property>
   </action>
   <action name="actionAbout_CuteCom">
    <property name="icon">
-    <iconset resource="resources.qrc">:/images/info.svg</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/info.svg</normaloff>:/images/info.svg</iconset>
    </property>
    <property name="text">
     <string>About CuteCom</string>

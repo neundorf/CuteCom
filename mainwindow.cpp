@@ -31,6 +31,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QThread>
+#include <QDialog>
 #include <QFileDialog>
 #include <QResizeEvent>
 #include <QMessageBox>
@@ -86,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_settings = new Settings(this);
     m_settings->readSettings(session);
     this->setWindowTitle("CuteCom - " + session);
+    m_sessionManager = new SessionManager(m_settings, this);
+    connect(m_sessionManager, &SessionManager::sessionSwitched, this, &MainWindow::switchSession);
 
     // restore window size from the settings
     QRect geometry = m_settings->getWindowGeometry();
@@ -168,6 +171,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     connect(actionAbout_CuteCom, &QAction::triggered, this, &MainWindow::showAboutMsg);
     connect(actionAbout_Qt, &QAction::triggered, &QApplication::aboutQt);
+
+    connect(actionManager, &QAction::triggered, m_sessionManager, &QDialog::show);
 }
 
 bool MainWindow::eventFilter(QObject * obj, QEvent * event)
@@ -763,6 +768,13 @@ void MainWindow::killSz()
     if(m_sz==0)
         return;
     m_sz->terminate();
+}
+
+void MainWindow::switchSession(const QString &session)
+{
+    m_settings->settingChanged(Settings::CurrentSession, session);
+    controlPanel->applySessionSettings(m_settings->getCurrentSession());
+    this->setWindowTitle("CuteCom - " + session);
 }
 
 /**

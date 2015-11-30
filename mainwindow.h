@@ -24,6 +24,7 @@
 
 #include "ui_mainwindow.h"
 #include "controlpanel.h"
+#include "sessionmanager.h"
 #include "statusbar.h"
 #include "settings.h"
 
@@ -73,8 +74,10 @@ private:
     void fillLineTerminationChooser(const Settings::LineTerminator setting = Settings::LF);
     void fillProtocolChooser(const Settings::Protocol setting = Settings::PLAIN);
     void killSz();
+    void switchSession(const QString &session);
 
     ControlPanel *controlPanel;
+    SessionManager *m_sessionManager;
     QSerialPort *m_device;
     StatusBar *m_device_statusbar;
     Settings *m_settings;
