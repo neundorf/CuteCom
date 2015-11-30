@@ -24,6 +24,7 @@
  */
 
 #include "mainwindow.h"
+#include "version.h"
 #include "settings.h"
 #include "qdebug.h"
 
@@ -60,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     // setting it to CuteCom5 will prevent the original CuteCom's settings file
     // to be overwritten
     QCoreApplication::setApplicationName(QStringLiteral("CuteCom5"));
-    QCoreApplication::setApplicationVersion(QStringLiteral("0.25"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("%1").arg(CuteCom_VERSION));
 //    qRegisterMetaType<Settings::LineTerminator>();
 
     setupUi(this);
@@ -395,9 +396,10 @@ void MainWindow::fillProtocolChooser(const Settings::Protocol setting)
 void MainWindow::showAboutMsg()
 {
    QMessageBox::about(this, tr("About CuteCom"),
-                      tr("This is CuteCom 0.25.0<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
-                          "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;"
-                          "<br>Licensed under the GNU GPL version 3 (or any later version)."));
+                      tr("This is CuteCom %1<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
+                          "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;<br> and contributors"
+                          "<br>Licensed under the GNU GPL version 3 (or any later version).")
+                      .arg(CuteCom_VERSION));
 }
 
 void MainWindow::setHexOutput(bool checked)

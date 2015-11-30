@@ -21,6 +21,9 @@
  */
 
 #include "mainwindow.h"
+// version.h is generated via cmake
+// if you use qmake, please cp version.h.in to version.h
+#include "version.h"
 #include <QApplication>
 #include <QIcon>
 #include <QCommandLineParser>
@@ -30,7 +33,8 @@ int main( int argc, char *argv[] )
     QApplication a( argc, argv );
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("CuteCom - Serial  Terminal");
+    parser.setApplicationDescription(QCoreApplication::translate("main", "CuteCom - Serial Terminal %1")
+                                     .arg(CuteCom_VERSION));
     parser.addHelpOption();
     QCommandLineOption sessionOption(QStringList() << "s" << "session",
                QCoreApplication::translate("main", "Open a named <session>"),

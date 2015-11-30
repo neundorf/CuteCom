@@ -2,6 +2,17 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR )
 
 project(CuteCom)
 
+set (CuteCom_MAJOR_VERSION 0)
+set (CuteCom_MINOR_VERSION 25)
+set (CuteCom_PATCH_VERSION 0)
+set (CuteCom_VERSION
+     ${CuteCom_MAJOR_VERSION}.${CuteCom_MINOR_VERSION}.${CuteCom_PATCH_VERSION})
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/version.h.in"
+  "${PROJECT_SOURCE_DIR}/version.h"
+)
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed.
