@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     // initialize settings stored in the config file
     m_settings = new Settings(this);
     m_settings->readSettings(session);
-    this->setWindowTitle("CuteCom - " + session);
+    this->setWindowTitle("CuteCom - " + m_settings->getCurrentSessionName());
     m_sessionManager = new SessionManager(m_settings, this);
     connect(m_sessionManager, &SessionManager::sessionSwitched, this, &MainWindow::switchSession);
 
