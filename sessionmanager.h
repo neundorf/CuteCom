@@ -30,18 +30,31 @@ class SessionManager : public QDialog, private Ui::SessionManager
 
 signals:
     void sessionSwitched(const QString &name);
+    void sessionRemoved(const QString &name);
 
 public:
     explicit SessionManager(Settings *settings, QWidget *parent = 0);
 
 private:
+    void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
     void switchSession();
+    void removeSession();
 
     /**
      * stores the reference of the application wide settings instance
      * @brief m_settings
      */
     Settings *m_settings;
+    /**
+     * The currently selected session
+     * @brief m_current_item
+     */
+    QListWidgetItem *m_current_item;
+    /**
+     * The currently used session
+     * @brief m_current_item
+     */
+    QListWidgetItem *m_current_session;
 };
 
 #endif // SESSIONMANAGER_H

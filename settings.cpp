@@ -297,6 +297,19 @@ void Settings::saveSessionSettings()
 
 }
 
+void Settings::removeSession(const QString &session)
+{
+    m_sessions.remove(session);
+    QSettings settings;
+    settings.beginGroup("sessions");
+    settings.remove("");
+    settings.endGroup();
+    saveSessionSettings();
+    m_current_session = QStringLiteral("Default");
+    saveGenericSettings();
+    emit this->sessionChanged(getCurrentSession());
+}
+
 QString Settings::getLogFileLocation() const
 {
     return m_logFileLocation;

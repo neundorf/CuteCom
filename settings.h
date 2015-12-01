@@ -105,6 +105,8 @@ public:
 
     QList<QString> getSessionNames() const;
 
+    void removeSession(const QString &session);
+
 signals:
     void sessionChanged(const Settings::Session &);
 

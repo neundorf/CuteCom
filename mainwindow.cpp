@@ -87,8 +87,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_settings = new Settings(this);
     m_settings->readSettings(session);
     this->setWindowTitle("CuteCom - " + m_settings->getCurrentSessionName());
-    m_sessionManager = new SessionManager(m_settings, this);
-    connect(m_sessionManager, &SessionManager::sessionSwitched, this, &MainWindow::switchSession);
 
     // restore window size from the settings
     QRect geometry = m_settings->getWindowGeometry();
@@ -172,6 +170,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     connect(actionAbout_CuteCom, &QAction::triggered, this, &MainWindow::showAboutMsg);
     connect(actionAbout_Qt, &QAction::triggered, &QApplication::aboutQt);
 
+    m_sessionManager = new SessionManager(m_settings, this);
+    connect(m_sessionManager, &SessionManager::sessionSwitched, this, &MainWindow::switchSession);
+    connect(m_sessionManager, &SessionManager::sessionRemoved, m_settings, &Settings::removeSession);
     connect(actionManager, &QAction::triggered, m_sessionManager, &QDialog::show);
 }
 
