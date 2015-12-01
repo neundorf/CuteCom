@@ -31,14 +31,20 @@ class SessionManager : public QDialog, private Ui::SessionManager
 signals:
     void sessionSwitched(const QString &name);
     void sessionRemoved(const QString &name);
+    void sessionRenamed(const QString &source, const QString &destination);
+    void sessionCloned(const QString &source, const QString &destination);
 
 public:
     explicit SessionManager(Settings *settings, QWidget *parent = 0);
 
 private:
     void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
+    void currentTextChanged(QWidget* pLineEdit);
     void switchSession();
     void removeSession();
+    void cloneSession();
+    void renameSession();
+
 
     /**
      * stores the reference of the application wide settings instance
@@ -55,6 +61,11 @@ private:
      * @brief m_current_item
      */
     QListWidgetItem *m_current_session;
+
+    bool m_isCloning;
+    bool m_isRenaming;
+    QString m_previousItemText;
+
 };
 
 #endif // SESSIONMANAGER_H

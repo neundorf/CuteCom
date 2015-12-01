@@ -107,6 +107,10 @@ public:
 
     void removeSession(const QString &session);
 
+    void cloneSession(const QString &source, const QString &destination);
+
+    void renameSession(const QString &source, const QString &destination);
+
 signals:
     void sessionChanged(const Settings::Session &);
 

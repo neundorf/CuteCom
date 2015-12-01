@@ -310,6 +310,16 @@ void Settings::removeSession(const QString &session)
     emit this->sessionChanged(getCurrentSession());
 }
 
+void Settings::cloneSession(const QString &source, const QString &destination)
+{
+
+}
+
+void Settings::renameSession(const QString &source, const QString &destination)
+{
+
+}
+
 QString Settings::getLogFileLocation() const
 {
     return m_logFileLocation;
