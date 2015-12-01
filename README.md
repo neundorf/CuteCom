@@ -5,6 +5,12 @@ Currently it runs on Linux, FreeBSD and Mac OS X.
 It is aimed mainly at hardware developers or other people who need a terminal to talk to their devices. It is free software and distributed under the GNU General Public License Version 2. It is written using the [Qt library](http://www.qt.io/) by Trolltech. Follow this link to visit the [project page on GitHub](https://github.com/neundorf/CuteCom).  
 CuteCom doesn't use the autotools (autoconf, automake, libtool, etc.) Instead "configure" displays some simple instruction refering to cmake. To uninstall CuteCom simply delete the file "cutecom" and the file "cutecom.desktop" and you're done. The config file is ~/.config/CuteCom/CuteCom.conf (was ~/.qt/cutecomrc in the Qt3-based versions).
 
+### Satus:
+
+With version 0.25.0, CuteCom was reimplemented taking advantage of Qt5 and the QtSerialport now available.
+Quite a few features where added too. The GUI was modified to clear some space for displaying more of the output data.
+This is more or less a developer preview and no package or tar ball is beeing provided at the moment.
+
 ### Features:
 
 *   easy to use GUI
@@ -13,22 +19,28 @@ CuteCom doesn't use the autotools (autoconf, automake, libtool, etc.) Instead "c
 *   Ctrl+C, Ctrl+Q and Ctrl+S control sequences work
 *   input history
 *   a cute GUI ;-)
+*   control panel hides when not used 
 *   xmodem, ymodem, zmodem support (requires the sz tools)
 *   easy to differentiate between typed text and echoed text
 *   select between read/write, read-only and write-only open mode
-*   open the device without changing its settings
+*   open the device without changing its settings (this is currently lost :-( )
 *   hexadecimal input and output
 *   configurable line end characters (LF, CR, LFCR)
 *   configurable delay between characters
+*   optionally show control caracters like line feed or tabs in output
+*   optionally prefix each line in output with a timestamp
+*   session support via -s <session name> specified at the command line
+*   switching sessions via a session manager
 
 ### Requirements for Building:
 
+*   CuteCom 0.25.0: Qt 5.1, CMake >= 2.8.11
 *   CuteCom 0.22.0: Qt 4.1, CMake >= 2.4.3
 *   CuteCom 0.14.2: Qt 3, qmake or CMake >= 2.4.3
 
 ## Download:
 
-**_Current version (uses Qt4):_** [cutecom-0.22.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , June 27th, 2009  
+**_Previous version (uses Qt4):_** [cutecom-0.22.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , June 27th, 2009  
 (yes, it's really only 22kb). Now also works on Mac OSX and supports more baud rates.  
 Here is the complete [**_Changelog_**](Changelog).  
 
