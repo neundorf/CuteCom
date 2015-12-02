@@ -24,6 +24,8 @@
 #include "ui_sessionmanager.h"
 #include "settings.h"
 
+#include <QItemDelegate>
+
 class SessionManager : public QDialog, private Ui::SessionManager
 {
     Q_OBJECT
@@ -36,6 +38,7 @@ signals:
 
 public:
     explicit SessionManager(Settings *settings, QWidget *parent = 0);
+    void editingFinished(const QString &newSessionName);
 
 private:
     void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
@@ -66,6 +69,21 @@ private:
     bool m_isRenaming;
     QString m_previousItemText;
 
+};
+
+class SessionItemDelegate : public QItemDelegate
+{
+    Q_OBJECT
+public:
+    SessionItemDelegate(QListWidget *list, QObject* parent = 0)
+        :QItemDelegate(parent), m_list(list) {}
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+
+signals:
+    void editingFinished(const QString &newSessionName);
+
+private:
+    QListWidget *m_list;
 };
 
 #endif // SESSIONMANAGER_H

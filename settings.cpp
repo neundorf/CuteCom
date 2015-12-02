@@ -312,12 +312,26 @@ void Settings::removeSession(const QString &session)
 
 void Settings::cloneSession(const QString &source, const QString &destination)
 {
-
+    Session session = m_sessions.value(source);
+    m_sessions.insert(destination, session);
+    saveSessionSettings();
 }
 
 void Settings::renameSession(const QString &source, const QString &destination)
 {
-
+    Session session = m_sessions.value(source);
+    m_sessions.remove(source);
+    QSettings settings;
+    settings.beginGroup("sessions");
+    settings.remove("");
+    settings.endGroup();
+    m_sessions.insert(destination, session);
+    saveSessionSettings();
+    if(m_current_session == source) {
+        m_current_session = destination;
+        saveGenericSettings();
+        emit this->sessionChanged(getCurrentSession());
+    }
 }
 
 QString Settings::getLogFileLocation() const
