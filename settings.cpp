@@ -327,11 +327,6 @@ void Settings::renameSession(const QString &source, const QString &destination)
     settings.endGroup();
     m_sessions.insert(destination, session);
     saveSessionSettings();
-    if(m_current_session == source) {
-        m_current_session = destination;
-        saveGenericSettings();
-        emit this->sessionChanged(getCurrentSession());
-    }
 }
 
 QString Settings::getLogFileLocation() const

@@ -173,8 +173,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_sessionManager = new SessionManager(m_settings, this);
     connect(m_sessionManager, &SessionManager::sessionSwitched, this, &MainWindow::switchSession);
     connect(m_sessionManager, &SessionManager::sessionRemoved, m_settings, &Settings::removeSession);
-    connect(m_sessionManager, &SessionManager::sessionCloned, m_settings, &Settings::renameSession);
-    connect(m_sessionManager, &SessionManager::sessionRenamed, m_settings, &Settings::cloneSession);
+    connect(m_sessionManager, &SessionManager::sessionRenamed, m_settings, &Settings::renameSession);
+    connect(m_sessionManager, &SessionManager::sessionCloned, m_settings, &Settings::cloneSession);
     connect(actionManager, &QAction::triggered, m_sessionManager, &QDialog::show);
 }
 

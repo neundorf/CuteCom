@@ -42,7 +42,6 @@ public:
 
 private:
     void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
-    void currentTextChanged(QWidget* pLineEdit);
     void switchSession();
     void removeSession();
     void cloneSession();
@@ -67,7 +66,7 @@ private:
 
     bool m_isCloning;
     bool m_isRenaming;
-    QString m_previousItemText;
+    QString m_previous_sessionName;
 
 };
 

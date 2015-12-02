@@ -41,11 +41,13 @@ public:
     QValidator::State validate(QString & input, int & pos) const;
 private:
     QListWidget *m_list;
+    QString m_original_name;
 };
 
 SessionNameValidator::SessionNameValidator(QObject *parent, QListWidget *list)
     : QValidator(parent), m_list(list)
 {
+    m_original_name = list->currentItem()->text();
 }
 
 QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
@@ -60,10 +62,14 @@ QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
             || input.contains(QLatin1Char(' ')))
         return QValidator::Invalid;
 
-    //if (m_sessions.contains(input))
     QList<QListWidgetItem *> items = m_list->findItems(input, Qt::MatchExactly);
 
-    if(items.size() > 1) {
+//    qDebug() << Q_FUNC_INFO << input << "found "
+//             << items.size() << " x"
+//             << "origin: " << m_original_name;
+
+    // ToDo this still needs some more work!!
+    if(items.size() > 0 && input != m_original_name) {
         return QValidator::Intermediate;
     }
     else
@@ -72,14 +78,24 @@ QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
 
 void SessionNameValidator::fixup(QString &input) const
 {
-    int i = 2;
     QString copy;
     do {
-        //ToDo - reuse -X to count session up if present!
-        copy = input + QLatin1String("-") + QString::number(i);
-        ++i;
+        int index = input.lastIndexOf("-");
+        if(index > -1) {
+            bool ok;
+            int orderNum = input.right(input.length() - 1 - index ).toInt(&ok);
+            if(ok) {
+                orderNum++;
+                copy = input.left(index+1) + QString::number(orderNum);
+            } else {
+                copy = input + QStringLiteral("-%1").arg(1);
+            }
+
+        } else {
+            copy = input + QStringLiteral("-%1").arg(1);
+        }
     } while ( (m_list->findItems(copy, Qt::MatchExactly)).size() > 1);
-    //while (m_sessions.contains(copy));
+
     input = copy;
 }
 
@@ -92,7 +108,6 @@ QWidget* SessionItemDelegate::createEditor(QWidget* parent, const QStyleOptionVi
         lineEdit->setValidator(new SessionNameValidator(parent, m_list));
         connect(lineEdit, &QLineEdit::editingFinished, this,
                 [=]() { emit editingFinished(lineEdit->text()); });
-//                &SessionItemDelegate::editingFinished);
     }
     return editor;
 }
@@ -147,7 +162,6 @@ SessionManager::SessionManager(Settings *settings, QWidget *parent) :
 void SessionManager::currentItemChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)
 {
 
-    qDebug() << Q_FUNC_INFO << current->text();
     if(current != m_current_session)
         m_bt_switch->setEnabled(true);
 
@@ -163,79 +177,21 @@ void SessionManager::currentItemChanged(QListWidgetItem *current, QListWidgetIte
 
 void SessionManager::editingFinished(const QString &newSessionName)
 {
-    qDebug() << Q_FUNC_INFO << "New session name: " << newSessionName;
+//    qDebug() << Q_FUNC_INFO << "New session name: " << newSessionName;
     if(m_isRenaming) {
-        emit sessionRenamed(m_previousItemText, newSessionName );
-
+        if(newSessionName != m_previous_sessionName)
+            emit sessionRenamed(m_previous_sessionName, newSessionName );
+        if(m_previous_sessionName == m_current_session->text() )
+            emit sessionSwitched(newSessionName);
         m_isRenaming = false;
     } else if (m_isCloning) {
-        emit sessionCloned(m_previousItemText, newSessionName );
+        emit sessionCloned(m_previous_sessionName, newSessionName );
         m_isCloning = false;
     } else {
-        qDebug() << "This should never be reached";
+        qDebug() << "This slot is called multiple times after editing finished - Why?";
     }
     m_bt_rename->setEnabled(true);
     m_bt_clone->setEnabled(true);
-
-}
-
-/*
- * stackoverflow.com/questions/9410039/how-to-issue-signal-each-time-a-row-is-edited-in-qlistqidget
- * validation is the problem here. I can't get the editor to beeing left open after
- * a replacment text is set
- */
-void SessionManager::currentTextChanged(QWidget* pLineEdit)
-{
-    static bool recall = false;
-    if(recall) {
-        recall = false;
-        return;
-    }
-    QLineEdit *lineEdit = reinterpret_cast<QLineEdit*>(pLineEdit);
-    QString newSessionName = lineEdit->text();
-
-    if( newSessionName != m_previousItemText ) {
-
-        QList<QListWidgetItem *> items = m_session_list->findItems(newSessionName, Qt::MatchExactly);
-
-        if(items.size() > 1) {
-            QString newText;
-            int index = newSessionName.lastIndexOf("-");
-            if(index > -1) {
-                bool ok;
-                int orderNum = newSessionName.right(index).toInt(&ok);
-                if(ok) {
-                    orderNum++;
-                    newText = newSessionName.left(index) + QString::number(orderNum);
-                } else {
-                    newText = newSessionName + QStringLiteral("-%1").arg(1);
-                }
-
-            } else {
-                newText = newSessionName + QStringLiteral("-%1").arg(1);
-            }
-            //m_current_item->setText(newText);
-            recall = true;
-            lineEdit->setText(newText);
-            lineEdit->selectAll();
-            lineEdit->setFocus();
-            return;
-        }
-
-        if(m_isRenaming) {
-            recall = true;
-            m_session_list->closePersistentEditor(m_current_item);
-            emit sessionRenamed(m_previousItemText, newSessionName );
-            m_isRenaming = false;
-        } else if (m_isCloning) {
-            emit sessionCloned(m_previousItemText, newSessionName );
-            m_isCloning = false;
-        } else {
-            qDebug() << "This should never be reached";
-        }
-    }
-    m_bt_rename->setEnabled(true);
-    // m_bt_clone->setEnabled(true);
 
 }
 
@@ -280,8 +236,8 @@ void SessionManager::removeSession()
  */
 void SessionManager::cloneSession()
 {
-    m_previousItemText = m_current_item->text();
-    QListWidgetItem *new_item = new QListWidgetItem(m_previousItemText, m_session_list);
+    m_previous_sessionName = m_current_item->text();
+    QListWidgetItem *new_item = new QListWidgetItem(m_previous_sessionName, m_session_list);
     new_item->setFlags(new_item->flags() | Qt::ItemIsEditable);
 
     m_session_list->setCurrentItem(new_item);
@@ -294,7 +250,7 @@ void SessionManager::cloneSession()
  */
 void SessionManager::renameSession()
 {
-   m_previousItemText = m_current_item->text();
+   m_previous_sessionName = m_current_item->text();
    m_current_item->setFlags(m_current_item->flags() | Qt::ItemIsEditable);
    m_isRenaming = true;
    m_bt_rename->setEnabled(false);
