@@ -36,7 +36,7 @@
 class SessionNameValidator : public QValidator
 {
 public:
-    SessionNameValidator(QObject *parent, QListWidget *list);
+    SessionNameValidator(QListWidget *list);
     void fixup(QString & input) const;
     QValidator::State validate(QString & input, int & pos) const;
 private:
@@ -44,8 +44,8 @@ private:
     QString m_original_name;
 };
 
-SessionNameValidator::SessionNameValidator(QObject *parent, QListWidget *list)
-    : QValidator(parent), m_list(list)
+SessionNameValidator::SessionNameValidator(QListWidget *list)
+    : QValidator(list), m_list(list)
 {
     m_original_name = list->currentItem()->text();
 }
@@ -68,7 +68,6 @@ QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
 //             << items.size() << " x"
 //             << "origin: " << m_original_name;
 
-    // ToDo this still needs some more work!!
     if(items.size() > 0 && input != m_original_name) {
         return QValidator::Intermediate;
     }
@@ -78,23 +77,24 @@ QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
 
 void SessionNameValidator::fixup(QString &input) const
 {
+    int orderNum = -1;
     QString copy;
     do {
         int index = input.lastIndexOf("-");
         if(index > -1) {
             bool ok;
-            int orderNum = input.right(input.length() - 1 - index ).toInt(&ok);
+            if (orderNum < 0)
+                orderNum = input.right(input.length() - 1 - index ).toInt(&ok);
             if(ok) {
                 orderNum++;
                 copy = input.left(index+1) + QString::number(orderNum);
-            } else {
-                copy = input + QStringLiteral("-%1").arg(1);
+                continue;
             }
-
-        } else {
-            copy = input + QStringLiteral("-%1").arg(1);
         }
-    } while ( (m_list->findItems(copy, Qt::MatchExactly)).size() > 1);
+        if (orderNum < 0) orderNum = 0;
+        copy = input + QStringLiteral("-%1").arg(++orderNum);
+//        qDebug() << "fixup   : " << "copy: " << copy << " : " << m_list->findItems(copy, Qt::MatchExactly).size();
+    } while ( (m_list->findItems(copy, Qt::MatchExactly)).size() > 0);
 
     input = copy;
 }
@@ -105,7 +105,7 @@ QWidget* SessionItemDelegate::createEditor(QWidget* parent, const QStyleOptionVi
     QWidget* editor = QItemDelegate::createEditor(parent, option, index);
     QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(editor);
     if(lineEdit) {
-        lineEdit->setValidator(new SessionNameValidator(parent, m_list));
+        lineEdit->setValidator(new SessionNameValidator(m_list));
         connect(lineEdit, &QLineEdit::editingFinished, this,
                 [=]() { emit editingFinished(lineEdit->text()); });
     }
@@ -152,8 +152,7 @@ SessionManager::SessionManager(Settings *settings, QWidget *parent) :
     connect(m_bt_rename, &QPushButton::clicked, this, &SessionManager::renameSession);
     connect(m_bt_clone, &QPushButton::clicked, this, &SessionManager::cloneSession);
 
-   // connect(m_session_list->itemDelegate(), &QAbstractItemDelegate::commitData, this, &SessionManager::currentTextChanged);
-    m_session_list->setItemDelegate(new SessionItemDelegate(m_session_list, m_session_list));
+    m_session_list->setItemDelegate(new SessionItemDelegate(m_session_list));
     connect(static_cast<SessionItemDelegate*>(m_session_list->itemDelegate()), &SessionItemDelegate::editingFinished,
             this, &SessionManager::editingFinished);
 
@@ -236,8 +235,10 @@ void SessionManager::removeSession()
  */
 void SessionManager::cloneSession()
 {
-    m_previous_sessionName = m_current_item->text();
-    QListWidgetItem *new_item = new QListWidgetItem(m_previous_sessionName, m_session_list);
+    QString newName = m_current_item->text();
+    SessionNameValidator *validator = new SessionNameValidator(m_session_list);
+    validator->fixup(newName);
+    QListWidgetItem *new_item = new QListWidgetItem(newName, m_session_list);
     new_item->setFlags(new_item->flags() | Qt::ItemIsEditable);
 
     m_session_list->setCurrentItem(new_item);
@@ -252,6 +253,7 @@ void SessionManager::renameSession()
 {
    m_previous_sessionName = m_current_item->text();
    m_current_item->setFlags(m_current_item->flags() | Qt::ItemIsEditable);
+
    m_isRenaming = true;
    m_bt_rename->setEnabled(false);
    m_session_list->editItem(m_current_item);

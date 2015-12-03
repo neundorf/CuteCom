@@ -74,8 +74,8 @@ class SessionItemDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-    SessionItemDelegate(QListWidget *list, QObject* parent = 0)
-        :QItemDelegate(parent), m_list(list) {}
+    SessionItemDelegate(QListWidget *list)
+        :QItemDelegate(list), m_list(list) {}
     QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
 signals:
@@ -83,6 +83,7 @@ signals:
 
 private:
     QListWidget *m_list;
+
 };
 
 #endif // SESSIONMANAGER_H
