@@ -1,0 +1,30 @@
+language: cpp
+
+branches:
+  only:
+    - master
+
+env:
+  - CONFIG=Release
+
+install:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+         wget http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-i386.tar.gz
+      && tar -xzf cmake-3.2.3-Linux-i386.tar.gz
+      && sudo cp -fR cmake-3.2.3-Linux-i386/* /usr
+      && sudo apt-add-repository -y ppa:beineri/opt-qt541
+      && sudo apt-get -qq update
+      && sudo apt-get -qq install g++-4.8 libc6-i386 qt54tools qt54svg  qt54serialport
+      && export CXX="g++-4.8"
+      && export CC="gcc-4.8"
+      ;
+ fi
+
+script:
+  -    cd build
+    && if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+         cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake ..
+         ;
+       fi
+    && make -j 3
+    && cd ..
