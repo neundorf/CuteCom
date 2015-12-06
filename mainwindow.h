@@ -75,6 +75,7 @@ private:
     void fillProtocolChooser(const Settings::Protocol setting = Settings::PLAIN);
     void killSz();
     void switchSession(const QString &session);
+    void updateCommandHistory();
 
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
@@ -90,6 +91,9 @@ private:
     QFont m_output_font;
     QTime m_timestamp;
     QFile m_logFile;
+
+    QCompleter *m_commandCompleter;
+    QStringListModel *m_command_history_model;
 
     /**
      * @brief m_keyRepeatTimer

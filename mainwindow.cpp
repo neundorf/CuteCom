@@ -31,6 +31,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QThread>
+#include <QCompleter>
 #include <QDialog>
 #include <QFileDialog>
 #include <QResizeEvent>
@@ -53,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     , m_progress(0)
     , m_sz(0)
     , m_previousChar('\0')
+    , m_command_history_model(0)
     , m_keyRepeatTimer(this)
     , m_keyCode(0)
     , m_cmdBufIndex(0)
@@ -98,6 +100,10 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         m_command_history->scrollToItem(m_command_history->currentItem());
         m_command_history->clearSelection();
     }
+
+    m_commandCompleter = new QCompleter(m_input_edit );
+    m_input_edit->setCompleter(m_commandCompleter);
+    updateCommandHistory();
 
     fillLineTerminationChooser(m_settings->getLineTerminator());
 
@@ -461,8 +467,10 @@ void MainWindow::execCmd()
             m_command_history->removeItemWidget(m_command_history->item(0));
 
         // Do not save settings if there is no new string
-        if (!found)
+        if (!found) {
             saveCommandHistory();
+            updateCommandHistory();
+        }
         // emit settingChanged .... // emit commandHistoryChanged and connect to settings slot above
     }
     m_command_history->clearSelection();
@@ -737,9 +745,36 @@ void MainWindow::killSz()
 
 void MainWindow::switchSession(const QString &session)
 {
+    if (m_device->isOpen())
+        closeDevice();
     m_settings->settingChanged(Settings::CurrentSession, session);
     controlPanel->applySessionSettings(m_settings->getCurrentSession());
+    m_command_history->clear();
+    QStringList history = m_settings->getCurrentSession().command_history;
+    if (!history.empty()) {
+        m_command_history->addItems(history);
+        m_command_history->setCurrentRow(m_command_history->count() - 1);
+        m_command_history->scrollToItem(m_command_history->currentItem());
+        m_command_history->clearSelection();
+    }
+    delete m_commandCompleter;
+    m_commandCompleter = new QCompleter(history, m_input_edit );
+    m_input_edit->setCompleter(m_commandCompleter);
     this->setWindowTitle("CuteCom - " + session);
+}
+
+void MainWindow::updateCommandHistory()
+{
+    if(m_command_history_model != 0)
+        m_command_history_model = dynamic_cast<QStringListModel*>(m_commandCompleter->model());
+
+    if(m_command_history_model == NULL)
+        m_command_history_model = new QStringListModel();
+
+    QStringList history = m_settings->getCurrentSession().command_history;
+    m_command_history_model->setStringList(history);
+    m_commandCompleter->setModel(m_command_history_model);
+
 }
 
 /**
