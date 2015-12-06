@@ -69,4 +69,22 @@ private:
     QString m_previous_sessionName;
 };
 
+class SessionItemDelegate : public QItemDelegate
+{
+    Q_OBJECT
+public:
+    SessionItemDelegate(QListWidget *list)
+        : QItemDelegate(list)
+        , m_list(list)
+    {
+    }
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+signals:
+    void editingFinished(const QString &newSessionName);
+
+private:
+    QListWidget *m_list;
+};
+
 #endif // SESSIONMANAGER_H

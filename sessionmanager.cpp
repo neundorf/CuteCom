@@ -99,24 +99,6 @@ void SessionNameValidator::fixup(QString &input) const
     input = copy;
 }
 
-class SessionItemDelegate : public QItemDelegate
-{
-    Q_OBJECT
-public:
-    SessionItemDelegate(QListWidget *list)
-        : QItemDelegate(list)
-        , m_list(list)
-    {
-    }
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-
-signals:
-    void editingFinished(const QString &newSessionName);
-
-private:
-    QListWidget *m_list;
-};
-
 QWidget *SessionItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                                            const QModelIndex &index) const
 {
