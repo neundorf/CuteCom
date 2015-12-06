@@ -18,6 +18,7 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+
 #include "sessionmanager.h"
 
 #include <QItemDelegate>
@@ -37,15 +38,17 @@ class SessionNameValidator : public QValidator
 {
 public:
     SessionNameValidator(QListWidget *list);
-    void fixup(QString & input) const;
-    QValidator::State validate(QString & input, int & pos) const;
+    void fixup(QString &input) const;
+    QValidator::State validate(QString &input, int &pos) const;
+
 private:
     QListWidget *m_list;
     QString m_original_name;
 };
 
 SessionNameValidator::SessionNameValidator(QListWidget *list)
-    : QValidator(list), m_list(list)
+    : QValidator(list)
+    , m_list(list)
 {
     m_original_name = list->currentItem()->text();
 }
@@ -54,24 +57,19 @@ QValidator::State SessionNameValidator::validate(QString &input, int &pos) const
 {
     Q_UNUSED(pos)
 
-    if (input.contains(QLatin1Char('/'))
-            || input.contains(QLatin1Char(':'))
-            || input.contains(QLatin1Char('\\'))
-            || input.contains(QLatin1Char('?'))
-            || input.contains(QLatin1Char('*'))
-            || input.contains(QLatin1Char(' ')))
+    if (input.contains(QLatin1Char('/')) || input.contains(QLatin1Char(':')) || input.contains(QLatin1Char('\\'))
+        || input.contains(QLatin1Char('?')) || input.contains(QLatin1Char('*')) || input.contains(QLatin1Char(' ')))
         return QValidator::Invalid;
 
     QList<QListWidgetItem *> items = m_list->findItems(input, Qt::MatchExactly);
 
-//    qDebug() << Q_FUNC_INFO << input << "found "
-//             << items.size() << " x"
-//             << "origin: " << m_original_name;
+    //    qDebug() << Q_FUNC_INFO << input << "found "
+    //             << items.size() << " x"
+    //             << "origin: " << m_original_name;
 
-    if(items.size() > 0 && input != m_original_name) {
+    if (items.size() > 0 && input != m_original_name) {
         return QValidator::Intermediate;
-    }
-    else
+    } else
         return QValidator::Acceptable;
 }
 
@@ -81,44 +79,63 @@ void SessionNameValidator::fixup(QString &input) const
     QString copy;
     do {
         int index = input.lastIndexOf("-");
-        if(index > -1) {
+        if (index > -1) {
             bool ok;
             if (orderNum < 0)
-                orderNum = input.right(input.length() - 1 - index ).toInt(&ok);
-            if(ok) {
+                orderNum = input.right(input.length() - 1 - index).toInt(&ok);
+            if (ok) {
                 orderNum++;
-                copy = input.left(index+1) + QString::number(orderNum);
+                copy = input.left(index + 1) + QString::number(orderNum);
                 continue;
             }
         }
-        if (orderNum < 0) orderNum = 0;
+        if (orderNum < 0)
+            orderNum = 0;
         copy = input + QStringLiteral("-%1").arg(++orderNum);
-//        qDebug() << "fixup   : " << "copy: " << copy << " : " << m_list->findItems(copy, Qt::MatchExactly).size();
-    } while ( (m_list->findItems(copy, Qt::MatchExactly)).size() > 0);
+        //        qDebug() << "fixup   : " << "copy: " << copy << " : " << m_list->findItems(copy,
+        //        Qt::MatchExactly).size();
+    } while ((m_list->findItems(copy, Qt::MatchExactly)).size() > 0);
 
     input = copy;
 }
 
-
-QWidget* SessionItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+class SessionItemDelegate : public QItemDelegate
 {
-    QWidget* editor = QItemDelegate::createEditor(parent, option, index);
-    QLineEdit* lineEdit = dynamic_cast<QLineEdit*>(editor);
-    if(lineEdit) {
+    Q_OBJECT
+public:
+    SessionItemDelegate(QListWidget *list)
+        : QItemDelegate(list)
+        , m_list(list)
+    {
+    }
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
+signals:
+    void editingFinished(const QString &newSessionName);
+
+private:
+    QListWidget *m_list;
+};
+
+QWidget *SessionItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                                           const QModelIndex &index) const
+{
+    QWidget *editor = QItemDelegate::createEditor(parent, option, index);
+    QLineEdit *lineEdit = dynamic_cast<QLineEdit *>(editor);
+    if (lineEdit) {
         lineEdit->setValidator(new SessionNameValidator(m_list));
-        connect(lineEdit, &QLineEdit::editingFinished, this,
-                [=]() { emit editingFinished(lineEdit->text()); });
+        connect(lineEdit, &QLineEdit::editingFinished, this, [=]() { emit editingFinished(lineEdit->text()); });
     }
     return editor;
 }
 
-SessionManager::SessionManager(Settings *settings, QWidget *parent) :
-  QDialog(parent)
-  ,m_settings(settings)
-  ,m_current_item(0)
-  ,m_current_session(0)
-  ,m_isCloning(false)
-  ,m_isRenaming(false)
+SessionManager::SessionManager(Settings *settings, QWidget *parent)
+    : QDialog(parent)
+    , m_settings(settings)
+    , m_current_item(0)
+    , m_current_session(0)
+    , m_isCloning(false)
+    , m_isRenaming(false)
 {
     setupUi(this);
 
@@ -130,8 +147,8 @@ SessionManager::SessionManager(Settings *settings, QWidget *parent) :
     m_session_list->addItem(QStringLiteral("Default"));
 
     QStringList sessions = m_settings->getSessionNames();
-    if(sessions.size() > 0) {
-        if(sessions.contains(QStringLiteral("Default"))) {
+    if (sessions.size() > 0) {
+        if (sessions.contains(QStringLiteral("Default"))) {
             sessions.removeOne(QStringLiteral("Default"));
         }
         sessions.sort();
@@ -153,19 +170,18 @@ SessionManager::SessionManager(Settings *settings, QWidget *parent) :
     connect(m_bt_clone, &QPushButton::clicked, this, &SessionManager::cloneSession);
 
     m_session_list->setItemDelegate(new SessionItemDelegate(m_session_list));
-    connect(static_cast<SessionItemDelegate*>(m_session_list->itemDelegate()), &SessionItemDelegate::editingFinished,
+    connect(static_cast<SessionItemDelegate *>(m_session_list->itemDelegate()), &SessionItemDelegate::editingFinished,
             this, &SessionManager::editingFinished);
-
 }
 
-void SessionManager::currentItemChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)
+void SessionManager::currentItemChanged(QListWidgetItem *current, QListWidgetItem * /*previous*/)
 {
 
-    if(current != m_current_session)
+    if (current != m_current_session)
         m_bt_switch->setEnabled(true);
 
     m_current_item = current;
-    if(current->text() == QStringLiteral("Default")){
+    if (current->text() == QStringLiteral("Default")) {
         m_bt_delete->setEnabled(false);
         m_bt_rename->setEnabled(false);
     } else {
@@ -176,22 +192,21 @@ void SessionManager::currentItemChanged(QListWidgetItem *current, QListWidgetIte
 
 void SessionManager::editingFinished(const QString &newSessionName)
 {
-//    qDebug() << Q_FUNC_INFO << "New session name: " << newSessionName;
-    if(m_isRenaming) {
-        if(newSessionName != m_previous_sessionName)
-            emit sessionRenamed(m_previous_sessionName, newSessionName );
-        if(m_previous_sessionName == m_current_session->text() )
+    //    qDebug() << Q_FUNC_INFO << "New session name: " << newSessionName;
+    if (m_isRenaming) {
+        if (newSessionName != m_previous_sessionName)
+            emit sessionRenamed(m_previous_sessionName, newSessionName);
+        if (m_previous_sessionName == m_current_session->text())
             emit sessionSwitched(newSessionName);
         m_isRenaming = false;
     } else if (m_isCloning) {
-        emit sessionCloned(m_previous_sessionName, newSessionName );
+        emit sessionCloned(m_previous_sessionName, newSessionName);
         m_isCloning = false;
     } else {
         qDebug() << "This slot is called multiple times after editing finished - Why?";
     }
     m_bt_rename->setEnabled(true);
     m_bt_clone->setEnabled(true);
-
 }
 
 void SessionManager::switchSession()
@@ -199,7 +214,7 @@ void SessionManager::switchSession()
     m_bt_switch->setEnabled(false);
     emit sessionSwitched(m_current_item->text());
     QFont font = m_current_item->font();
-    if(m_current_session)
+    if (m_current_session)
         m_current_session->setFont(font);
     font.setBold(true);
     m_current_item->setFont(font);
@@ -216,7 +231,7 @@ void SessionManager::removeSession()
     emit sessionRemoved(m_current_item->text());
     QListWidgetItem *remove_item = m_current_item;
 
-    if(m_current_session == remove_item) {
+    if (m_current_session == remove_item) {
         // the currently used session was removed
         // we would be better off, switching to a different one
         // the default session is save to switch too
@@ -251,11 +266,10 @@ void SessionManager::cloneSession()
  */
 void SessionManager::renameSession()
 {
-   m_previous_sessionName = m_current_item->text();
-   m_current_item->setFlags(m_current_item->flags() | Qt::ItemIsEditable);
+    m_previous_sessionName = m_current_item->text();
+    m_current_item->setFlags(m_current_item->flags() | Qt::ItemIsEditable);
 
-   m_isRenaming = true;
-   m_bt_rename->setEnabled(false);
-   m_session_list->editItem(m_current_item);
-
+    m_isRenaming = true;
+    m_bt_rename->setEnabled(false);
+    m_session_list->editItem(m_current_item);
 }

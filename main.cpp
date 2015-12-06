@@ -28,17 +28,18 @@
 #include <QIcon>
 #include <QCommandLineParser>
 
-int main( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
-    QApplication a( argc, argv );
+    QApplication a(argc, argv);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main", "CuteCom - Serial Terminal %1")
-                                     .arg(CuteCom_VERSION));
+    parser.setApplicationDescription(
+        QCoreApplication::translate("main", "CuteCom - Serial Terminal %1").arg(CuteCom_VERSION));
     parser.addHelpOption();
-    QCommandLineOption sessionOption(QStringList() << "s" << "session",
-               QCoreApplication::translate("main", "Open a named <session>"),
-               QCoreApplication::translate("main", "session"));
+    QCommandLineOption sessionOption(QStringList() << "s"
+                                                   << "session",
+                                     QCoreApplication::translate("main", "Open a named <session>"),
+                                     QCoreApplication::translate("main", "session"));
     parser.addOption(sessionOption);
 
     // Process the actual command line arguments given by the user
@@ -53,4 +54,3 @@ int main( int argc, char *argv[] )
 
     return a.exec();
 }
-

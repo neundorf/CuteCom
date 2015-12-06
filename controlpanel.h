@@ -38,7 +38,7 @@ signals:
     void settingChanged(Settings::Options option, QVariant setting);
 
 public:
-    explicit ControlPanel(QWidget *parent = 0, Settings *settings = 0 );
+    explicit ControlPanel(QWidget *parent = 0, Settings *settings = 0);
     ~ControlPanel();
     /**
      * Returns the space in the y-achsis needed
@@ -56,10 +56,14 @@ public:
      */
     void setLeftMargin(int x) { m_x = x; }
 
-    void fillDeviceCombo(const QString& deviceName);
+    void fillDeviceCombo(const QString &deviceName);
     void applySessionSettings(Settings::Session settings);
 
-    void closeDevice() { toggleDevice(false); m_bt_open->setChecked(false); }
+    void closeDevice()
+    {
+        toggleDevice(false);
+        m_bt_open->setChecked(false);
+    }
 
 private:
     void fillBaudCombo();
@@ -69,7 +73,7 @@ private:
     void fillStopBitCombo();
     void fillOpenModeCombo();
 
-//slots
+    // slots
     void toggleMenu();
     void toggleDevice(bool open);
     void customBaudRate(int index);
@@ -82,7 +86,6 @@ private:
     bool m_menuVisible;
     QIntValidator *m_baudValidator;
     QLineEdit *m_baud_edit;
-
 };
 
 #endif // CONTROLPANEL_H

@@ -30,28 +30,28 @@ class Settings : public QObject
     Q_OBJECT
 
 public:
-
     enum Options {
-        Device
-        ,BaudRate
-        ,DataBits
-        ,StopBits
-        ,Parity
-        ,FlowControl
-        ,OpenMode
-        ,ShowCtrlCharacters
-        ,ShowTimestamp
-        ,CommandHistory
-        ,WindowGeometry
-        ,LogFileLocation
-        ,LineTermination
-        ,CharacterDelay
-        ,SendStartDir
-        ,ProtocolOption
-        ,CurrentSession
+        Device,
+        BaudRate,
+        DataBits,
+        StopBits,
+        Parity,
+        FlowControl,
+        OpenMode,
+        ShowCtrlCharacters,
+        ShowTimestamp,
+        CommandHistory,
+        WindowGeometry,
+        LogFileLocation,
+        LineTermination,
+        CharacterDelay,
+        SendStartDir,
+        ProtocolOption,
+        CurrentSession
     };
 
-    struct Session {
+    struct Session
+    {
         QString device;
         quint32 baudRate;
         QSerialPort::DataBits dataBits;
@@ -64,31 +64,17 @@ public:
         QStringList command_history;
     };
 
-    enum LineTerminator {
-        LF = 0
-        ,CR
-        ,CRLF
-        ,NONE
-        ,HEX
-    };
+    enum LineTerminator { LF = 0, CR, CRLF, NONE, HEX };
     Q_ENUMS(LineTerminator)
 
-    enum Protocol {
-        PLAIN
-        ,SCRIPT
-        ,XMODEM
-        ,YMODEM
-        ,ZMODEM
-        ,ONEKXMODEM
-        ,PROTOCOL_MAX
-    };
+    enum Protocol { PLAIN, SCRIPT, XMODEM, YMODEM, ZMODEM, ONEKXMODEM, PROTOCOL_MAX };
     Q_ENUMS(Protocol)
 
-    explicit Settings(QObject* parent = 0);
+    explicit Settings(QObject *parent = 0);
     void readSettings(const QString &session);
 
     const Settings::Session getCurrentSession();
-    QString getCurrentSessionName() const { return m_current_session;}
+    QString getCurrentSessionName() const { return m_current_session; }
     void settingChanged(Settings::Options option, QVariant setting);
 
     QRect getWindowGeometry() const;
@@ -118,7 +104,7 @@ private:
     void readSessionSettings(QSettings &settings);
     void saveGenericSettings();
     void saveSessionSettings();
-    bool readUIntSetting(QSettings &settings, QString const& name, quint32 *i );
+    bool readUIntSetting(QSettings &settings, QString const &name, quint32 *i);
 
     QRect m_windowGeometry;
     QString m_logFileLocation;
@@ -146,7 +132,6 @@ private:
     QHash<QString, Session> m_sessions;
     QString m_current_session;
     static const QString DEFAULT_SESSION_NAME;
-
 };
 
 Q_DECLARE_METATYPE(Settings::Session)

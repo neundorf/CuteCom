@@ -24,7 +24,8 @@
 #include <QSerialPortInfo>
 #include "qdebug.h"
 
-SerialDeviceListModel::SerialDeviceListModel(QObject *parent) : QAbstractListModel(parent)
+SerialDeviceListModel::SerialDeviceListModel(QObject *parent)
+    : QAbstractListModel(parent)
 {
 }
 
@@ -33,21 +34,20 @@ int SerialDeviceListModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent)
     qDebug() << Q_FUNC_INFO;
     return m_device_count;
-
 }
 
 QVariant SerialDeviceListModel::data(const QModelIndex &index, int role) const
 {
-    if(!index.isValid())
+    if (!index.isValid())
         return QVariant();
 
-    if(index.row() >= m_devices.size() || index.row() < 0)
+    if (index.row() >= m_devices.size() || index.row() < 0)
         return QVariant();
 
     qDebug() << Q_FUNC_INFO;
-    if(role == Qt::ToolTipRole) {
+    if (role == Qt::ToolTipRole) {
         return QStringLiteral("SerialDevice ...");
-    }else if(role == Qt::DisplayRole) {
+    } else if (role == Qt::DisplayRole) {
         return m_devices.at(index.row());
     } else {
         return QVariant();

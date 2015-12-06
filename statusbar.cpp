@@ -18,13 +18,14 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+
 #include "statusbar.h"
 #include <QString>
 #include <QtSerialPort/QtSerialPort>
 #include <QSerialPortInfo>
 
-StatusBar::StatusBar(QWidget *parent) :
-    QWidget(parent)
+StatusBar::StatusBar(QWidget *parent)
+    : QWidget(parent)
 {
     setupUi(this);
 }
@@ -32,7 +33,7 @@ StatusBar::StatusBar(QWidget *parent) :
 void StatusBar::sessionChanged(const Settings::Session &session)
 {
     QString parity;
-    switch(session.parity) {
+    switch (session.parity) {
     case QSerialPort::NoParity:
         parity = QStringLiteral("N");
         break;
@@ -53,7 +54,7 @@ void StatusBar::sessionChanged(const Settings::Session &session)
         break;
     }
     QString stopBits;
-    switch(session.stopBits) {
+    switch (session.stopBits) {
     case QSerialPort::OneStop:
         stopBits = QString::number(1);
         break;
@@ -67,44 +68,37 @@ void StatusBar::sessionChanged(const Settings::Session &session)
         break;
     }
 
-    QString connectionParameter = QString("%1 @ %2-%3-%4")
-            .arg(session.baudRate)
-            .arg(session.dataBits)
-            .arg(parity)
-            .arg(stopBits);
+    QString connectionParameter
+        = QString("%1 @ %2-%3-%4").arg(session.baudRate).arg(session.dataBits).arg(parity).arg(stopBits);
     m_lb_portparams->setText(connectionParameter);
 
-    if(!session.device.isEmpty())
+    if (!session.device.isEmpty())
         m_lb_deviceName->setText(session.device);
     QWidget::setToolTip(QStringLiteral(""));
-
 }
 
-void StatusBar::setDeviceInfo(const QSerialPort *port ){
+void StatusBar::setDeviceInfo(const QSerialPort *port)
+{
     QSerialPortInfo info = QSerialPortInfo(*port);
-    if(info.isValid()) {
-        QString deviceInfo =QString("%1 %2 @%3")
-            .arg(info.manufacturer())
-            .arg(info.description())
-            .arg(info.portName());
+    if (info.isValid()) {
+        QString deviceInfo = QString("%1 %2 @%3").arg(info.manufacturer()).arg(info.description()).arg(info.portName());
         m_lb_deviceName->setText(deviceInfo);
     }
-
 }
 
-void StatusBar::setToolTip(const QSerialPort *port ){
+void StatusBar::setToolTip(const QSerialPort *port)
+{
 
     QSerialPortInfo info = QSerialPortInfo(*port);
-    if(info.isValid()) {
-        QString deviceInfo =QString("%1 %2\n%3:%4 # %5")
-            .arg(info.manufacturer())
-            .arg(info.description())
-            .arg(info.vendorIdentifier())
-            .arg(info.productIdentifier())
-            .arg(info.serialNumber());
+    if (info.isValid()) {
+        QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
+                                 .arg(info.manufacturer())
+                                 .arg(info.description())
+                                 .arg(info.vendorIdentifier())
+                                 .arg(info.productIdentifier())
+                                 .arg(info.serialNumber());
         QWidget::setToolTip(deviceInfo);
     } else {
         QWidget::setToolTip(tr("Not a valid device"));
     }
-
 }

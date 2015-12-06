@@ -43,7 +43,7 @@ public:
     ~MainWindow();
 
 protected:
-bool eventFilter(QObject * obj, QEvent * event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     void openDevice();
@@ -60,14 +60,14 @@ protected:
     void nextCmd();
     void execCmd();
     void commandFromHistoryClicked(QListWidgetItem *item);
-    bool sendString(const QString& s);
+    bool sendString(const QString &s);
     bool sendByte(const char c, unsigned long delay);
     void sendKey();
     void sendFile();
     void readFromStdOut();
     void readFromStdErr();
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void toggleLogging(bool start);
@@ -101,7 +101,6 @@ private:
      * @brief m_cmdBufIndex
      */
     int m_cmdBufIndex;
-
 };
 
 #endif // MAINWINDOW_H
