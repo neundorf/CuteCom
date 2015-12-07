@@ -18,6 +18,7 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+
 #ifndef SESSIONMANAGER_H
 #define SESSIONMANAGER_H
 
@@ -41,12 +42,11 @@ public:
     void editingFinished(const QString &newSessionName);
 
 private:
-    void currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
+    void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void switchSession();
     void removeSession();
     void cloneSession();
     void renameSession();
-
 
     /**
      * stores the reference of the application wide settings instance
@@ -67,7 +67,6 @@ private:
     bool m_isCloning;
     bool m_isRenaming;
     QString m_previous_sessionName;
-
 };
 
 class SessionItemDelegate : public QItemDelegate
@@ -75,15 +74,17 @@ class SessionItemDelegate : public QItemDelegate
     Q_OBJECT
 public:
     SessionItemDelegate(QListWidget *list)
-        :QItemDelegate(list), m_list(list) {}
-    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+        : QItemDelegate(list)
+        , m_list(list)
+    {
+    }
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 signals:
     void editingFinished(const QString &newSessionName);
 
 private:
     QListWidget *m_list;
-
 };
 
 #endif // SESSIONMANAGER_H

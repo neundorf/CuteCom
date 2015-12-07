@@ -37,13 +37,13 @@ void DeviceCombo::refill()
     int numberDevices = 0;
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
         addItem(info.systemLocation());
-        if(info.isValid()) {
-            QString deviceInfo =QString("%1 %2\n%3:%4 # %5")
-                    .arg(info.manufacturer())
-                    .arg(info.description())
-                    .arg(info.vendorIdentifier())
-                    .arg(info.productIdentifier())
-                    .arg(info.serialNumber());
+        if (info.isValid()) {
+            QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
+                                     .arg(info.manufacturer())
+                                     .arg(info.description())
+                                     .arg(info.vendorIdentifier())
+                                     .arg(info.productIdentifier())
+                                     .arg(info.serialNumber());
             setItemData(numberDevices, deviceInfo, Qt::ToolTipRole);
         } else {
             setItemData(numberDevices, tr("Not a valid device"), Qt::ToolTipRole);
@@ -52,7 +52,7 @@ void DeviceCombo::refill()
     }
 
     int index = findText(selection);
-    if( index != -1 ) {
+    if (index != -1) {
         // found something - work done!
         setCurrentIndex(index);
     } else {

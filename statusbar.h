@@ -18,6 +18,7 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+
 #ifndef STATUSBAR_H
 #define STATUSBAR_H
 

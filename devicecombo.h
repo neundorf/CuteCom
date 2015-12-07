@@ -18,23 +18,24 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+
 #ifndef DEVICECOMBO_H
 #define DEVICECOMBO_H
 
-#include<QComboBox>
+#include <QComboBox>
 
 class DeviceCombo : public QComboBox
 {
     Q_OBJECT
 
 public:
-    DeviceCombo(QWidget *parent = 0) : QComboBox(parent){};
+    DeviceCombo(QWidget *parent = 0)
+        : QComboBox(parent){};
 
     virtual void showPopup() Q_DECL_OVERRIDE;
 
 private:
     void refill();
-
 };
 
 #endif // DEVICECOMBO_H

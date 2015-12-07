@@ -27,16 +27,19 @@
 
 #include <qdebug.h>
 
-const QString Settings::DEFAULT_SESSION_NAME = QStringLiteral( "Default");
+const QString Settings::DEFAULT_SESSION_NAME = QStringLiteral("Default");
 
-Settings::Settings(QObject* parent) : QObject(parent) {}
+Settings::Settings(QObject *parent)
+    : QObject(parent)
+{
+}
 
 void Settings::settingChanged(Settings::Options option, QVariant setting)
 {
     bool sessionSettings = true;
     Session session;
     if (m_sessions.contains(m_current_session))
-            session = m_sessions.value(m_current_session);
+        session = m_sessions.value(m_current_session);
 
     switch (option) {
     case BaudRate:
@@ -101,7 +104,7 @@ void Settings::settingChanged(Settings::Options option, QVariant setting)
         break;
     }
     m_sessions.insert(m_current_session, session);
-    if(sessionSettings) {
+    if (sessionSettings) {
         saveSessionSettings();
         emit sessionChanged(getCurrentSession());
     } else {
@@ -127,18 +130,18 @@ void Settings::readSessionSettings(QSettings &settings)
 {
     int size = settings.beginReadArray("sessions");
 
-    if( size < 1) {
+    if (size < 1) {
         qDebug() << "no session information found in conf file";
         return;
     }
     m_sessions.clear();
     quint32 value;
 
-    for( int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         settings.setArrayIndex(i);
         Session session;
         QString name = settings.value("name").toString();
-        if(name.isEmpty())
+        if (name.isEmpty())
             continue;
 
         /*
@@ -149,17 +152,22 @@ void Settings::readSessionSettings(QSettings &settings)
          * handled the time this value is appied to the combo boxes within
          * the control panel. It's a workaround though.
          */
-        session.baudRate = settings.value("BaudRate",115200).toInt();
-        session.dataBits = (readUIntSetting(settings, QStringLiteral("DataBits"), &value))?
-                    static_cast<QSerialPort::DataBits>(value) : QSerialPort::Data8;
-        session.parity = (readUIntSetting(settings, QStringLiteral("Parity"), &value))?
-                    static_cast<QSerialPort::Parity>(value) : QSerialPort::NoParity;
-        session.stopBits = (readUIntSetting(settings, QStringLiteral("StopBits"), &value))?
-                    static_cast<QSerialPort::StopBits>(value) : QSerialPort::OneStop;
-        session.flowControl = (readUIntSetting(settings, QStringLiteral("FlowControl"), &value))?
-                    static_cast<QSerialPort::FlowControl>(value) : QSerialPort::NoFlowControl;
-        session.openMode = (readUIntSetting(settings, QStringLiteral("OpenMode"), &value))?
-                    static_cast<QIODevice::OpenModeFlag>(value) : QIODevice::ReadWrite;
+        session.baudRate = settings.value("BaudRate", 115200).toInt();
+        session.dataBits = (readUIntSetting(settings, QStringLiteral("DataBits"), &value))
+                               ? static_cast<QSerialPort::DataBits>(value)
+                               : QSerialPort::Data8;
+        session.parity = (readUIntSetting(settings, QStringLiteral("Parity"), &value))
+                             ? static_cast<QSerialPort::Parity>(value)
+                             : QSerialPort::NoParity;
+        session.stopBits = (readUIntSetting(settings, QStringLiteral("StopBits"), &value))
+                               ? static_cast<QSerialPort::StopBits>(value)
+                               : QSerialPort::OneStop;
+        session.flowControl = (readUIntSetting(settings, QStringLiteral("FlowControl"), &value))
+                                  ? static_cast<QSerialPort::FlowControl>(value)
+                                  : QSerialPort::NoFlowControl;
+        session.openMode = (readUIntSetting(settings, QStringLiteral("OpenMode"), &value))
+                               ? static_cast<QIODevice::OpenModeFlag>(value)
+                               : QIODevice::ReadWrite;
         // the recovering default for the device its Linux specific but I can live with that
         session.device = settings.value("Device", QStringLiteral("/dev/ttyUSB0")).toString();
         session.showCtrlCharacters = settings.value("showCtrlCharacters", false).toBool();
@@ -169,14 +177,13 @@ void Settings::readSessionSettings(QSettings &settings)
         m_sessions.insert(name, session);
     }
     settings.endArray();
-
 }
 
-bool Settings::readUIntSetting(QSettings &settings, QString const& name, quint32 *i )
+bool Settings::readUIntSetting(QSettings &settings, QString const &name, quint32 *i)
 {
     bool ok = false;
     int r = settings.value(name, -1).toInt(&ok);
-    if( r < 0 || !ok) {
+    if (r < 0 || !ok) {
         *i = 0;
         return false;
     } else {
@@ -193,27 +200,29 @@ void Settings::readSettings(const QString &session)
 {
     QSettings settings(this->parent());
     settings.beginGroup("CuteCom");
-    QString stored_session = settings.value("session",DEFAULT_SESSION_NAME).toString();
-    if(session.isEmpty()){
+    QString stored_session = settings.value("session", DEFAULT_SESSION_NAME).toString();
+    if (session.isEmpty()) {
         m_current_session = stored_session;
     } else {
-            m_current_session = session;
-            if(session != stored_session)
-                settings.setValue("session", session);
+        m_current_session = session;
+        if (session != stored_session)
+            settings.setValue("session", session);
     }
     qDebug() << "setting current session to: " << m_current_session;
 
-    m_windowGeometry = settings.value("WindowGeometry", QRect(0,0,0,0)).toRect();
+    m_windowGeometry = settings.value("WindowGeometry", QRect(0, 0, 0, 0)).toRect();
     m_logFileLocation = settings.value("LogFileLocation").toString();
     if (m_logFileLocation.isEmpty()) {
         m_logFileLocation = QDir::homePath() + QDir::separator() + QStringLiteral("cutecom.log");
     }
 
-    m_lineterm = static_cast<Settings::LineTerminator>(settings.value("LineTerminator", QVariant::fromValue(Settings::LF)).toUInt());
+    m_lineterm = static_cast<Settings::LineTerminator>(
+        settings.value("LineTerminator", QVariant::fromValue(Settings::LF)).toUInt());
 
-    m_protocol = static_cast<Settings::Protocol>(settings.value("Protocol", QVariant::fromValue(Settings::PLAIN)).toUInt());
+    m_protocol
+        = static_cast<Settings::Protocol>(settings.value("Protocol", QVariant::fromValue(Settings::PLAIN)).toUInt());
 
-    m_sendingStartDir = settings.value("SendingStartDir",QDir::homePath()).toString();
+    m_sendingStartDir = settings.value("SendingStartDir", QDir::homePath()).toString();
 
     m_character_delay = settings.value("CharacterDelay", 0).toUInt();
 
@@ -251,8 +260,8 @@ void Settings::saveGenericSettings()
     settings.setValue("LogFileLocation", m_logFileLocation);
 
     // save session releated settings
-    if(!m_current_session.isEmpty())
-        settings.setValue("session", m_current_session );
+    if (!m_current_session.isEmpty())
+        settings.setValue("session", m_current_session);
     else
         settings.setValue("session", DEFAULT_SESSION_NAME);
 
@@ -265,14 +274,13 @@ void Settings::saveGenericSettings()
     settings.setValue("SendingStartDir", m_sendingStartDir);
 
     settings.endGroup();
-
 }
 
 void Settings::saveSessionSettings()
 {
     QSettings settings(this->parent());
 
-    if(m_sessions.size()> 0) {
+    if (m_sessions.size() > 0) {
         settings.beginWriteArray("sessions");
         int index = 0;
         QHashIterator<QString, Session> iter(m_sessions);
@@ -294,7 +302,6 @@ void Settings::saveSessionSettings()
         }
         settings.endArray();
     }
-
 }
 
 void Settings::removeSession(const QString &session)
@@ -329,25 +336,16 @@ void Settings::renameSession(const QString &source, const QString &destination)
     saveSessionSettings();
 }
 
-QString Settings::getLogFileLocation() const
-{
-    return m_logFileLocation;
-}
+QString Settings::getLogFileLocation() const { return m_logFileLocation; }
 
-Settings::LineTerminator Settings::getLineTerminator() const
-{
-    return m_lineterm;
-}
+Settings::LineTerminator Settings::getLineTerminator() const { return m_lineterm; }
 
 QList<QString> Settings::getSessionNames() const
 {
-    QList<QString> sessions =  m_sessions.keys();
-    if(sessions.isEmpty())
+    QList<QString> sessions = m_sessions.keys();
+    if (sessions.isEmpty())
         sessions.append(QStringLiteral("Default"));
     return sessions;
 }
 
-QRect Settings::getWindowGeometry() const
-{
-    return m_windowGeometry;
-}
+QRect Settings::getWindowGeometry() const { return m_windowGeometry; }

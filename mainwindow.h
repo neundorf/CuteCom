@@ -43,7 +43,7 @@ public:
     ~MainWindow();
 
 protected:
-bool eventFilter(QObject * obj, QEvent * event);
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     void openDevice();
@@ -60,14 +60,14 @@ protected:
     void nextCmd();
     void execCmd();
     void commandFromHistoryClicked(QListWidgetItem *item);
-    bool sendString(const QString& s);
+    bool sendString(const QString &s);
     bool sendByte(const char c, unsigned long delay);
     void sendKey();
     void sendFile();
     void readFromStdOut();
     void readFromStdErr();
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
-    void resizeEvent(QResizeEvent* event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void toggleLogging(bool start);
@@ -75,10 +75,12 @@ private:
     void fillProtocolChooser(const Settings::Protocol setting = Settings::PLAIN);
     void killSz();
     void switchSession(const QString &session);
+    void updateCommandHistory();
 
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
     QSerialPort *m_device;
+    bool m_deviceOpen;
     StatusBar *m_device_statusbar;
     Settings *m_settings;
     QProgressDialog *m_progress;
@@ -91,6 +93,10 @@ private:
     QTime m_timestamp;
     QFile m_logFile;
 
+    QCompleter *m_commandCompleter;
+    QStringListModel *m_command_history_model;
+    QMenu *m_command_history_menu;
+
     /**
      * @brief m_keyRepeatTimer
      */
@@ -101,7 +107,6 @@ private:
      * @brief m_cmdBufIndex
      */
     int m_cmdBufIndex;
-
 };
 
 #endif // MAINWINDOW_H
