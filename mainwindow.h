@@ -95,6 +95,7 @@ private:
 
     QCompleter *m_commandCompleter;
     QStringListModel *m_command_history_model;
+    QMenu *m_command_history_menu;
 
     /**
      * @brief m_keyRepeatTimer

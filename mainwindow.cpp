@@ -108,6 +108,18 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
 
+    // adds a custom context menu with a single entry to clear the command history
+    m_command_history->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_command_history_menu = new QMenu(this);
+    QAction *clearAction = new QAction(tr("Clear History"), m_command_history);
+    m_command_history_menu->addAction(clearAction);
+    connect(clearAction, &QAction::triggered, m_command_history, [=]() {
+        m_command_history->clear();
+        saveCommandHistory();
+    });
+    connect(m_command_history, &QListWidget::customContextMenuRequested,
+            [=](const QPoint &pos) { m_command_history_menu->exec(mapToParent(pos)); });
+
     fillLineTerminationChooser(m_settings->getLineTerminator());
 
     fillProtocolChooser(m_settings->getProtocol());
