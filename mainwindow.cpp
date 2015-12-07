@@ -984,5 +984,7 @@ MainWindow::~MainWindow()
 {
     if (m_device->isOpen())
         m_device->close();
+    if (m_logFile.isOpen())
+        m_logFile.close();
     delete m_settings;
 }
