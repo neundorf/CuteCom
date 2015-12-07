@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     }
 
     m_commandCompleter = new QCompleter(m_input_edit);
+    m_commandCompleter->setCompletionMode(QCompleter::InlineCompletion);
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
 
