@@ -52,7 +52,7 @@ private:
     void handleError(QSerialPort::SerialPortError);
     void printDeviceInfo();
     void showAboutMsg();
-    void setHexOutput(bool checked);
+    void setHexOutputFormat(bool checked);
     void saveCommandHistory();
 
 protected:
@@ -70,6 +70,7 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    void setupTextFormats();
     void toggleLogging(bool start);
     void fillLineTerminationChooser(const Settings::LineTerminator setting = Settings::LF);
     void fillProtocolChooser(const Settings::Protocol setting = Settings::PLAIN);
@@ -89,13 +90,15 @@ private:
     bool m_devices_needs_refresh;
     unsigned int m_hexBytes;
     char m_previousChar;
-    QFont m_output_font;
     QTime m_timestamp;
     QFile m_logFile;
 
     QCompleter *m_commandCompleter;
     QStringListModel *m_command_history_model;
     QMenu *m_command_history_menu;
+    QTextCharFormat *m_format_data;
+    QTextCharFormat *m_format_time;
+    QTextCharFormat *m_format_hex;
 
     /**
      * @brief m_keyRepeatTimer

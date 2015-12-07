@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     //    qRegisterMetaType<Settings::LineTerminator>();
 
     setupUi(this);
+    setupTextFormats();
 
     m_bt_sendfile->setEnabled(false);
     m_command_history->setEnabled(false);
@@ -81,9 +82,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         m_output_display->clear();
         m_hexBytes = 0;
     });
-    m_output_font = QFont("Monospace");
-    m_output_font.setStyleHint(QFont::Monospace);
-    connect(m_check_hex_out, &QCheckBox::toggled, this, &MainWindow::setHexOutput);
+    connect(m_check_hex_out, &QCheckBox::toggled, this, &MainWindow::setHexOutputFormat);
 
     // initialize settings stored in the config file
     m_settings = new Settings(this);
@@ -278,6 +277,36 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     m_settings->settingChanged(Settings::WindowGeometry, this->frameGeometry());
 }
 
+/**
+ * Setting up different formats for displaying
+ * different sections of the data differently
+ * @brief MainWindow::setUpTextFormats
+ */
+void MainWindow::setupTextFormats()
+{
+    // ToDo make this changeable via settings
+
+    QTextCursor cursor = m_output_display->textCursor();
+    QTextCharFormat format = cursor.charFormat();
+    QColor col = QColor(Qt::black);
+    format.setForeground(col);
+    QFont font;
+    font.setFamily(font.defaultFamily());
+    format.setFont(font);
+    m_format_data = new QTextCharFormat(format);
+
+    col = QColor(120, 180, 200);
+    format.setForeground(col);
+    m_format_time = new QTextCharFormat(format);
+
+    col = QColor(20, 20, 20);
+    format.setForeground(col);
+    QFont mfont = QFont("Monospace");
+    mfont.setStyleHint(QFont::Monospace);
+    format.setFont(mfont);
+    m_format_hex = new QTextCharFormat(format);
+}
+
 void MainWindow::openDevice()
 {
     const Settings::Session session = m_settings->getCurrentSession();
@@ -386,7 +415,7 @@ void MainWindow::toggleLogging(bool start)
         m_logFile.setFileName(m_lb_logfile->text());
         QIODevice::OpenMode mode = QIODevice::ReadWrite;
         mode = (controlPanel->m_check_appendLog->isChecked()) ? mode | QIODevice::Truncate : mode | QIODevice::Append;
-        qDebug() << mode;
+
         if (!m_logFile.open(mode)) {
             QMessageBox::information(this, tr("Opening file failed"),
                                      tr("Could not open file %1 for writing").arg(m_lb_logfile->text()));
@@ -445,15 +474,21 @@ void MainWindow::showAboutMsg()
                           "<br>Licensed under the GNU GPL version 3 (or any later version).").arg(CuteCom_VERSION));
 }
 
-void MainWindow::setHexOutput(bool checked)
+/**
+ * Changes the formating of the output display to
+ * a monospaced font for aligning the hex data in
+ * columns
+ * @brief MainWindow::setHexOutputFormat
+ * @param checked
+ */
+void MainWindow::setHexOutputFormat(bool checked)
 {
     if (checked) {
-        m_output_display->setFont(m_output_font);
+        m_output_display->moveCursor(QTextCursor::End);
+        m_output_display->mergeCurrentCharFormat(*m_format_hex);
     } else {
-        // ToDo make this changeable via settings
-        QFont defaultFont;
-        defaultFont.setFamily(defaultFont.defaultFamily());
-        m_output_display->setFont(defaultFont);
+        m_output_display->moveCursor(QTextCursor::End);
+        m_output_display->mergeCurrentCharFormat(*m_format_data);
     }
 }
 
@@ -904,6 +939,8 @@ void MainWindow::displayData()
         m_logFile.write(data);
     }
 
+    bool previous_ended_with_nl = (m_previousChar == 0 || m_previousChar == '\n');
+
     QString formattedString;
 
     char buf[16];
@@ -974,19 +1011,52 @@ void MainWindow::displayData()
         }
     }
 
-    if (controlPanel->m_check_timestamp->isChecked()) {
-        m_timestamp = QTime::currentTime();
-        QString timestring = QStringLiteral("\n[") + m_timestamp.toString(QStringLiteral("HH:mm:ss:zzz"))
-                             + QStringLiteral("]");
-        formattedString.replace("\n", timestring);
-    }
-
     QScrollBar *sb = m_output_display->verticalScrollBar();
     int save_scroll = sb->value();
     int save_max = (save_scroll == sb->maximum());
 
     m_output_display->moveCursor(QTextCursor::End);
-    m_output_display->insertPlainText(formattedString);
+
+    if (!controlPanel->m_check_timestamp->isChecked() || m_check_hex_out->isChecked()) {
+
+        m_output_display->mergeCurrentCharFormat(*m_format_hex);
+        m_output_display->insertPlainText(formattedString);
+
+    } else {
+        m_timestamp = QTime::currentTime();
+        QString timestring = QStringLiteral("[") + m_timestamp.toString(QStringLiteral("HH:mm:ss:zzz"))
+                             + QStringLiteral("]");
+
+        bool current_ends_with_nl = false;
+        QStringList list = formattedString.split("\n");
+        if (list.last().isEmpty()) {
+            list.takeLast();
+            current_ends_with_nl = true;
+        }
+        if (!list.isEmpty()) {
+            if (previous_ended_with_nl) {
+                m_output_display->mergeCurrentCharFormat(*m_format_time);
+                m_output_display->insertPlainText(timestring);
+                m_output_display->moveCursor(QTextCursor::End);
+                m_output_display->mergeCurrentCharFormat(*m_format_data);
+            }
+
+            m_output_display->insertPlainText(list.at(0));
+            list.takeFirst();
+            for (const QString &printData : list) {
+                m_output_display->moveCursor(QTextCursor::End);
+                m_output_display->mergeCurrentCharFormat(*m_format_time);
+                m_output_display->insertPlainText(timestring);
+                m_output_display->moveCursor(QTextCursor::End);
+                m_output_display->mergeCurrentCharFormat(*m_format_data);
+                m_output_display->insertPlainText(printData);
+            }
+            if (current_ends_with_nl) {
+                m_output_display->moveCursor(QTextCursor::End);
+                m_output_display->insertPlainText("\n");
+            }
+        }
+    }
 
     if (save_max)
         sb->setValue(sb->maximum());
