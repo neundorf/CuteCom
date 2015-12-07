@@ -1,3 +1,5 @@
+[![Build status](https://api.travis-ci.org/cyc1ingsir/cutecom.svg?branch=master)](https://travis-ci.org/cyc1ingsir/cutecom)
+
 ## Welcome to _CuteCom_
 
 CuteCom is a graphical serial terminal, like minicom (or Hyperterminal on Windows, but I don't want to compare CuteCom to it, since Hyperterminal is really one of the worst applications I know).  
