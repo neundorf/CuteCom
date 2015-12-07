@@ -423,11 +423,12 @@ void MainWindow::fillProtocolChooser(const Settings::Protocol setting)
 {
     m_combo_protocol->addItem(tr("Plain"), QVariant::fromValue(Settings::PLAIN));
     m_combo_protocol->addItem(tr("Script"), QVariant::fromValue(Settings::SCRIPT));
+#if defined(Q_OS_LINUX) || defined(Q_OS_UNIX) || defined(Q_OS_MAC)
     m_combo_protocol->addItem(tr("XModem"), QVariant::fromValue(Settings::XMODEM));
     m_combo_protocol->addItem(tr("YModem"), QVariant::fromValue(Settings::YMODEM));
     m_combo_protocol->addItem(tr("ZModem"), QVariant::fromValue(Settings::ZMODEM));
     m_combo_protocol->addItem(tr("1KXModem"), QVariant::fromValue(Settings::ONEKXMODEM));
-
+#endif
     int index = m_combo_protocol->findData((setting < Settings::PROTOCOL_MAX) ? setting : Settings::PLAIN);
     if (index != -1) {
         m_combo_protocol->setCurrentIndex(index);
