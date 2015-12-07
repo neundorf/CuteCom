@@ -51,6 +51,8 @@ void millisleep(unsigned long ms)
 
 MainWindow::MainWindow(QWidget *parent, const QString &session)
     : QMainWindow(parent)
+    , m_device(new QSerialPort(this))
+    , m_deviceOpen(false)
     , m_progress(0)
     , m_sz(0)
     , m_previousChar('\0')
@@ -101,7 +103,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         m_command_history->clearSelection();
     }
 
-    m_commandCompleter = new QCompleter(m_input_edit );
+    m_commandCompleter = new QCompleter(m_input_edit);
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
 
@@ -136,8 +138,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     mainMargins.setTop(hHeight);
     m_verticalLayout->setContentsMargins(mainMargins);
     m_mainSplitter->installEventFilter(this);
-
-    m_device = new QSerialPort(this);
 
     // setup status bar with initial infromation
     m_device_statusbar = new StatusBar(this);
@@ -226,11 +226,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 m_keyCode = 19;
                 sendByte(m_keyCode, 0);
                 return true;
-            case Qt::Key_Down: // fall through
-            case Qt::Key_Up: // fall through
-            case Qt::Key_PageUp: // fall through
+            case Qt::Key_Down:     // fall through
+            case Qt::Key_Up:       // fall through
+            case Qt::Key_PageUp:   // fall through
             case Qt::Key_PageDown: // fall through
-            case Qt::Key_Home: // fall through
+            case Qt::Key_Home:     // fall through
             case Qt::Key_End: {
                 QKeyEvent cpy(QEvent::KeyPress, ke->key(), Qt::NoModifier);
                 QApplication::sendEvent(m_output_display, &cpy);
@@ -268,13 +268,11 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::openDevice()
 {
     const Settings::Session session = m_settings->getCurrentSession();
-    QMessageBox error;
-    error.setIcon(QMessageBox::Critical);
-    if (session.device.isEmpty()) {
-        error.setText(tr("Opening not possible."));
-        error.setInformativeText(tr("No device has been specified"));
 
-        error.exec();
+    if (session.device.isEmpty()) {
+
+        QMessageBox::warning(this, tr("Opening not possible."), tr("No device has been specified"));
+
         controlPanel->closeDevice();
         return;
     }
@@ -286,32 +284,37 @@ void MainWindow::openDevice()
     m_device->setFlowControl(session.flowControl);
 
     if (m_device->open(session.openMode)) {
-        // display connectin parameter on status bar
-        printDeviceInfo();
-    } else {
-        QMessageBox::critical(this, tr("Opening device not possible"), m_device->errorString());
-    }
-
-    if (session.openMode == QIODevice::WriteOnly || session.openMode == QIODevice::ReadWrite) {
-
+        m_deviceOpen = true;
+        // printDeviceInfo(); // debugging
         m_device->flush();
 
-        m_input_edit->setEnabled(true);
-        m_input_edit->setFocus();
         controlPanel->m_combo_device->setEnabled(false);
-        m_bt_sendfile->setEnabled(true);
-        m_command_history->setEnabled(true);
-
         m_hexBytes = 0;
         m_previousChar = '\0';
 
+        // display connection parameter on status bar
         m_device_statusbar->setDeviceInfo(m_device);
+
+        // enable all inputs if writing to the device is enabled
+        if (session.openMode == QIODevice::WriteOnly || session.openMode == QIODevice::ReadWrite) {
+
+            m_input_edit->setEnabled(true);
+            m_input_edit->setFocus();
+            m_bt_sendfile->setEnabled(true);
+            m_command_history->setEnabled(true);
+        }
     }
 }
 
+/**
+ * This is connected to the control panels closing signal.
+ * and need not to be called directly
+ * @brief MainWindow::closeDevice
+ */
 void MainWindow::closeDevice()
 {
     m_device->close();
+    m_deviceOpen = false;
     m_input_edit->setEnabled(false);
     controlPanel->m_bt_open->setFocus();
     controlPanel->m_combo_device->setEnabled(true);
@@ -319,14 +322,38 @@ void MainWindow::closeDevice()
     m_command_history->setEnabled(false);
 }
 
+/**
+ * This is connected to the error signal of the serial port
+ * beeing used.
+ * @brief MainWindow::handleError
+ * @param error
+ */
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
-    if (error == QSerialPort::ResourceError) {
+    if (error == QSerialPort::NoError) {
+        return;
+    } else if (error == QSerialPort::OpenError) {
+        QMessageBox::warning(this, tr("Error opening device"), m_device->errorString());
+        m_device->clearError();
+    } else if (m_deviceOpen) {
+        // on hot unplug of usb2serial adapters, multiple errors will be
+        // reported which is of no importance to the users.
+        // reporting it once should be enough
+        m_deviceOpen = false;
         QMessageBox::critical(this, tr("Device Error"), m_device->errorString());
+        // this will finally close the device too;
         controlPanel->closeDevice();
+    } else {
+        qDebug() << error << m_device->errorString();
+        m_device->clearError();
     }
 }
 
+/**
+ * This displays information about the device on the console window.
+ * Useful mainly for debugging or for a CLI version of cutecom
+ * @brief MainWindow::printDeviceInfo
+ */
 void MainWindow::printDeviceInfo()
 {
     QSerialPortInfo info = QSerialPortInfo(*m_device);
@@ -758,23 +785,22 @@ void MainWindow::switchSession(const QString &session)
         m_command_history->clearSelection();
     }
     delete m_commandCompleter;
-    m_commandCompleter = new QCompleter(history, m_input_edit );
+    m_commandCompleter = new QCompleter(history, m_input_edit);
     m_input_edit->setCompleter(m_commandCompleter);
     this->setWindowTitle("CuteCom - " + session);
 }
 
 void MainWindow::updateCommandHistory()
 {
-    if(m_command_history_model != 0)
-        m_command_history_model = dynamic_cast<QStringListModel*>(m_commandCompleter->model());
+    if (m_command_history_model != 0)
+        m_command_history_model = dynamic_cast<QStringListModel *>(m_commandCompleter->model());
 
-    if(m_command_history_model == NULL)
+    if (m_command_history_model == NULL)
         m_command_history_model = new QStringListModel();
 
     QStringList history = m_settings->getCurrentSession().command_history;
     m_command_history_model->setStringList(history);
     m_commandCompleter->setModel(m_command_history_model);
-
 }
 
 /**
@@ -956,7 +982,6 @@ void MainWindow::displayData()
 
 MainWindow::~MainWindow()
 {
-
     if (m_device->isOpen())
         m_device->close();
     delete m_settings;

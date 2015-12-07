@@ -80,6 +80,7 @@ private:
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
     QSerialPort *m_device;
+    bool m_deviceOpen;
     StatusBar *m_device_statusbar;
     Settings *m_settings;
     QProgressDialog *m_progress;
