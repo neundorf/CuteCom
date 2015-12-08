@@ -53,12 +53,12 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     : QMainWindow(parent)
     , m_device(new QSerialPort(this))
     , m_deviceOpen(false)
-    , m_progress(0)
-    , m_sz(0)
+    , m_progress(nullptr)
+    , m_sz(nullptr)
     , m_previousChar('\0')
-    , m_command_history_model(0)
+    , m_command_history_model(nullptr)
     , m_keyRepeatTimer(this)
-    , m_keyCode(0)
+    , m_keyCode('\0')
     , m_cmdBufIndex(0)
 {
     QCoreApplication::setOrganizationName(QStringLiteral("CuteCom"));
@@ -720,7 +720,7 @@ void MainWindow::sendFile()
                 break;
         }
         delete m_progress;
-        m_progress = 0;
+        m_progress = nullptr;
 
     } else if (protocol == Settings::SCRIPT) {
         QFile fd(filename);
@@ -800,9 +800,9 @@ void MainWindow::sendFile()
         }
 
         delete m_sz;
-        m_sz = 0;
+        m_sz = nullptr;
         delete m_progress;
-        m_progress = 0;
+        m_progress = nullptr;
         openDevice();
     } else {
         QMessageBox::information(this, tr("Unsupported Protocol"), tr("The selected protocoll is not supported (yet)"));
@@ -814,7 +814,7 @@ void MainWindow::sendFile()
  */
 void MainWindow::killSz()
 {
-    if (m_sz == 0)
+    if (m_sz == nullptr)
         return;
     m_sz->terminate();
 }
@@ -841,10 +841,10 @@ void MainWindow::switchSession(const QString &session)
 
 void MainWindow::updateCommandHistory()
 {
-    if (m_command_history_model != 0)
+    if (m_command_history_model != nullptr)
         m_command_history_model = dynamic_cast<QStringListModel *>(m_commandCompleter->model());
 
-    if (m_command_history_model == NULL)
+    if (m_command_history_model == nullptr)
         m_command_history_model = new QStringListModel();
 
     QStringList history = m_settings->getCurrentSession().command_history;
@@ -881,7 +881,7 @@ void MainWindow::readFromStdOut()
 void MainWindow::readFromStdErr()
 {
     QByteArray ba = m_sz->readAllStandardError();
-    if (m_progress == 0) {
+    if (m_progress == nullptr) {
         return;
     }
     QString s(ba);
