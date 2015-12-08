@@ -531,7 +531,7 @@ void MainWindow::execCmd()
     if (!cmd.isEmpty()) {
         bool found = false;
         QList<QListWidgetItem *> list = m_command_history->findItems(cmd, 0);
-        foreach (QListWidgetItem *item, list) {
+        for (QListWidgetItem *item : list) {
             item = m_command_history->takeItem(m_command_history->row(item));
             delete item;
             found = true;

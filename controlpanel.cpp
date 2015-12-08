@@ -241,7 +241,7 @@ void ControlPanel::fillDeviceCombo(const QString &deviceName)
 {
     m_combo_device->clear();
     int numberDevices = 0;
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+    for (auto info : QSerialPortInfo::availablePorts()) {
         m_combo_device->addItem(info.systemLocation());
         if (info.isValid()) {
             QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
