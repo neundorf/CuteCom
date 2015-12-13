@@ -706,8 +706,8 @@ void MainWindow::sendFile()
                 m_progress->setValue(i / step);
                 qApp->processEvents();
             }
-            sendByte(data.data()[i], charDelay);
-            if ((data.data()[i] == '\n') || (data.data()[i] = '\r')) {
+            sendByte(data.at(i), charDelay);
+            if ((data.at(i) == '\n') || (data.at(i) = '\r')) {
                 // waiting twice as long after bytes whigh might by line ends
                 //(this helps some uCs)
                 millisleep(charDelay);
@@ -902,7 +902,7 @@ void MainWindow::readFromStdErr()
     //      cerr<<"--------"<<s.latin1()<<"-"<<std::endl;
     /*   for (unsigned int i=0; i<ba.count(); i++)
        {
-          char c=ba.data()[i];
+          char c=ba.at(i);
           unsigned int tmp=c;
           if (isprint(tmp))
              cerr<<c;
