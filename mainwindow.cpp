@@ -24,6 +24,7 @@
  */
 
 #include "mainwindow.h"
+#include "datadisplay.h"
 #include "version.h"
 #include "settings.h"
 #include "qdebug.h"
@@ -69,7 +70,6 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     //    qRegisterMetaType<Settings::LineTerminator>();
 
     setupUi(this);
-    setupTextFormats();
 
     m_bt_sendfile->setEnabled(false);
     m_command_history->setEnabled(false);
@@ -80,9 +80,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         if (m_device->isOpen())
             m_input_edit->setFocus();
         m_output_display->clear();
-        m_hexBytes = 0;
     });
-    connect(m_check_hex_out, &QCheckBox::toggled, this, &MainWindow::setHexOutputFormat);
+    connect(m_check_hex_out, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayHex);
 
     // initialize settings stored in the config file
     m_settings = new Settings(this);
@@ -157,12 +156,17 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     this->statusBar()->addWidget(m_device_statusbar);
     connect(m_settings, &Settings::sessionChanged, m_device_statusbar, &StatusBar::sessionChanged);
 
+    m_output_display->setDisplayCtrlCharacters(m_settings->getCurrentSession().showCtrlCharacters);
+    m_output_display->setDisplayTime(m_settings->getCurrentSession().showTimestamp);
+    connect(controlPanel->m_check_timestamp, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayTime);
+    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayCtrlCharacters);
+
     connect(controlPanel, &ControlPanel::openDeviceClicked, this, &MainWindow::openDevice);
     connect(controlPanel, &ControlPanel::closeDeviceClicked, this, &MainWindow::closeDevice);
     connect(m_device,
             static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError serialPortError)>(&QSerialPort::error), this,
             &MainWindow::handleError);
-    connect(m_device, &QSerialPort::readyRead, this, &MainWindow::displayData);
+    connect(m_device, &QSerialPort::readyRead, this, &MainWindow::processData);
 
     m_input_edit->installEventFilter(this);
     connect(&m_keyRepeatTimer, &QTimer::timeout, this, &MainWindow::sendKey);
@@ -277,36 +281,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     m_settings->settingChanged(Settings::WindowGeometry, this->frameGeometry());
 }
 
-/**
- * Setting up different formats for displaying
- * different sections of the data differently
- * @brief MainWindow::setUpTextFormats
- */
-void MainWindow::setupTextFormats()
-{
-    // ToDo make this changeable via settings
-
-    QTextCursor cursor = m_output_display->textCursor();
-    QTextCharFormat format = cursor.charFormat();
-    QColor col = QColor(Qt::black);
-    format.setForeground(col);
-    QFont font;
-    font.setFamily(font.defaultFamily());
-    format.setFont(font);
-    m_format_data = new QTextCharFormat(format);
-
-    col = QColor(120, 180, 200);
-    format.setForeground(col);
-    m_format_time = new QTextCharFormat(format);
-
-    col = QColor(20, 20, 20);
-    format.setForeground(col);
-    QFont mfont = QFont("Monospace");
-    mfont.setStyleHint(QFont::Monospace);
-    format.setFont(mfont);
-    m_format_hex = new QTextCharFormat(format);
-}
-
 void MainWindow::openDevice()
 {
     const Settings::Session session = m_settings->getCurrentSession();
@@ -331,7 +305,6 @@ void MainWindow::openDevice()
         m_device->flush();
 
         controlPanel->m_combo_device->setEnabled(false);
-        m_hexBytes = 0;
         m_previousChar = '\0';
 
         // display connection parameter on status bar
@@ -472,24 +445,6 @@ void MainWindow::showAboutMsg()
                        tr("This is CuteCom %1<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
                           "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;<br> and contributors"
                           "<br>Licensed under the GNU GPL version 3 (or any later version).").arg(CuteCom_VERSION));
-}
-
-/**
- * Changes the formating of the output display to
- * a monospaced font for aligning the hex data in
- * columns
- * @brief MainWindow::setHexOutputFormat
- * @param checked
- */
-void MainWindow::setHexOutputFormat(bool checked)
-{
-    if (checked) {
-        m_output_display->moveCursor(QTextCursor::End);
-        m_output_display->mergeCurrentCharFormat(*m_format_hex);
-    } else {
-        m_output_display->moveCursor(QTextCursor::End);
-        m_output_display->mergeCurrentCharFormat(*m_format_data);
-    }
 }
 
 void MainWindow::prevCmd()
@@ -707,7 +662,7 @@ void MainWindow::sendFile()
                 qApp->processEvents();
             }
             sendByte(data.at(i), charDelay);
-            if ((data.at(i) == '\n') || (data.at(i) = '\r')) {
+            if ((data.at(i) == '\n') || (data.at(i) == '\r')) {
                 // waiting twice as long after bytes whigh might by line ends
                 //(this helps some uCs)
                 millisleep(charDelay);
@@ -852,28 +807,6 @@ void MainWindow::updateCommandHistory()
     m_commandCompleter->setModel(m_command_history_model);
 }
 
-/**
- * THIS IS NO LONGER USED?????
- * redirects the output from the Sz process
- * to the serial port device
- * @brief MainWindow::readFromStdOut
- */
-void MainWindow::readFromStdOut()
-{
-    QByteArray data = m_sz->readAllStandardOutput();
-
-    quint64 bytesToWrite = data.size();
-    qint64 bytesWritten = 0;
-    while (bytesToWrite > 0) {
-        bytesWritten = m_device->write(data);
-        if (bytesWritten < 0) {
-            // qDebug() << "error writing to device;
-            return;
-        }
-        bytesToWrite -= bytesWritten;
-        data = data.right(bytesToWrite);
-    }
-}
 
 /**
  * @brief MainWindow::readFromStdErr
@@ -927,7 +860,7 @@ void MainWindow::sendDone(int exitCode, QProcess::ExitStatus exitStatus)
  * https://forum.qt.io/topic/25145/solved-qbytearray-values-to-hex-formatted-qstring/5
  * @brief MainWindow::displayData
  */
-void MainWindow::displayData()
+void MainWindow::processData()
 {
     QByteArray data = m_device->readAll();
     // Debugging:
@@ -938,130 +871,8 @@ void MainWindow::displayData()
     if (m_logFile.isOpen()) {
         m_logFile.write(data);
     }
+    m_output_display->displayData(data);
 
-    bool previous_ended_with_nl = (m_previousChar == 0 || m_previousChar == '\n');
-
-    QString formattedString;
-
-    char buf[16];
-    for (int i = 0; i < data.size(); i++) {
-        unsigned int b = data.at(i);
-
-        if (m_check_hex_out->isChecked()) {
-            static QString text_ascii;
-            if ((m_hexBytes % 16) == 0) {
-                snprintf(buf, 16, "%08x: ", m_hexBytes);
-                formattedString += buf;
-                text_ascii = '\t';
-            }
-
-            snprintf(buf, 16, "%02x ", b & 0xff);
-            formattedString += buf;
-            if (b < 0x20)
-                b += 0x2400;
-            else if (0x7F <= b)
-                b = '.';
-            text_ascii += QChar(b);
-
-            m_hexBytes++;
-            if ((m_hexBytes % 16) == 0) {
-                formattedString += text_ascii;
-                formattedString += "\n";
-            } else if ((m_hexBytes % 8) == 0) {
-                formattedString += "  ";
-                text_ascii += "  ";
-            }
-        } else {
-            static bool state_ctrl = false;
-
-            // also print a newline for \r, and print only one newline for \r\n
-            if ((isprint(b)) || (b == '\n') || (b == '\r') || (b == '\t')) {
-                // a terminating '\0' was detected, start on a new line
-                if (state_ctrl) {
-                    formattedString += '\n';
-                    state_ctrl = false;
-                }
-
-                if (b == '\r') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x240D);
-                } else if (b == '\n') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x240A);
-                    formattedString += '\n';
-                } else if (b == '\t') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x21E5);
-                    formattedString += '\t';
-                } else {
-                    formattedString += b;
-                }
-
-                m_previousChar = b;
-            } else {
-                state_ctrl = true;
-                if (b == '\0') {
-                    formattedString += "<break>";
-
-                } else {
-                    snprintf(buf, 16, "<0x%02x>", b & 0xff);
-                    formattedString += buf;
-                }
-            }
-        }
-    }
-
-    QScrollBar *sb = m_output_display->verticalScrollBar();
-    int save_scroll = sb->value();
-    int save_max = (save_scroll == sb->maximum());
-
-    m_output_display->moveCursor(QTextCursor::End);
-
-    if (!controlPanel->m_check_timestamp->isChecked() || m_check_hex_out->isChecked()) {
-
-        m_output_display->mergeCurrentCharFormat(*m_format_hex);
-        m_output_display->insertPlainText(formattedString);
-
-    } else {
-        m_timestamp = QTime::currentTime();
-        QString timestring = QStringLiteral("[") + m_timestamp.toString(QStringLiteral("HH:mm:ss:zzz"))
-                             + QStringLiteral("]");
-
-        bool current_ends_with_nl = false;
-        QStringList list = formattedString.split("\n");
-        if (list.last().isEmpty()) {
-            list.takeLast();
-            current_ends_with_nl = true;
-        }
-        if (!list.isEmpty()) {
-            if (previous_ended_with_nl) {
-                m_output_display->mergeCurrentCharFormat(*m_format_time);
-                m_output_display->insertPlainText(timestring);
-                m_output_display->moveCursor(QTextCursor::End);
-                m_output_display->mergeCurrentCharFormat(*m_format_data);
-            }
-
-            m_output_display->insertPlainText(list.at(0));
-            list.takeFirst();
-            for (const QString &printData : list) {
-                m_output_display->moveCursor(QTextCursor::End);
-                m_output_display->mergeCurrentCharFormat(*m_format_time);
-                m_output_display->insertPlainText(timestring);
-                m_output_display->moveCursor(QTextCursor::End);
-                m_output_display->mergeCurrentCharFormat(*m_format_data);
-                m_output_display->insertPlainText(printData);
-            }
-            if (current_ends_with_nl) {
-                m_output_display->moveCursor(QTextCursor::End);
-                m_output_display->insertPlainText("\n");
-            }
-        }
-    }
-
-    if (save_max)
-        sb->setValue(sb->maximum());
-    else
-        sb->setValue(save_max);
 }
 
 MainWindow::~MainWindow()

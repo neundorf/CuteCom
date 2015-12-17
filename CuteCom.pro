@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     devicecombo.cpp \
     serialdevicelistmodel.cpp \
     statusbar.cpp \
-    sessionmanager.cpp
+    sessionmanager.cpp \
+    datadisplay.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     devicecombo.h \
     serialdevicelistmodel.h \
     statusbar.h \
-    sessionmanager.h
+    sessionmanager.h \
+    datadisplay.h
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \
@@ -47,3 +49,6 @@ FORMS    += mainwindow.ui \
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES += \
+    qt.astylerc
