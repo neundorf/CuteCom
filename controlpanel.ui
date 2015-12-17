@@ -72,7 +72,7 @@
      <item row="0" column="4">
       <widget class="QCheckBox" name="m_check_lineBreak">
        <property name="text">
-        <string>Show &amp;Linebreaks</string>
+        <string>Display &amp;Ctrl characters</string>
        </property>
       </widget>
      </item>

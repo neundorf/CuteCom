@@ -35,7 +35,7 @@ void DeviceCombo::refill()
     QString selection = currentText();
     clear();
     int numberDevices = 0;
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+    for (auto info : QSerialPortInfo::availablePorts()) {
         addItem(info.systemLocation());
         if (info.isValid()) {
             QString deviceInfo = QString("%1 %2\n%3:%4 # %5")

@@ -189,7 +189,7 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QTextEdit" name="m_output_display">
+         <widget class="DataDisplay" name="m_output_display">
           <property name="undoRedoEnabled">
            <bool>false</bool>
           </property>
@@ -212,7 +212,7 @@
              <string>C&amp;lear</string>
             </property>
             <property name="shortcut">
-             <string>Alt+C</string>
+             <string>Alt+L</string>
             </property>
            </widget>
           </item>
@@ -228,10 +228,10 @@
              <string>Show the output in hexadecimal format</string>
             </property>
             <property name="text">
-             <string>&amp;Hex output</string>
+             <string>He&amp;x output</string>
             </property>
             <property name="shortcut">
-             <string>Alt+H</string>
+             <string>Alt+X</string>
             </property>
            </widget>
           </item>

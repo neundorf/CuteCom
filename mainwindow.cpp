@@ -24,6 +24,7 @@
  */
 
 #include "mainwindow.h"
+#include "datadisplay.h"
 #include "version.h"
 #include "settings.h"
 #include "qdebug.h"
@@ -52,13 +53,13 @@ void millisleep(unsigned long ms)
 MainWindow::MainWindow(QWidget *parent, const QString &session)
     : QMainWindow(parent)
     , m_device(new QSerialPort(this))
-    , m_deviceOpen(false)
-    , m_progress(0)
-    , m_sz(0)
+    , m_deviceState(DEVICE_CLOSED)
+    , m_progress(nullptr)
+    , m_sz(nullptr)
     , m_previousChar('\0')
-    , m_command_history_model(0)
+    , m_command_history_model(nullptr)
     , m_keyRepeatTimer(this)
-    , m_keyCode(0)
+    , m_keyCode('\0')
     , m_cmdBufIndex(0)
 {
     QCoreApplication::setOrganizationName(QStringLiteral("CuteCom"));
@@ -79,11 +80,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         if (m_device->isOpen())
             m_input_edit->setFocus();
         m_output_display->clear();
-        m_hexBytes = 0;
     });
-    m_output_font = QFont("Monospace");
-    m_output_font.setStyleHint(QFont::Monospace);
-    connect(m_check_hex_out, &QCheckBox::toggled, this, &MainWindow::setHexOutput);
+    connect(m_check_hex_out, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayHex);
 
     // initialize settings stored in the config file
     m_settings = new Settings(this);
@@ -158,12 +156,17 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     this->statusBar()->addWidget(m_device_statusbar);
     connect(m_settings, &Settings::sessionChanged, m_device_statusbar, &StatusBar::sessionChanged);
 
+    m_output_display->setDisplayCtrlCharacters(m_settings->getCurrentSession().showCtrlCharacters);
+    m_output_display->setDisplayTime(m_settings->getCurrentSession().showTimestamp);
+    connect(controlPanel->m_check_timestamp, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayTime);
+    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayCtrlCharacters);
+
     connect(controlPanel, &ControlPanel::openDeviceClicked, this, &MainWindow::openDevice);
     connect(controlPanel, &ControlPanel::closeDeviceClicked, this, &MainWindow::closeDevice);
     connect(m_device,
             static_cast<void (QSerialPort::*)(QSerialPort::SerialPortError serialPortError)>(&QSerialPort::error), this,
             &MainWindow::handleError);
-    connect(m_device, &QSerialPort::readyRead, this, &MainWindow::displayData);
+    connect(m_device, &QSerialPort::readyRead, this, &MainWindow::processData);
 
     m_input_edit->installEventFilter(this);
     connect(&m_keyRepeatTimer, &QTimer::timeout, this, &MainWindow::sendKey);
@@ -296,13 +299,13 @@ void MainWindow::openDevice()
     m_device->setStopBits(session.stopBits);
     m_device->setFlowControl(session.flowControl);
 
+    m_deviceState = DEVICE_OPENING;
     if (m_device->open(session.openMode)) {
-        m_deviceOpen = true;
+        m_deviceState = DEVICE_OPEN;
         // printDeviceInfo(); // debugging
         m_device->flush();
 
         controlPanel->m_combo_device->setEnabled(false);
-        m_hexBytes = 0;
         m_previousChar = '\0';
 
         // display connection parameter on status bar
@@ -327,7 +330,7 @@ void MainWindow::openDevice()
 void MainWindow::closeDevice()
 {
     m_device->close();
-    m_deviceOpen = false;
+    m_deviceState = DEVICE_CLOSED;
     m_input_edit->setEnabled(false);
     controlPanel->m_bt_open->setFocus();
     controlPanel->m_combo_device->setEnabled(true);
@@ -345,21 +348,19 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::NoError) {
         return;
-    } else if (error == QSerialPort::OpenError) {
-        QMessageBox::warning(this, tr("Error opening device"), m_device->errorString());
-        m_device->clearError();
-    } else if (m_deviceOpen) {
+    } else if (m_deviceState == DEVICE_OPEN || m_deviceState == DEVICE_OPENING) {
         // on hot unplug of usb2serial adapters, multiple errors will be
         // reported which is of no importance to the users.
         // reporting it once should be enough
-        m_deviceOpen = false;
-        QMessageBox::critical(this, tr("Device Error"), m_device->errorString());
+        QString heading = (m_deviceState == DEVICE_OPENING)? tr("Error opening device") : tr("Device Error");
+        m_deviceState = DEVICE_CLOSING;
+        QMessageBox::critical(this, heading, m_device->errorString());
         // this will finally close the device too;
         controlPanel->closeDevice();
     } else {
         qDebug() << error << m_device->errorString();
-        m_device->clearError();
     }
+    m_device->clearError();
 }
 
 /**
@@ -386,7 +387,7 @@ void MainWindow::toggleLogging(bool start)
         m_logFile.setFileName(m_lb_logfile->text());
         QIODevice::OpenMode mode = QIODevice::ReadWrite;
         mode = (controlPanel->m_check_appendLog->isChecked()) ? mode | QIODevice::Truncate : mode | QIODevice::Append;
-        qDebug() << mode;
+
         if (!m_logFile.open(mode)) {
             QMessageBox::information(this, tr("Opening file failed"),
                                      tr("Could not open file %1 for writing").arg(m_lb_logfile->text()));
@@ -423,11 +424,12 @@ void MainWindow::fillProtocolChooser(const Settings::Protocol setting)
 {
     m_combo_protocol->addItem(tr("Plain"), QVariant::fromValue(Settings::PLAIN));
     m_combo_protocol->addItem(tr("Script"), QVariant::fromValue(Settings::SCRIPT));
+#if defined(Q_OS_LINUX) || defined(Q_OS_UNIX) || defined(Q_OS_MAC)
     m_combo_protocol->addItem(tr("XModem"), QVariant::fromValue(Settings::XMODEM));
     m_combo_protocol->addItem(tr("YModem"), QVariant::fromValue(Settings::YMODEM));
     m_combo_protocol->addItem(tr("ZModem"), QVariant::fromValue(Settings::ZMODEM));
     m_combo_protocol->addItem(tr("1KXModem"), QVariant::fromValue(Settings::ONEKXMODEM));
-
+#endif
     int index = m_combo_protocol->findData((setting < Settings::PROTOCOL_MAX) ? setting : Settings::PLAIN);
     if (index != -1) {
         m_combo_protocol->setCurrentIndex(index);
@@ -442,18 +444,6 @@ void MainWindow::showAboutMsg()
                        tr("This is CuteCom %1<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
                           "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;<br> and contributors"
                           "<br>Licensed under the GNU GPL version 3 (or any later version).").arg(CuteCom_VERSION));
-}
-
-void MainWindow::setHexOutput(bool checked)
-{
-    if (checked) {
-        m_output_display->setFont(m_output_font);
-    } else {
-        // ToDo make this changeable via settings
-        QFont defaultFont;
-        defaultFont.setFamily(defaultFont.defaultFamily());
-        m_output_display->setFont(defaultFont);
-    }
 }
 
 void MainWindow::prevCmd()
@@ -495,7 +485,7 @@ void MainWindow::execCmd()
     if (!cmd.isEmpty()) {
         bool found = false;
         QList<QListWidgetItem *> list = m_command_history->findItems(cmd, 0);
-        foreach (QListWidgetItem *item, list) {
+        for (QListWidgetItem *item : list) {
             item = m_command_history->takeItem(m_command_history->row(item));
             delete item;
             found = true;
@@ -670,8 +660,8 @@ void MainWindow::sendFile()
                 m_progress->setValue(i / step);
                 qApp->processEvents();
             }
-            sendByte(data.data()[i], charDelay);
-            if ((data.data()[i] == '\n') || (data.data()[i] = '\r')) {
+            sendByte(data.at(i), charDelay);
+            if ((data.at(i) == '\n') || (data.at(i) == '\r')) {
                 // waiting twice as long after bytes whigh might by line ends
                 //(this helps some uCs)
                 millisleep(charDelay);
@@ -684,7 +674,7 @@ void MainWindow::sendFile()
                 break;
         }
         delete m_progress;
-        m_progress = 0;
+        m_progress = nullptr;
 
     } else if (protocol == Settings::SCRIPT) {
         QFile fd(filename);
@@ -764,9 +754,9 @@ void MainWindow::sendFile()
         }
 
         delete m_sz;
-        m_sz = 0;
+        m_sz = nullptr;
         delete m_progress;
-        m_progress = 0;
+        m_progress = nullptr;
         openDevice();
     } else {
         QMessageBox::information(this, tr("Unsupported Protocol"), tr("The selected protocoll is not supported (yet)"));
@@ -778,7 +768,7 @@ void MainWindow::sendFile()
  */
 void MainWindow::killSz()
 {
-    if (m_sz == 0)
+    if (m_sz == nullptr)
         return;
     m_sz->terminate();
 }
@@ -805,10 +795,10 @@ void MainWindow::switchSession(const QString &session)
 
 void MainWindow::updateCommandHistory()
 {
-    if (m_command_history_model != 0)
+    if (m_command_history_model != nullptr)
         m_command_history_model = dynamic_cast<QStringListModel *>(m_commandCompleter->model());
 
-    if (m_command_history_model == NULL)
+    if (m_command_history_model == nullptr)
         m_command_history_model = new QStringListModel();
 
     QStringList history = m_settings->getCurrentSession().command_history;
@@ -816,28 +806,6 @@ void MainWindow::updateCommandHistory()
     m_commandCompleter->setModel(m_command_history_model);
 }
 
-/**
- * THIS IS NO LONGER USED?????
- * redirects the output from the Sz process
- * to the serial port device
- * @brief MainWindow::readFromStdOut
- */
-void MainWindow::readFromStdOut()
-{
-    QByteArray data = m_sz->readAllStandardOutput();
-
-    quint64 bytesToWrite = data.size();
-    qint64 bytesWritten = 0;
-    while (bytesToWrite > 0) {
-        bytesWritten = m_device->write(data);
-        if (bytesWritten < 0) {
-            // qDebug() << "error writing to device;
-            return;
-        }
-        bytesToWrite -= bytesWritten;
-        data = data.right(bytesToWrite);
-    }
-}
 
 /**
  * @brief MainWindow::readFromStdErr
@@ -845,7 +813,7 @@ void MainWindow::readFromStdOut()
 void MainWindow::readFromStdErr()
 {
     QByteArray ba = m_sz->readAllStandardError();
-    if (m_progress == 0) {
+    if (m_progress == nullptr) {
         return;
     }
     QString s(ba);
@@ -866,7 +834,7 @@ void MainWindow::readFromStdErr()
     //      cerr<<"--------"<<s.latin1()<<"-"<<std::endl;
     /*   for (unsigned int i=0; i<ba.count(); i++)
        {
-          char c=ba.data()[i];
+          char c=ba.at(i);
           unsigned int tmp=c;
           if (isprint(tmp))
              cerr<<c;
@@ -891,7 +859,7 @@ void MainWindow::sendDone(int exitCode, QProcess::ExitStatus exitStatus)
  * https://forum.qt.io/topic/25145/solved-qbytearray-values-to-hex-formatted-qstring/5
  * @brief MainWindow::displayData
  */
-void MainWindow::displayData()
+void MainWindow::processData()
 {
     QByteArray data = m_device->readAll();
     // Debugging:
@@ -902,95 +870,8 @@ void MainWindow::displayData()
     if (m_logFile.isOpen()) {
         m_logFile.write(data);
     }
+    m_output_display->displayData(data);
 
-    QString formattedString;
-
-    char buf[16];
-    for (int i = 0; i < data.size(); i++) {
-        unsigned int b = data.at(i);
-
-        if (m_check_hex_out->isChecked()) {
-            static QString text_ascii;
-            if ((m_hexBytes % 16) == 0) {
-                snprintf(buf, 16, "%08x: ", m_hexBytes);
-                formattedString += buf;
-                text_ascii = '\t';
-            }
-
-            snprintf(buf, 16, "%02x ", b & 0xff);
-            formattedString += buf;
-            if (b < 0x20)
-                b += 0x2400;
-            else if (0x7F <= b)
-                b = '.';
-            text_ascii += QChar(b);
-
-            m_hexBytes++;
-            if ((m_hexBytes % 16) == 0) {
-                formattedString += text_ascii;
-                formattedString += "\n";
-            } else if ((m_hexBytes % 8) == 0) {
-                formattedString += "  ";
-                text_ascii += "  ";
-            }
-        } else {
-            static bool state_ctrl = false;
-
-            // also print a newline for \r, and print only one newline for \r\n
-            if ((isprint(b)) || (b == '\n') || (b == '\r') || (b == '\t')) {
-                // a terminating '\0' was detected, start on a new line
-                if (state_ctrl) {
-                    formattedString += '\n';
-                    state_ctrl = false;
-                }
-
-                if (b == '\r') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x240D);
-                } else if (b == '\n') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x240A);
-                    formattedString += '\n';
-                } else if (b == '\t') {
-                    if (controlPanel->m_check_lineBreak->isChecked())
-                        formattedString += QChar(0x21E5);
-                    formattedString += '\t';
-                } else {
-                    formattedString += b;
-                }
-
-                m_previousChar = b;
-            } else {
-                state_ctrl = true;
-                if (b == '\0') {
-                    formattedString += "<break>";
-
-                } else {
-                    snprintf(buf, 16, "<0x%02x>", b & 0xff);
-                    formattedString += buf;
-                }
-            }
-        }
-    }
-
-    if (controlPanel->m_check_timestamp->isChecked()) {
-        m_timestamp = QTime::currentTime();
-        QString timestring = QStringLiteral("\n[") + m_timestamp.toString(QStringLiteral("HH:mm:ss:zzz"))
-                             + QStringLiteral("]");
-        formattedString.replace("\n", timestring);
-    }
-
-    QScrollBar *sb = m_output_display->verticalScrollBar();
-    int save_scroll = sb->value();
-    int save_max = (save_scroll == sb->maximum());
-
-    m_output_display->moveCursor(QTextCursor::End);
-    m_output_display->insertPlainText(formattedString);
-
-    if (save_max)
-        sb->setValue(sb->maximum());
-    else
-        sb->setValue(save_max);
 }
 
 MainWindow::~MainWindow()

@@ -241,7 +241,7 @@ void ControlPanel::fillDeviceCombo(const QString &deviceName)
 {
     m_combo_device->clear();
     int numberDevices = 0;
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
+    for (auto info : QSerialPortInfo::availablePorts()) {
         m_combo_device->addItem(info.systemLocation());
         if (info.isValid()) {
             QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
@@ -335,7 +335,9 @@ void ControlPanel::fillDataBitCombo()
 void ControlPanel::fillStopBitCombo()
 {
     m_combo_stopBits->addItem(QStringLiteral("1"), QSerialPort::OneStop);
+#ifdef Q_WS_WIN
     m_combo_stopBits->addItem(QStringLiteral("1.5"), QSerialPort::OneAndHalfStop);
+#endif
     m_combo_stopBits->addItem(QStringLiteral("2"), QSerialPort::TwoStop);
 
     connect(m_combo_stopBits, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),

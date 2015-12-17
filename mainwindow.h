@@ -38,6 +38,13 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 
+    enum DeviceState {
+        DEVICE_CLOSED,
+        DEVICE_OPENING,
+        DEVICE_OPEN,
+        DEVICE_CLOSING
+    };
+
 public:
     explicit MainWindow(QWidget *parent = 0, const QString &session = "");
     ~MainWindow();
@@ -48,11 +55,11 @@ protected:
 private:
     void openDevice();
     void closeDevice();
-    void displayData();
+    void processData();
     void handleError(QSerialPort::SerialPortError);
     void printDeviceInfo();
     void showAboutMsg();
-    void setHexOutput(bool checked);
+    void setHexOutputFormat(bool checked);
     void saveCommandHistory();
 
 protected:
@@ -64,7 +71,6 @@ protected:
     bool sendByte(const char c, unsigned long delay);
     void sendKey();
     void sendFile();
-    void readFromStdOut();
     void readFromStdErr();
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
     void resizeEvent(QResizeEvent *event);
@@ -80,16 +86,14 @@ private:
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
     QSerialPort *m_device;
-    bool m_deviceOpen;
+    DeviceState m_deviceState;
     StatusBar *m_device_statusbar;
     Settings *m_settings;
     QProgressDialog *m_progress;
     int m_progressStepSize;
     QProcess *m_sz;
     bool m_devices_needs_refresh;
-    unsigned int m_hexBytes;
     char m_previousChar;
-    QFont m_output_font;
     QTime m_timestamp;
     QFile m_logFile;
 
