@@ -53,7 +53,7 @@ void millisleep(unsigned long ms)
 MainWindow::MainWindow(QWidget *parent, const QString &session)
     : QMainWindow(parent)
     , m_device(new QSerialPort(this))
-    , m_deviceOpen(false)
+    , m_deviceState(DEVICE_CLOSED)
     , m_progress(nullptr)
     , m_sz(nullptr)
     , m_previousChar('\0')
@@ -299,8 +299,9 @@ void MainWindow::openDevice()
     m_device->setStopBits(session.stopBits);
     m_device->setFlowControl(session.flowControl);
 
+    m_deviceState = DEVICE_OPENING;
     if (m_device->open(session.openMode)) {
-        m_deviceOpen = true;
+        m_deviceState = DEVICE_OPEN;
         // printDeviceInfo(); // debugging
         m_device->flush();
 
@@ -329,7 +330,7 @@ void MainWindow::openDevice()
 void MainWindow::closeDevice()
 {
     m_device->close();
-    m_deviceOpen = false;
+    m_deviceState = DEVICE_CLOSED;
     m_input_edit->setEnabled(false);
     controlPanel->m_bt_open->setFocus();
     controlPanel->m_combo_device->setEnabled(true);
@@ -347,21 +348,19 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::NoError) {
         return;
-    } else if (error == QSerialPort::OpenError) {
-        QMessageBox::warning(this, tr("Error opening device"), m_device->errorString());
-        m_device->clearError();
-    } else if (m_deviceOpen) {
+    } else if (m_deviceState == DEVICE_OPEN || m_deviceState == DEVICE_OPENING) {
         // on hot unplug of usb2serial adapters, multiple errors will be
         // reported which is of no importance to the users.
         // reporting it once should be enough
-        m_deviceOpen = false;
-        QMessageBox::critical(this, tr("Device Error"), m_device->errorString());
+        QString heading = (m_deviceState == DEVICE_OPENING)? tr("Error opening device") : tr("Device Error");
+        m_deviceState = DEVICE_CLOSING;
+        QMessageBox::critical(this, heading, m_device->errorString());
         // this will finally close the device too;
         controlPanel->closeDevice();
     } else {
         qDebug() << error << m_device->errorString();
-        m_device->clearError();
     }
+    m_device->clearError();
 }
 
 /**

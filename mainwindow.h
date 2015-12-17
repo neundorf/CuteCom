@@ -38,6 +38,13 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 
+    enum DeviceState {
+        DEVICE_CLOSED,
+        DEVICE_OPENING,
+        DEVICE_OPEN,
+        DEVICE_CLOSING
+    };
+
 public:
     explicit MainWindow(QWidget *parent = 0, const QString &session = "");
     ~MainWindow();
@@ -79,7 +86,7 @@ private:
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
     QSerialPort *m_device;
-    bool m_deviceOpen;
+    DeviceState m_deviceState;
     StatusBar *m_device_statusbar;
     Settings *m_settings;
     QProgressDialog *m_progress;
