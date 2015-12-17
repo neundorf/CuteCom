@@ -1,7 +1,7 @@
 #
 # spec file for package cutecom
 #
-# Copyright (c) 2012 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -18,27 +18,20 @@
 
 
 Name:           cutecom
-Version:        0.23.0
-Release:        15.0.1
-Url:            http://cutecom.sourceforge.net/
+Version:        0.30.0
+Release:        1.0.0
+Url:            http://github.com/neundorf/CuteCom
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  libqt5-qtbase-devel
+BuildRequires:  libqt5-qtbase-devel libqt5-qtserialport-devel
 Summary:        Serial terminal
-License:        GPL-2.0+
+License:        GPL-3.0+
 Group:          Applications/Communications
-Source:         %{name}-%{version}.tar.gz
-Source3:        %{name}.desktop
-Source4:        %{name}.png
-
-%if 0%{?suse_version}
-# for >= 11.1 validity tests
-BuildRequires:  gnome-icon-theme
-%endif
+Source:         %{name}-%{version}.tgz
 
 %description
-Qt based serial terminal
+Qt5 based serial terminal
 
 %prep
 %setup
@@ -55,9 +48,9 @@ gzip %{name}.1
 install -m 644 %{name}.1.gz $RPM_BUILD_ROOT/%{_mandir}/man1/
 
 install -d 755 $RPM_BUILD_ROOT%{_datadir}/applications
-install -m 644 %SOURCE3 $RPM_BUILD_ROOT%{_datadir}/applications/
+install -m 644 distribution/openSUSE/cutecom.desktop $RPM_BUILD_ROOT%{_datadir}/applications/
 install -d 755 $RPM_BUILD_ROOT%{_datadir}/pixmaps
-install -m 644 %SOURCE4 $RPM_BUILD_ROOT%{_datadir}/pixmaps/
+install -m 644 images/cutecom.svg $RPM_BUILD_ROOT%{_datadir}/pixmaps/
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
@@ -67,12 +60,16 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1.gz
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/pixmaps/%{name}.png
-%doc Changelog TODO COPYING README
+%{_datadir}/pixmaps/cutecom.svg
+%doc Changelog TODO LICENSE CREDITS README.md
 
 %changelog
-* Tue Oct 27 2015 cyc1ingsir@gmail.com
-- version 0.23 based on Qt5 and command line sessions
+* Fri Dec 4 2015 cyc1ingsir@gmail.com 
+- reimplementation based on Qt5
+- including various feature enhancements
+* Tue Nov 17 2015 opensuse@dstoecker.de
+- fix build for Leap 42.1
+- correct FSF address
 * Thu Feb 23 2012 opensuse@dstoecker.de
 - display correct license in about dialog
 * Thu Jan 12 2012 coolo@suse.com

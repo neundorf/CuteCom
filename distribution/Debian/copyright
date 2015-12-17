@@ -1,14 +1,15 @@
 Format-Specification:
     http://wiki.debian.org/Proposals/CopyrightFormat?action=recall&rev=226
 Upstream-Name: CuteCom
-Upstream-Source: http://cutecom.sourceforge.net/
-Upstream-Maintainer: Alexander Neundorf <neundorf@kde.org>
+Upstream-Source: http://github.com/neundorf/CuteCom
+Upstream-Maintainer: Meinhard Ritscher <cyc1ingsir@gmail.com>
 
 Files: *
 Copyright: Copyright 2004-2009, Alexander Neundorf <neundorf@kde.org>
-License: GPL-2+
+Copyright: Copyright 2015-2015, Meinhard Ritscher <cyc1ingsir@gmail.com>
+License: GPL-3+
  On Debian systems the full text of the GNU General Public License can be found
- in the `/usr/share/common-licenses/GPL-2' file.
+ in the `/usr/share/common-licenses/GPL-3' file.
 
 Files: debian/*
 Copyright: Copyright 2006-2009 Roman I Khimov <roman@khimov.ru>

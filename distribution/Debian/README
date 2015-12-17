@@ -7,5 +7,7 @@ Jorge Salamero Sanz <bencer@cauterized.net>
 Roman I Khimov <roman@khimov.ru>
 
 
-SATUS: ummaintained - original CuteCom
+SATUS: updated to create packages on the open build service
+
+https://davesteele.github.io/development/2015/05/02/debian-watch-file-format-for-signed-github-source-tars/
 

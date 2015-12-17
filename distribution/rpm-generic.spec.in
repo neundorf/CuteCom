@@ -20,7 +20,7 @@ Group:          Applications/Communications
 %define _topdir @CMAKE_CURRENT_BINARY_DIR@/_CPack_Packages/Linux/RPM
 
 %description
-Qt based serial terminal
+Qt5 based serial terminal
 
 %prep
 mv $RPM_BUILD_ROOT @CMAKE_CURRENT_BINARY_DIR@/_CPack_Packages/Linux/RPM/tmpBBroot
@@ -43,6 +43,8 @@ rm -rf "$RPM_BUILD_ROOT"
 @CPACK_PACKAGING_INSTALL_PREFIX@/usr/bin/cutecom
 
 %changelog
+* Fri Dec 18 2015 cyc1ingsir@gmail.com
+- Version 0.30 release
 * Mon Nov 30 2015 cyc1ingsir@gmail.com
 - Version 0.25 reimplemented using Qt5
 * Tue Oct 27 2015 cyc1ingsir@gmail.com

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR )
 project(CuteCom)
 
 set (CuteCom_MAJOR_VERSION 0)
-set (CuteCom_MINOR_VERSION 25)
+set (CuteCom_MINOR_VERSION 29)
 set (CuteCom_PATCH_VERSION 0)
 set (CuteCom_VERSION
      ${CuteCom_MAJOR_VERSION}.${CuteCom_MINOR_VERSION}.${CuteCom_PATCH_VERSION})
@@ -58,7 +58,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 set (CPACK_PACKAGE_VERSION ${CuteCom_VERSION})
-set (CPACK_SOURCE_GENERATOR "TBZ2")
+set (CPACK_SOURCE_GENERATOR "TGZ")
 set (CPACK_GENERATOR "RPM")
 set (CPACK_PACKAGE_NAME "cutecom")
 set (CPACK_PACKAGE_RELEASE 1)
@@ -76,5 +76,5 @@ set (CPACK_SOURCE_IGNORE_FILES
        "${CMAKE_CURRENT_BINARY_DIR};/.git/;~$;${CPACK_SOURCE_IGNORE_FILES}")
 include (CPack)
 
-add_custom_target(dist COMMAND git archive --format tar --prefix=cutecom-${CuteCom_VERSION}/ HEAD | bzip2 > ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_SOURCE_PACKAGE_FILE_NAME}.tar.bz2 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+add_custom_target(dist COMMAND git archive --format tar --prefix=cutecom-${CuteCom_VERSION}/ HEAD | gzip > ${CMAKE_CURRENT_BINARY_DIR}/${CPACK_SOURCE_PACKAGE_FILE_NAME}.tgz WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 

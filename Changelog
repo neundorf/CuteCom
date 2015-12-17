@@ -1,3 +1,15 @@
+0.30.0, December 20th, 2015
+-first public release of the reimplemented version
+
+0.25.0, November 30th, 2015
+-first preview of reimplemented version
+-facelifted GUI
+-full session support
+-feature enhancements collected from various forks
+-timestamp prefix
+-display control characters
+-requires Qt > 5.1 
+
 0.23.0, October 27th, 2015
 -ported partly to Qt5
 -made named sessions available via command line option (-s)

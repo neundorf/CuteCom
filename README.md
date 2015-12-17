@@ -2,16 +2,21 @@
 
 ## Welcome to _CuteCom_
 
-CuteCom is a graphical serial terminal, like minicom (or Hyperterminal on Windows, but I don't want to compare CuteCom to it, since Hyperterminal is really one of the worst applications I know).  
-Currently it runs on Linux, FreeBSD and Mac OS X.  
-It is aimed mainly at hardware developers or other people who need a terminal to talk to their devices. It is free software and distributed under the GNU General Public License Version 2. It is written using the [Qt library](http://www.qt.io/) by Trolltech. Follow this link to visit the [project page on GitHub](https://github.com/neundorf/CuteCom).  
-CuteCom doesn't use the autotools (autoconf, automake, libtool, etc.) Instead "configure" displays some simple instruction refering to cmake. To uninstall CuteCom simply delete the file "cutecom" and the file "cutecom.desktop" and you're done. The config file is ~/.config/CuteCom/CuteCom.conf (was ~/.qt/cutecomrc in the Qt3-based versions).
+CuteCom is a graphical serial terminal, like minicom. 
+Currently it runs on Linux (tested) and should run on FreeBSD, Mac OS X and maybe other systems as well (untested).  
+It is aimed mainly at hardware developers or other people who need a terminal to talk to their devices. 
+It is free software and distributed under the GNU General Public License Version 3. 
+It is written using the [Qt library](http://www.qt.io/) originally created by Trolltech.
 
-### Satus:
+### History
 
-With version 0.25.0, CuteCom was reimplemented taking advantage of Qt5 and the QtSerialport now available.
-Quite a few features where added too. The GUI was modified to clear some space for displaying more of the output data.
-This is more or less a developer preview and no package or tar ball is beeing provided at the moment.
+The current CuteCom-version has being reimplemented using Qt 5 switching to the now available QSerialport.
+The GUI was facelifted and amongst other features a session support was added.
+Session support comes in handy if you have two or more devices connected, each of it talking 
+in different baudrates or other connection parameters. The command history is stored for each individual session since
+different devices may provide a different set of commands.
+Features enhancements of various forks have been included see [**_CREDITS_**](CREDITS) for a complete list.
+Version 0.30.0 is the first public release after the reimplementation.
 
 ### Features:
 
@@ -21,77 +26,72 @@ This is more or less a developer preview and no package or tar ball is beeing pr
 *   Ctrl+C, Ctrl+Q and Ctrl+S control sequences work
 *   input history
 *   a cute GUI ;-)
+*   session support via -s <session name> specified at the command line
+*   switching sessions via a session manager
 *   control panel hides when not used 
 *   xmodem, ymodem, zmodem support (requires the sz tools)
 *   easy to differentiate between typed text and echoed text
 *   select between read/write, read-only and write-only open mode
-*   open the device without changing its settings (this is currently lost :-( )
 *   hexadecimal input and output
 *   configurable line end characters (LF, CR, LFCR)
 *   configurable delay between characters
-*   optionally show control caracters like line feed or tabs in output
+*   optionally show control characters like line feed or tabs in output
 *   optionally prefix each line in output with a timestamp
-*   session support via -s <session name> specified at the command line
-*   switching sessions via a session manager
+*   open the device without changing its settings (was not ported but could be added if demand arrises )
 
-### Requirements for Building:
 
-*   CuteCom 0.25.0: Qt 5.1, CMake >= 2.8.11
-*   CuteCom 0.22.0: Qt 4.1, CMake >= 2.4.3
-*   CuteCom 0.14.2: Qt 3, qmake or CMake >= 2.4.3
+### Build instructions
 
-## Download:
+On Linux you will hopefully find ready made packages using the package manager of your distribution.
+To build your own copy, you need to run `cmake .` followd by make.
+You'll then find a cutecom binary in the same folder.
+`make package` should provide you with a generic RPM package (which lacks the documentation and the like).
+`make dist` creates a tar ball (so does `make package_source`)
 
-**_Previous version (uses Qt4):_** [cutecom-0.22.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , June 27th, 2009  
-(yes, it's really only 22kb). Now also works on Mac OSX and supports more baud rates.  
+#### Requirements for Building:
+
+*   CuteCom 0.30.0 +: Qt >= 5.1, CMake >= 2.8.11
+*   on linux look for the qt5 development packages including QSerialport
+*   Since C++C11 features are used a gcc supporting these is needed too
+
+## Changelog
+
 Here is the complete [**_Changelog_**](Changelog).  
 
-You can also browse the **[code only at GitHub](https://github.com/neundorf/CuteCom)**.  
+**_Current state:_** stable
 
-**_Current state:_** stable  
 **_TODO_ **:
 
-*   font selection via the context menu of the output view
 *   searching in the output view via context menu and Ctrl+F shortcut
-*   get rid of Qt3Support
-*   translations  
+*   translations
+*   show control characters in a different colour
+*   selectable style for the output view like green on black including
+*   font selection for the output view
 
-Pull requests are welcome ! :-)  
 
-**_Previous versions:_**
-
-*   [cutecom-0.21.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , May 11th, 2009
-*   [cutecom-0.20.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.21.0.tar.gz) , March 12th, 2008
-*   [cutecom-0.14.2.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.14.2.tar.gz) , January 26th, 2007 - _last version for Qt3_
-*   [cutecom-0.14.1.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.14.1.tar.gz) , November 22nd, 2006
-*   [cutecom-0.14.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.14.0.tar.gz) , July 16th, 2006
-*   [cutecom-0.13.2.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.13.2.tar.gz) , June 9th, 2005
-*   [cutecom-0.13.1.tar.gz](http://cutecom.sourceforge.net/cutecom-0.13.1.tar.gz), February 2nd, 2005
-*   [cutecom-0.13.0.tar.gz](http://cutecom.sourceforge.net/cutecom-0.13.0.tar.gz), January 29th, 2005
-*   [cutecom-0.12.0.tar.gz](http://cutecom.sourceforge.net/cutecom-0.12.0.tar.gz), November 09th, 2004
-*   [cutecom-0.11.0.tar.gz](http://cutecom.sourceforge.net/cutecom-0.11.0.tar.gz), October 13th, 2004
-*   [cutecom-0.10.2.tar.gz](http://cutecom.sourceforge.net/cutecom-0.10.2.tar.gz), October 10th, 2004
-*   [cutecom-0.10.1.tar.gz](http://cutecom.sourceforge.net/cutecom-0.10.1.tar.gz), August 11th, 2004
-*   [cutecom-0.10.0.tar.gz](http://cutecom.sourceforge.net/cutecom-0.10.0.tar.gz)
-*   [cutecom-0.0.8.tar.gz](http://cutecom.sourceforge.net/cutecom-0.0.8.tar.gz)
-*   [cutecom-0.0.7.tar.gz](http://cutecom.sourceforge.net/cutecom-0.0.7.tar.gz)
-*   [cutecom-0.0.6.tar.gz](http://cutecom.sourceforge.net/cutecom-0.0.6.tar.gz)
-*   [cutecom-0.0.5.tar.gz](http://cutecom.sourceforge.net/cutecom-0.0.5.tar.gz)
-*   [cutecom-0.0.4.tar.gz](http://cutecom.sourceforge.net/cutecom-0.0.4.tar.gz)
+As always:
+**Pull requests are welcome ! :-)**
 
 ### Screenshot
 
 Ok, here comes the inevitable screenshot:  
 
-![](cutecom.png)  
+![](cutecom.png)
 
-At the top you can see the widgets where you can adjust the serial communication settings. Beneath this part there is the output view, where you can see _everything_ the device sent back, also non-printable characters. And in the bottom part you can see the input area, with the input line to enter the commands, and the list featuring the history for the input line.
+The control panel for adjusting the device settings slides out when pressing the Settings button.
+At the upper half, commands issued are accumulated. 
+Commands may be selected from the history using up and down arrow keys.'
+Right below command line situated right in the middle, the output view can be found.
+It will autoscroll to the end of the date sent from the connected device.
+Autoscolling will stop, once a certain section of the data is scrolled to.
+PageUp and PageDown are working for moving through the output view.
 
-Currently CuteCom runs on Linux, FreeBSD and Mac OS X, porting to other UNIX-like platforms should be easy, and porting to Windows shouldn't be really hard. Everything platform specific should be in QCPPDialogImpl::setNewOptions(). Distributions are welcome :-)
+## Previous versions:
+
+**_Previous version (uses Qt4):_** [cutecom-0.22.0.tar.gz,](http://cutecom.sourceforge.net/cutecom-0.22.0.tar.gz) , June 27th, 2009
+(yes, it's really only 22kb). Now also works on Mac OSX and supports more baud rates.  
+
+For older versions have a look at the SourceForge project page.
 
 CuteCom was heavily inspired by [Bray++ Terminal for Windows](https://sites.google.com/site/terminalbpp/).
-
-### Author and contact:
-
-Alexander Neundorf, <neundorf at kde dot org>
 
