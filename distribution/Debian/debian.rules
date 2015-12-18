@@ -1,11 +1,20 @@
 #!/usr/bin/make -f
+# GNU copyright 1997 to 1999 by Joey Hess.
 
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-include /usr/share/quilt/quilt.make
+# This is the debhelper compatibility version to use.
+export DH_COMPAT=4
 
-config: patch
+CFLAGS = -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+CFLAGS += -O0
+else
+CFLAGS += -O2
+endif
+
+config:
 	dh_testdir
 	mkdir -p build
 	cd build && cmake -DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/cutecom/usr \
@@ -21,9 +30,7 @@ build-stamp:  config
 
 	touch $@
 
-clean: clean-patched unpatch
-
-clean-patched:
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp
@@ -38,25 +45,37 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	cd build && $(MAKE) install
+	cd build && make install DESTDIR=/usr/src/packages/BUILD/debian/cutecom
 
 # Build architecture-independent files here.
 binary-indep: build install
-# We have nothing to do here
+	# We have nothing to do by default.
 
 # Build architecture-dependent files here.
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs Changelog
+# dh_installdebconf
 	dh_installdocs
 	dh_installexamples
 	dh_installmenu
+# dh_installlogrotate
+# dh_installemacsen
+# dh_installpam
+# dh_installmime
+# dh_installinit
+	dh_installcron
+	dh_installman
+	dh_installinfo
+# dh_undocumented
+	dh_installchangelogs
 	dh_link
 	dh_strip
 	dh_compress
 	dh_fixperms
+# dh_makeshlibs
 	dh_installdeb
+# dh_perl
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
