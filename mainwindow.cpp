@@ -1,6 +1,6 @@
-﻿/*
+/*
  * Copyright (C) 2004-2009 Alexander Neundorf <neundorf@kde.org> (code used from original CuteCom)
- * Copyright (C) 2013 Preet Desai <preet.desai@gmail.com> (code to send files proted to Qt5 for the original CuteCom
+ * Copyright (C) 2013 Preet Desai <preet.desai@gmail.com> (code to send files ported to Qt5 for the original CuteCom
  *                                                          from https://github.com/preet/cutecom-qt5)
  * Copyright (c) 2015 Meinhard Ritscher <cyc1ingsir@gmail.com>
  * Copyright (c) 2015 Antoine Calando <acalando@free.fr> (improvements added to original CuteCom)

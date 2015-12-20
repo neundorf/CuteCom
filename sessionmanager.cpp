@@ -30,7 +30,7 @@
  * This Validator prevents session names to contain some
  * characters not very sensible to use within session names.
  * It prevents duplicate session names as well.
- * It's based on the on included in the QtCreator's sessiondialog.
+ * It's based on the one included in the QtCreator's sessiondialog.
  * Copyright (C) 2015 The Qt Company Ltd.
  * @brief The SessionNameValidator class
  */
