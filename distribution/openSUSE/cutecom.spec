@@ -18,7 +18,7 @@
 
 
 Name:           cutecom
-Version:        0.30.0
+Version:        0.30.1
 Release:        1.0.0
 Url:            http://github.com/neundorf/CuteCom
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -64,7 +64,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %doc Changelog TODO LICENSE CREDITS README.md
 
 %changelog
-* Fri Dec 4 2015 cyc1ingsir@gmail.com 
+* Mon Dec 21 2015 cyc1ingsir@gmail.com 
+- fixed a bug preventing to compile on gcc 5.2
+* Fri Dec 18 2015 cyc1ingsir@gmail.com 
 - reimplementation based on Qt5
 - including various feature enhancements
 * Tue Nov 17 2015 opensuse@dstoecker.de

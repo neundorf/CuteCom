@@ -1,4 +1,7 @@
-0.30.0, December 20th, 2015
+0.31.1, December 21th, 2015
+-fixed a bug preventing to compile on gcc 5.2
+
+0.30.0, December 18th, 2015
 -first public release of the reimplemented version
 
 0.25.0, November 30th, 2015
