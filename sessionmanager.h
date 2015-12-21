@@ -78,10 +78,10 @@ public:
         , m_list(list)
     {
     }
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
 
 signals:
-    void editingFinished(const QString &newSessionName);
+    void editingFinished(QString newSessionName) const;
 
 private:
     QListWidget *m_list;
