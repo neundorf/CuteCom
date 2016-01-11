@@ -168,8 +168,8 @@ void ControlPanel::applySessionSettings(Settings::Session session)
     } else {
         index = m_combo_Baud->findData(-1);
         if (index != -1) {
+            m_combo_Baud->setItemText(index, QString::number(session.baudRate));
             m_combo_Baud->setCurrentIndex(index);
-            m_combo_Baud->setCurrentText(QString::number(session.baudRate));
         }
     }
 
@@ -296,7 +296,10 @@ void ControlPanel::fillBaudCombo()
     m_combo_Baud->addItem(QStringLiteral("Custom"), -1);
 
     connect(m_combo_Baud, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            [=]() { emit settingChanged(Settings::BaudRate, m_combo_Baud->currentData()); });
+            [=]() { int custom = m_combo_Baud->currentData().toInt();
+                    emit settingChanged(Settings::BaudRate,
+                                        (custom == -1) ? m_combo_Baud->currentText() : m_combo_Baud->currentData());
+    });
 }
 
 void ControlPanel::fillFlowCombo()
