@@ -18,8 +18,8 @@
 
 
 Name:           cutecom
-Version:        0.30.1
-Release:        1.0.0
+Version:        0.30.2
+Release:        0
 Url:            http://github.com/neundorf/CuteCom
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  cmake
@@ -64,19 +64,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %doc Changelog TODO LICENSE CREDITS README.md
 
 %changelog
-* Mon Dec 21 2015 cyc1ingsir@gmail.com 
-- fixed a bug preventing to compile on gcc 5.2
-* Fri Dec 18 2015 cyc1ingsir@gmail.com 
-- reimplementation based on Qt5
-- including various feature enhancements
-* Tue Nov 17 2015 opensuse@dstoecker.de
-- fix build for Leap 42.1
-- correct FSF address
-* Thu Feb 23 2012 opensuse@dstoecker.de
-- display correct license in about dialog
-* Thu Jan 12 2012 coolo@suse.com
-- change license to be in spdx.org format
-* Tue Apr 26 2011 opensuse@dstoecker.de
-- fix line breaking issue (patch copied from Debian)
-* Tue Jan 27 2009 opensuse@dstoecker.de
-- initial setup
+

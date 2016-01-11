@@ -1,3 +1,8 @@
+0.30.2, January 11th, 2016
+-opening a connnection with more than 200000 Baud not possible - FIX
+-custom baud rate not restored - FIX
+-extra long lines are wrapped - less disturbing
+
 0.31.1, December 21th, 2015
 -fixed a bug preventing to compile on gcc 5.2
 

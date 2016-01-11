@@ -1,0 +1,39 @@
+Mon Jan 11 17:10:33 UTC 2016 - cyc1ingsir@gmail.com 
+
+- opening a connnection with more than 200000 Baud not possible - FIX
+- custom baud rate not restored - FIX
+- extra long lines are wrapped - less disturbing
+
+-------------------------------------------------------------------
+Fri Dec 18 20:20:20 UTC 2015 - cyc1ingsir@gmail.com 
+
+- reimplementation based on Qt5
+- including various feature enhancements
+- removed cutecom-0.22.0-license.diff - codebase changed
+- removed cutecom-0.22.0-nolinebreak.diff - codebase changed
+
+-------------------------------------------------------------------
+Tue Nov 17 10:35:42 UTC 2015 - opensuse@dstoecker.de
+
+- fix build for Leap 42.1
+- correct FSF address
+
+-------------------------------------------------------------------
+Thu Feb 23 17:08:17 UTC 2012 - opensuse@dstoecker.de
+
+- display correct license in about dialog
+
+-------------------------------------------------------------------
+Thu Jan 12 11:30:33 UTC 2012 - coolo@suse.com
+
+- change license to be in spdx.org format
+
+-------------------------------------------------------------------
+Tue Apr 26 18:39:52 CEST 2011 - opensuse@dstoecker.de
+
+- fix line breaking issue (patch copied from Debian)
+
+-------------------------------------------------------------------
+Tue Jan 27 12:00:00 CEST 2009 - opensuse@dstoecker.de
+
+- initial setup
