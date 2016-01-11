@@ -37,7 +37,6 @@ DataDisplay::DataDisplay(QWidget *parent)
     , m_previous_ended_with_nl(true)
 {
     setupTextFormats();
-    setLineWrapMode(QTextEdit::NoWrap);
 }
 
 void DataDisplay::clear()
@@ -273,7 +272,7 @@ void DataDisplay::constructDisplayLine(const QByteArray &inData)
                 line.prefix = m_timestamp;
                 continue;
             } else {
-                line.data += QString("<0x%1>").arg(b & 0xff, 8, 16, QChar('0'));
+                line.data += QString("<0x%1>").arg(b & 0xff, 2, 16, QChar('0'));
             }
         }
     }
@@ -302,12 +301,14 @@ void DataDisplay::setDisplayTime(bool displayTime)
 void DataDisplay::setDisplayHex(bool displayHex)
 {
     if (displayHex) {
+        setLineWrapMode(QTextEdit::NoWrap);
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
         }
         m_hexBytes = 0;
         m_displayHex = displayHex;
     } else {
+        setLineWrapMode(QTextEdit::WidgetWidth);
         m_displayHex = displayHex;
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
