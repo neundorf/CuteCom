@@ -37,7 +37,7 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
 {
     this->setupUi(this);
 
-    m_baudValidator = new QIntValidator(0, 220000, this);
+    m_baudValidator = new QIntValidator(0, 999000, this);
     m_combo_Baud->setInsertPolicy(QComboBox::NoInsert);
     const Settings::Session session = settings->getCurrentSession();
 
