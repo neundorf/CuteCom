@@ -336,6 +336,9 @@ void MainWindow::closeDevice()
     controlPanel->m_combo_device->setEnabled(true);
     m_bt_sendfile->setEnabled(false);
     m_command_history->setEnabled(false);
+    if (m_logFile.isOpen()) {
+        m_logFile.flush();
+    }
 }
 
 /**
@@ -386,7 +389,7 @@ void MainWindow::toggleLogging(bool start)
     if (start) {
         m_logFile.setFileName(m_lb_logfile->text());
         QIODevice::OpenMode mode = QIODevice::ReadWrite;
-        mode = (controlPanel->m_check_appendLog->isChecked()) ? mode | QIODevice::Truncate : mode | QIODevice::Append;
+        mode = (controlPanel->m_check_appendLog->isChecked()) ? mode | QIODevice::Append : mode | QIODevice::Truncate;
 
         if (!m_logFile.open(mode)) {
             QMessageBox::information(this, tr("Opening file failed"),
