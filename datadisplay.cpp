@@ -142,7 +142,7 @@ void DataDisplay::displayData(const QByteArray &data)
     if (save_max)
         sb->setValue(sb->maximum());
     else
-        sb->setValue(save_max);
+        sb->setValue(save_scroll);
 }
 
 /*!
