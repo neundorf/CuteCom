@@ -58,6 +58,12 @@ void DataDisplay::displayData(const QByteArray &data)
         m_timestamp = QStringLiteral("[") + timestamp.toString(m_timestampFormat) + QStringLiteral("] ");
     }
 
+    // stop auto scrolling if the user scrolled to
+    // to older data
+    QScrollBar *sb = verticalScrollBar();
+    int save_scroll = sb->value();
+    int save_max = (save_scroll == sb->maximum());
+
     if (m_displayHex) {
         if (formatHexData(data)) {
             // the last line was incomplete
@@ -104,12 +110,6 @@ void DataDisplay::displayData(const QByteArray &data)
             constructDisplayLine(line);
         }
     }
-
-    // stop auto scrolling if the user scrolled to
-    // to older data
-    QScrollBar *sb = verticalScrollBar();
-    int save_scroll = sb->value();
-    int save_max = (save_scroll == sb->maximum());
 
     // append the data to end of the parent's TextEdit
     // each part of the line with it's set format
