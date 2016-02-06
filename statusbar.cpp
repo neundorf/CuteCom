@@ -91,12 +91,21 @@ void StatusBar::setToolTip(const QSerialPort *port)
 
     QSerialPortInfo info = QSerialPortInfo(*port);
     if (info.isValid()) {
-        QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
+        QString deviceInfo = QString("%1 %2\n%3:%4 "
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                                     )
+#else
+                                     "# %5")
+#endif
                                  .arg(info.manufacturer())
                                  .arg(info.description())
                                  .arg(info.vendorIdentifier())
                                  .arg(info.productIdentifier())
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                ;
+#else
                                  .arg(info.serialNumber());
+#endif
         QWidget::setToolTip(deviceInfo);
     } else {
         QWidget::setToolTip(tr("Not a valid device"));

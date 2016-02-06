@@ -292,17 +292,19 @@ void MainWindow::openDevice()
         controlPanel->closeDevice();
         return;
     }
-    m_device->setPortName(session.device);
-    m_device->setBaudRate(session.baudRate);
-    m_device->setDataBits(session.dataBits);
-    m_device->setParity(session.parity);
-    m_device->setStopBits(session.stopBits);
-    m_device->setFlowControl(session.flowControl);
 
+    m_device->setPortName(session.device);
     m_deviceState = DEVICE_OPENING;
     if (m_device->open(session.openMode)) {
         m_deviceState = DEVICE_OPEN;
         // printDeviceInfo(); // debugging
+
+        m_device->setBaudRate(session.baudRate);
+        m_device->setDataBits(session.dataBits);
+        m_device->setParity(session.parity);
+        m_device->setStopBits(session.stopBits);
+        m_device->setFlowControl(session.flowControl);
+
         m_device->flush();
 
         controlPanel->m_combo_device->setEnabled(false);
@@ -329,6 +331,7 @@ void MainWindow::openDevice()
  */
 void MainWindow::closeDevice()
 {
+    m_device->clearError();
     m_device->close();
     m_deviceState = DEVICE_CLOSED;
     m_input_edit->setEnabled(false);
@@ -360,8 +363,8 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
         QMessageBox::critical(this, heading, m_device->errorString());
         // this will finally close the device too;
         controlPanel->closeDevice();
-    } else {
-        qDebug() << error << m_device->errorString();
+    } else if(m_deviceState != DEVICE_CLOSING && m_deviceState != DEVICE_CLOSED) {
+        qDebug() << "Error-#" << error << " " << m_device->errorString();
     }
     m_device->clearError();
 }
@@ -374,7 +377,10 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 void MainWindow::printDeviceInfo()
 {
     QSerialPortInfo info = QSerialPortInfo(*m_device);
-    qDebug() << info.description() << info.manufacturer() << info.productIdentifier() << info.serialNumber()
+    qDebug() << info.description() << info.manufacturer() << info.productIdentifier()
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+             << info.serialNumber()
+#endif
              << info.portName();
     qDebug() << m_device->baudRate() << " : " << m_device->dataBits() << "-" << m_device->parity() << "-"
              << m_device->stopBits() << " # " << m_device->flowControl();
@@ -879,8 +885,10 @@ void MainWindow::processData()
 
 MainWindow::~MainWindow()
 {
-    if (m_device->isOpen())
-        m_device->close();
+    if (m_device->isOpen()){
+        m_deviceState = DEVICE_CLOSING;
+        closeDevice();
+    }
     if (m_logFile.isOpen())
         m_logFile.close();
     delete m_settings;

@@ -38,12 +38,21 @@ void DeviceCombo::refill()
     for (auto info : QSerialPortInfo::availablePorts()) {
         addItem(info.systemLocation());
         if (info.isValid()) {
-            QString deviceInfo = QString("%1 %2\n%3:%4 # %5")
+            QString deviceInfo = QString("%1 %2\n%3:%4 "
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                                         )
+#else
+                                         "# %5")
+#endif
                                      .arg(info.manufacturer())
                                      .arg(info.description())
                                      .arg(info.vendorIdentifier())
                                      .arg(info.productIdentifier())
+#if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
+                    ;
+#else
                                      .arg(info.serialNumber());
+#endif
             setItemData(numberDevices, deviceInfo, Qt::ToolTipRole);
         } else {
             setItemData(numberDevices, tr("Not a valid device"), Qt::ToolTipRole);
