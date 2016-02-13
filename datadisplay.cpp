@@ -28,7 +28,7 @@
 #include <QDebug>
 
 DataDisplay::DataDisplay(QWidget *parent)
-    : QTextEdit(parent)
+    : QPlainTextEdit(parent)
     , m_hexBytes(0)
     , m_displayHex(false)
     , m_displayTime(false)
@@ -42,7 +42,7 @@ DataDisplay::DataDisplay(QWidget *parent)
 void DataDisplay::clear()
 {
     m_hexBytes = 0;
-    QTextEdit::clear();
+    QPlainTextEdit::clear();
 }
 
 /**
@@ -117,24 +117,20 @@ void DataDisplay::displayData(const QByteArray &data)
 
         if (m_displayHex) {
             moveCursor(QTextCursor::End);
-            mergeCurrentCharFormat(*m_format_prefix);
-            insertPlainText(line.prefix);
+            textCursor().insertText(line.prefix, *m_format_prefix);
 
             moveCursor(QTextCursor::End);
-            mergeCurrentCharFormat(*m_format_hex);
-            insertPlainText(line.data);
+            textCursor().insertText(line.data, *m_format_hex);
+
             moveCursor(QTextCursor::End);
-            mergeCurrentCharFormat(*m_format_ascii);
-            insertPlainText(line.trailer);
+            textCursor().insertText(line.trailer, *m_format_ascii);
         } else {
             if (line.prefix.size() > 0) {
                 moveCursor(QTextCursor::End);
-                mergeCurrentCharFormat(*m_format_prefix);
-                insertPlainText(line.prefix);
+                textCursor().insertText(line.prefix, *m_format_prefix);
             }
             moveCursor(QTextCursor::End);
-            mergeCurrentCharFormat(*m_format_data);
-            insertPlainText(line.data);
+            textCursor().insertText(line.data, *m_format_data);
         }
     }
     m_data.clear();
@@ -301,14 +297,14 @@ void DataDisplay::setDisplayTime(bool displayTime)
 void DataDisplay::setDisplayHex(bool displayHex)
 {
     if (displayHex) {
-        setLineWrapMode(QTextEdit::NoWrap);
+        setLineWrapMode(QPlainTextEdit::NoWrap);
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
         }
         m_hexBytes = 0;
         m_displayHex = displayHex;
     } else {
-        setLineWrapMode(QTextEdit::WidgetWidth);
+        setLineWrapMode(QPlainTextEdit::WidgetWidth);
         m_displayHex = displayHex;
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
@@ -349,12 +345,12 @@ void DataDisplay::setupTextFormats()
     font.setPointSize(10);
     format.setFont(font);
     m_format_data = new QTextCharFormat(format);
-    qDebug() << m_format_data->foreground();
+    //    qDebug() << m_format_data->foreground();
 
     col = QColor(120, 180, 200);
     format.setForeground(col);
     m_format_prefix = new QTextCharFormat(format);
-    qDebug() << m_format_prefix->foreground();
+    //    qDebug() << m_format_prefix->foreground();
 
     col = QColor(Qt::black);
     format.setForeground(col);

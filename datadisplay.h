@@ -22,9 +22,9 @@
 #ifndef DATADISPLAY_H
 #define DATADISPLAY_H
 
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
-class DataDisplay : public QTextEdit
+class DataDisplay : public QPlainTextEdit
 {
     Q_OBJECT
 
