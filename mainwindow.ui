@@ -189,11 +189,11 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="DataDisplay" name="m_output_display">
-          <property name="undoRedoEnabled">
+         <widget class="DataDisplay" name="m_output_display" native="true">
+          <property name="undoRedoEnabled" stdset="0">
            <bool>false</bool>
           </property>
-          <property name="readOnly">
+          <property name="readOnly" stdset="0">
            <bool>true</bool>
           </property>
          </widget>
@@ -305,7 +305,14 @@
     <addaction name="actionAbout_CuteCom"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionFind"/>
+   </widget>
    <addaction name="menuSessions"/>
+   <addaction name="menuEdit"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="m_statusBar"/>
@@ -344,8 +351,20 @@
     <string>About Qt</string>
    </property>
   </action>
+  <action name="actionFind">
+   <property name="text">
+    <string>Find</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>DataDisplay</class>
+   <extends>QWidget</extends>
+   <header>datadisplay.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

@@ -159,7 +159,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_output_display->setDisplayCtrlCharacters(m_settings->getCurrentSession().showCtrlCharacters);
     m_output_display->setDisplayTime(m_settings->getCurrentSession().showTimestamp);
     connect(controlPanel->m_check_timestamp, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayTime);
-    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayCtrlCharacters);
+    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display,
+            &DataDisplay::setDisplayCtrlCharacters);
 
     connect(controlPanel, &ControlPanel::openDeviceClicked, this, &MainWindow::openDevice);
     connect(controlPanel, &ControlPanel::closeDeviceClicked, this, &MainWindow::closeDevice);
@@ -185,6 +186,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         m_settings->settingChanged(Settings::LogFileLocation, text);
     });
     connect(m_check_logging, &QCheckBox::toggled, this, &MainWindow::toggleLogging);
+
+    connect(actionFind, &QAction::triggered, m_output_display,
+            static_cast<void (DataDisplay::*)()>(&DataDisplay::showSearchPanel));
 
     connect(actionAbout_CuteCom, &QAction::triggered, this, &MainWindow::showAboutMsg);
     connect(actionAbout_Qt, &QAction::triggered, &QApplication::aboutQt);
@@ -364,12 +368,12 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
         // on hot unplug of usb2serial adapters, multiple errors will be
         // reported which is of no importance to the users.
         // reporting it once should be enough
-        QString heading = (m_deviceState == DEVICE_OPENING)? tr("Error opening device") : tr("Device Error");
+        QString heading = (m_deviceState == DEVICE_OPENING) ? tr("Error opening device") : tr("Device Error");
         m_deviceState = DEVICE_CLOSING;
         QMessageBox::critical(this, heading, m_device->errorString());
         // this will finally close the device too;
         controlPanel->closeDevice();
-    } else if(m_deviceState != DEVICE_CLOSING && m_deviceState != DEVICE_CLOSED) {
+    } else if (m_deviceState != DEVICE_CLOSING && m_deviceState != DEVICE_CLOSED) {
         qDebug() << "Error-#" << error << " " << m_device->errorString();
     }
     m_device->clearError();
@@ -821,7 +825,6 @@ void MainWindow::updateCommandHistory()
     m_commandCompleter->setModel(m_command_history_model);
 }
 
-
 /**
  * @brief MainWindow::readFromStdErr
  */
@@ -886,12 +889,11 @@ void MainWindow::processData()
         m_logFile.write(data);
     }
     m_output_display->displayData(data);
-
 }
 
 MainWindow::~MainWindow()
 {
-    if (m_device->isOpen()){
+    if (m_device->isOpen()) {
         m_deviceState = DEVICE_CLOSING;
         closeDevice();
     }
