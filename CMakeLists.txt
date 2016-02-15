@@ -4,7 +4,7 @@ project(CuteCom)
 
 set (CuteCom_MAJOR_VERSION 0)
 set (CuteCom_MINOR_VERSION 30)
-set (CuteCom_PATCH_VERSION 2)
+set (CuteCom_PATCH_VERSION 3)
 set (CuteCom_VERSION
      ${CuteCom_MAJOR_VERSION}.${CuteCom_MINOR_VERSION}.${CuteCom_PATCH_VERSION})
 

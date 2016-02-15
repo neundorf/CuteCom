@@ -1,3 +1,7 @@
+0.30.3, February 15th, 2016
+-now builds and runs using Qt5 versions less than 5.3
+-performance tuning by switching to QPlainTextEdit
+
 0.30.2, January 11th, 2016
 -opening a connnection with more than 200000 Baud not possible - FIX
 -custom baud rate not restored - FIX

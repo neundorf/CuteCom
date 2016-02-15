@@ -1,3 +1,9 @@
+cutecom (0.30.3-0) unstable; urgency=low
+  * now builds and runs with Qt5 versions less 5.3
+  * performance tuning by switching to QPlainTextEdit
+
+ -- Meinhard Ritscher <cyc1ingsir@gmail.com>  Mon, 15 Feb 2016 18:10:00 +0100
+
 cutecom (0.30.2-0) unstable; urgency=low
   * opening a connnection with more than 200000 Baud not possible - FIX
   * custom baud rate not restored - FIX

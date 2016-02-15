@@ -1,8 +1,17 @@
-Mon Jan 11 17:10:33 UTC 2016 - cyc1ingsir@gmail.com 
+-------------------------------------------------------------------
+Mon Feb 15 20:20:20 UTC 2016 - cyc1ingsir@gmail.com 
 
-- opening a connnection with more than 200000 Baud not possible - FIX
-- custom baud rate not restored - FIX
-- extra long lines are wrapped - less disturbing
+-update to release 0.30.3
+ * make build and run using Qt5 versions less 5.3
+ * performance tuning switching to QPlainTextEdit
+
+-------------------------------------------------------------------
+Thu Jan 14 14:21:11 UTC 2016 - opensuse@dstoecker.de
+
+- update to release 0.30.2
+ * custom baud rates restored properly on startup
+ * custom baud rates > 200000 now selectable
+ * prevent horizontal scroll bar showing up (feedback)
 
 -------------------------------------------------------------------
 Fri Dec 18 20:20:20 UTC 2015 - cyc1ingsir@gmail.com 
