@@ -305,6 +305,12 @@ void MainWindow::openDevice()
         m_device->setStopBits(session.stopBits);
         m_device->setFlowControl(session.flowControl);
 
+        /* Disable RTS/DTR when no flow control is used */
+        if (session.flowControl == QSerialPort::NoFlowControl) {
+            m_device->setDataTerminalReady(false);
+            m_device->setRequestToSend(false);
+        }        
+
         m_device->flush();
 
         controlPanel->m_combo_device->setEnabled(false);
