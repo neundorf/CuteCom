@@ -2,7 +2,7 @@
 .\" First parameter, NAME, should be all caps
 .\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
 .\" other parameters are allowed: see man(7), man(1)
-.TH CUTECOM 1 "November 24, 2006"
+.TH CUTECOM 1 "September 30, 2016"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -30,17 +30,21 @@ instead of character-oriented, xmodem, ymodem, zmodem support
 (requires the lrzsz package) and hexadecimal input and output among
 other things.
 .SH OPTIONS
-.IP -h
+.IP "\fB-h\fP, \fB--help\fP"
 prints a short help message
-.IP "-s <session_name>"
+.IP "\fB-s\fP, \fB--session\fP <session_name>"
 opens a previously defined session. A new Session with default connection 
 parameters is created when a session with this name can not be found in 
 the config file
+.SH FILES
+.IP "~/.config/CuteCom/CuteCom5.conf"
+Personal CuteCom configuration file (with sessions stored there also).
 .SH SEE ALSO
 .BR minicom (1),
 .BR sz (1).
 .SH AUTHOR
-CuteCom was originally written by Alexander Neundorf <neundorf@kde.org>.
+CuteCom was originally written by Alexander Neundorf <neundorf@kde.org>
+and is now maintained by Meinhard Ritscher <cyc1ingsir@gmail.com>.
 .PP
 This manual page was written by Roman I Khimov <roman@khimov.ru>,
 for the Debian project (but may be used by others).
