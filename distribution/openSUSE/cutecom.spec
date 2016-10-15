@@ -18,7 +18,7 @@
 
 
 Name:           cutecom
-Version:        0.30.3
+Version:        0.30.4
 Release:        0
 Url:            http://github.com/neundorf/CuteCom
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build

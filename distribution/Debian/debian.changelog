@@ -1,3 +1,10 @@
+cutecom (0.30.4-0) unstable; urgency=low
+  *Disable RTS/DTR when no flow control is used
+  *man page update
+  *licenses cleanup
+
+ -- Meinhard Ritscher <cyc1ingsir@gmail.com>  Sat, 16 Oct 2016 22:05:00 +0100
+
 cutecom (0.30.3-0) unstable; urgency=low
   * now builds and runs with Qt5 versions less 5.3
   * performance tuning by switching to QPlainTextEdit
