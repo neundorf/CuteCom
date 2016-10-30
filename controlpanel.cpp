@@ -62,6 +62,9 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
     setAutoFillBackground(true);
     //    setWindowOpacity(0.1);
     m_bt_open->setCheckable(true);
+    // Disable RTS and CTS checkboxes during construction
+    m_rts_line->setEnabled(false);
+    m_dtr_line->setEnabled(false);
 
     // Connect button signal to slot
     connect(m_bt_settings, &QPushButton::clicked, this, &ControlPanel::toggleMenu);
@@ -129,10 +132,19 @@ void ControlPanel::toggleDevice(bool open)
     if (open) {
         if (m_menuVisible)
             toggleMenu();
+        // Enable RTS and DTR checkboxes when opening device. Note that visibility of these
+        // widgets depends on currently selected type of flow control.
+        m_rts_line->setEnabled(true);
+        m_dtr_line->setEnabled(true);
+
         m_bt_settings->setEnabled(false);
         m_bt_open->setText(tr("Cl&ose"));
         emit openDeviceClicked();
     } else {
+        // Disable RTS and DTR checkboxes when closing device.
+        m_rts_line->setEnabled(false);
+        m_dtr_line->setEnabled(false);
+
         m_bt_settings->setEnabled(true);
         emit closeDeviceClicked();
         m_bt_open->setText(tr("&Open"));
@@ -319,6 +331,11 @@ void ControlPanel::fillFlowCombo()
 
     connect(m_combo_flowControl, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
             [=]() { emit settingChanged(Settings::FlowControl, m_combo_flowControl->currentData()); });
+
+    // Connect flow-control's combobox index changed signal to the slot that sets the visibility of RTS and DTR
+    // checkboxes
+    connect(m_combo_flowControl, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &ControlPanel::changeVisibilityOfRTSandDTRCheckboxes);
 }
 
 void ControlPanel::fillParityCombo()
@@ -376,5 +393,21 @@ void ControlPanel::chooseLogFile()
     QString logFile = QFileDialog::getSaveFileName(this, tr("Save log file ..."), m_logfile_edit->text());
     if (!logFile.isEmpty()) {
         m_logfile_edit->setText(logFile);
+    }
+}
+
+void ControlPanel::changeVisibilityOfRTSandDTRCheckboxes(int index)
+{
+    // if index is valid then retrieve the flow control type and change visibility of RTS and DTR lines. RTS and CTS
+    // checkboxes are invisible only if hardware control is enabled.
+    if (-1 != index) {
+        auto data = static_cast<QSerialPort::FlowControl>(m_combo_flowControl->itemData(index).toInt());
+        if (QSerialPort::FlowControl::HardwareControl == data) {
+            m_rts_line->setVisible(false);
+            m_dtr_line->setVisible(false);
+        } else {
+            m_rts_line->setVisible(true);
+            m_dtr_line->setVisible(true);
+        }
     }
 }

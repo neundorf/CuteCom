@@ -81,6 +81,17 @@ protected:
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
     void resizeEvent(QResizeEvent *event);
 
+protected slots:
+    /**
+     * @brief Handles QCheckBox::stateChanged signal received from RTS checkbox (placed in control panel).
+     */
+    void setRTSLineState(int checked);
+
+    /**
+     * @brief Handles QCheckBox::stateChanged signal recieved from DTR checkbox (placed in control panel).
+     */
+    void setDTRLineState(int checked);
+
 private:
     void toggleLogging(bool start);
     void fillLineTerminationChooser(const Settings::LineTerminator setting = Settings::LF);

@@ -212,6 +212,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     connect(m_sessionManager, &SessionManager::sessionRenamed, m_settings, &Settings::renameSession);
     connect(m_sessionManager, &SessionManager::sessionCloned, m_settings, &Settings::cloneSession);
     connect(actionManager, &QAction::triggered, m_sessionManager, &QDialog::show);
+
+    connect(controlPanel->m_rts_line, &QCheckBox::stateChanged, this, &MainWindow::setRTSLineState);
+    connect(controlPanel->m_dtr_line, &QCheckBox::stateChanged, this, &MainWindow::setDTRLineState);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -322,10 +325,15 @@ void MainWindow::openDevice()
         m_device->setStopBits(session.stopBits);
         m_device->setFlowControl(session.flowControl);
 
-        /* Disable RTS/DTR when no flow control is used */
-        if (session.flowControl == QSerialPort::NoFlowControl) {
-            m_device->setDataTerminalReady(false);
-            m_device->setRequestToSend(false);
+        /* Disable RTS/DTR when no flow control or software flow control is used */
+        if (QSerialPort::FlowControl::HardwareControl != session.flowControl) {
+            // Force to emit QCheckBox::stateChanged signals to set proper logic levels on DTR/RTS lines.
+            // Note that on Linux when opening serial device even with no flow control, DTR and RTS lines are set to
+            // logic high, in RS232 that means a negative voltage on these lines (or just 0V for TTL based USB-UARTs).
+            // So this applies the same settings after reopen the device, and sets RTS/DTR to logic low when opening for
+            // first time when no flow control or software flow control is set.
+            emit controlPanel->m_dtr_line->stateChanged(controlPanel->m_dtr_line->checkState());
+            emit controlPanel->m_rts_line->stateChanged(controlPanel->m_rts_line->checkState());
         }
 
         m_device->flush();
@@ -919,6 +927,28 @@ void MainWindow::removeSelectedInputItems(bool checked)
         }
         m_command_history->setUpdatesEnabled(true);
         saveCommandHistory();
+    }
+}
+
+void MainWindow::setRTSLineState(int checked)
+{
+    if ((nullptr != m_device) && (true == m_device->isOpen())) {
+        if (Qt::CheckState::Checked == static_cast<Qt::CheckState>(checked)) {
+            m_device->setRequestToSend(true);
+        } else {
+            m_device->setRequestToSend(false);
+        }
+    }
+}
+
+void MainWindow::setDTRLineState(int checked)
+{
+    if ((nullptr != m_device) && (true == m_device->isOpen())) {
+        if (Qt::CheckState::Checked == static_cast<Qt::CheckState>(checked)) {
+            m_device->setDataTerminalReady(true);
+        } else {
+            m_device->setDataTerminalReady(false);
+        }
     }
 }
 
