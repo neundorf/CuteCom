@@ -62,6 +62,12 @@ private:
     void setHexOutputFormat(bool checked);
     void saveCommandHistory();
 
+private slots:
+    /**
+     * @brief Action to handle QAction::triggered signal. It removes selected items from inputs history list.
+     */
+    void removeSelectedInputItems(bool remove);
+
 protected:
     void prevCmd();
     void nextCmd();

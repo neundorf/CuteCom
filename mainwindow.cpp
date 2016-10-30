@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     m_bt_sendfile->setEnabled(false);
     m_command_history->setEnabled(false);
+    m_command_history->setSelectionMode(QAbstractItemView::SelectionMode::ExtendedSelection);
 
     m_lb_logfile->setStyleSheet(" QLabel:hover{color: blue;} ");
 
@@ -106,17 +107,33 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
 
-    // adds a custom context menu with a single entry to clear the command history
+    // adds a custom context menu with a entry to clear whole the command history or just remove selected items
     m_command_history->setContextMenuPolicy(Qt::CustomContextMenu);
     m_command_history_menu = new QMenu(this);
+    QAction* removeSelected = new QAction(tr("Remove selected"), m_command_history);
     QAction *clearAction = new QAction(tr("Clear History"), m_command_history);
+
+    // make the 'remove selected' action invisible at start-up, it will be shown only when user points to the valid row
+    removeSelected->setVisible(false);
+    m_command_history_menu->addAction(removeSelected);
     m_command_history_menu->addAction(clearAction);
     connect(clearAction, &QAction::triggered, m_command_history, [=]() {
         m_command_history->clear();
         saveCommandHistory();
     });
+
+    // define an action to delete the selected row from the list
+    connect(removeSelected, &QAction::triggered, this, &MainWindow::removeSelectedInputItems);
+
     connect(m_command_history, &QListWidget::customContextMenuRequested,
-            [=](const QPoint &pos) { m_command_history_menu->exec(mapToParent(pos)); });
+            [=](const QPoint &pos) {
+        // show the 'remove selected' action in the context menu only when row in the list is selected
+        if (true == m_command_history->selectionModel()->hasSelection()) {
+            removeSelected->setVisible(true);
+        }
+        m_command_history_menu->exec(QCursor::pos());
+        removeSelected->setVisible(false);
+    });
 
     fillLineTerminationChooser(m_settings->getLineTerminator());
 
@@ -888,6 +905,26 @@ void MainWindow::processData()
     m_output_display->displayData(data);
 
 }
+
+
+void MainWindow::removeSelectedInputItems(bool checked)
+{
+    if (true == m_command_history->selectionModel()->hasSelection()) {
+        QList<QModelIndex> selectedItems = m_command_history->selectionModel()->selectedIndexes();
+        // sort indexes in descending order - sorting is required to properly delete from the qlistwidget
+        std::sort(selectedItems.begin(), selectedItems.end(),
+                  [](const QModelIndex& a, const QModelIndex& b) {return b.row() < a.row();});
+        m_command_history->setUpdatesEnabled(false);
+        for (auto item = selectedItems.begin(); item != selectedItems.end(); ++item) {
+            if (true == item->isValid()) {
+                delete m_command_history->takeItem(item->row());
+            }
+        }
+        m_command_history->setUpdatesEnabled(true);
+        saveCommandHistory();
+    }
+}
+
 
 MainWindow::~MainWindow()
 {
