@@ -71,6 +71,7 @@ Here is the complete [**_Changelog_**](Changelog).
 
 As always:
 **Pull requests are welcome ! :-)**
+Please check the [contribution guidelines](CONTRIBUTING.md).
 
 ### Screenshot
 

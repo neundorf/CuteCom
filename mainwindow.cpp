@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     // adds a custom context menu with a entry to clear whole the command history or just remove selected items
     m_command_history->setContextMenuPolicy(Qt::CustomContextMenu);
     m_command_history_menu = new QMenu(this);
-    QAction* removeSelected = new QAction(tr("Remove selected"), m_command_history);
+    QAction *removeSelected = new QAction(tr("Remove selected"), m_command_history);
     QAction *clearAction = new QAction(tr("Clear History"), m_command_history);
 
     // make the 'remove selected' action invisible at start-up, it will be shown only when user points to the valid row
@@ -125,8 +125,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     // define an action to delete the selected row from the list
     connect(removeSelected, &QAction::triggered, this, &MainWindow::removeSelectedInputItems);
 
-    connect(m_command_history, &QListWidget::customContextMenuRequested,
-            [=](const QPoint &pos) {
+    connect(m_command_history, &QListWidget::customContextMenuRequested, [=](const QPoint &pos) {
         // show the 'remove selected' action in the context menu only when row in the list is selected
         if (true == m_command_history->selectionModel()->hasSelection()) {
             removeSelected->setVisible(true);
@@ -176,7 +175,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_output_display->setDisplayCtrlCharacters(m_settings->getCurrentSession().showCtrlCharacters);
     m_output_display->setDisplayTime(m_settings->getCurrentSession().showTimestamp);
     connect(controlPanel->m_check_timestamp, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayTime);
-    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display, &DataDisplay::setDisplayCtrlCharacters);
+    connect(controlPanel->m_check_lineBreak, &QCheckBox::toggled, m_output_display,
+            &DataDisplay::setDisplayCtrlCharacters);
 
     connect(controlPanel, &ControlPanel::openDeviceClicked, this, &MainWindow::openDevice);
     connect(controlPanel, &ControlPanel::closeDeviceClicked, this, &MainWindow::closeDevice);
@@ -326,7 +326,7 @@ void MainWindow::openDevice()
         if (session.flowControl == QSerialPort::NoFlowControl) {
             m_device->setDataTerminalReady(false);
             m_device->setRequestToSend(false);
-        }        
+        }
 
         m_device->flush();
 
@@ -381,12 +381,12 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
         // on hot unplug of usb2serial adapters, multiple errors will be
         // reported which is of no importance to the users.
         // reporting it once should be enough
-        QString heading = (m_deviceState == DEVICE_OPENING)? tr("Error opening device") : tr("Device Error");
+        QString heading = (m_deviceState == DEVICE_OPENING) ? tr("Error opening device") : tr("Device Error");
         m_deviceState = DEVICE_CLOSING;
         QMessageBox::critical(this, heading, m_device->errorString());
         // this will finally close the device too;
         controlPanel->closeDevice();
-    } else if(m_deviceState != DEVICE_CLOSING && m_deviceState != DEVICE_CLOSED) {
+    } else if (m_deviceState != DEVICE_CLOSING && m_deviceState != DEVICE_CLOSED) {
         qDebug() << "Error-#" << error << " " << m_device->errorString();
     }
     m_device->clearError();
@@ -838,7 +838,6 @@ void MainWindow::updateCommandHistory()
     m_commandCompleter->setModel(m_command_history_model);
 }
 
-
 /**
  * @brief MainWindow::readFromStdErr
  */
@@ -903,9 +902,7 @@ void MainWindow::processData()
         m_logFile.write(data);
     }
     m_output_display->displayData(data);
-
 }
-
 
 void MainWindow::removeSelectedInputItems(bool checked)
 {
@@ -913,7 +910,7 @@ void MainWindow::removeSelectedInputItems(bool checked)
         QList<QModelIndex> selectedItems = m_command_history->selectionModel()->selectedIndexes();
         // sort indexes in descending order - sorting is required to properly delete from the qlistwidget
         std::sort(selectedItems.begin(), selectedItems.end(),
-                  [](const QModelIndex& a, const QModelIndex& b) {return b.row() < a.row();});
+                  [](const QModelIndex &a, const QModelIndex &b) { return b.row() < a.row(); });
         m_command_history->setUpdatesEnabled(false);
         for (auto item = selectedItems.begin(); item != selectedItems.end(); ++item) {
             if (true == item->isValid()) {
@@ -925,10 +922,9 @@ void MainWindow::removeSelectedInputItems(bool checked)
     }
 }
 
-
 MainWindow::~MainWindow()
 {
-    if (m_device->isOpen()){
+    if (m_device->isOpen()) {
         m_deviceState = DEVICE_CLOSING;
         closeDevice();
     }
