@@ -80,6 +80,15 @@ private:
     void customBaudRateSet();
     void chooseLogFile();
 
+    /**
+     * @brief   Designed to catch QComboBox::currentIndexChanged(int) signal. Its roles is to set the
+     *          proper visibility of RTS and DTR checkboxes which depends on selected type of flow control.
+     *          If user selects the hardware flow control, then RTS and DTR checkboxes are being invisible.
+     *          If user selects none or software flow control, then RTS and DTR checkboxes are being visible.
+     * @param   index   QComboBox item's index.
+     */
+    void changeVisibilityOfRTSandDTRCheckboxes(int index);
+
 private:
     int m_x;
     int m_y;
