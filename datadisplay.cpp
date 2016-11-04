@@ -58,11 +58,17 @@ void DataDisplay::displayData(const QByteArray &data)
         m_timestamp = QStringLiteral("[") + timestamp.toString(m_timestampFormat) + QStringLiteral("] ");
     }
 
+    // Store selection position before appending new data
+    QTextCursor cursor = textCursor();
+    const int selStart = cursor.selectionStart();
+    const int selEnd = cursor.selectionEnd();
+    const int selLength = selEnd - selStart;
+
     // stop auto scrolling if the user scrolled to
     // to older data
     QScrollBar *sb = verticalScrollBar();
     int save_scroll = sb->value();
-    int save_max = (save_scroll == sb->maximum());
+    bool save_max = (save_scroll == sb->maximum());
 
     if (m_displayHex) {
         if (formatHexData(data)) {
@@ -135,6 +141,18 @@ void DataDisplay::displayData(const QByteArray &data)
     }
     m_data.clear();
 
+    // if any text was selected before appending new data then restore that selection
+    if (selLength > 0) {
+        // get new cursor object because probably it has changed after appending new data
+        cursor = textCursor();
+        // set the anchor - start of the selection
+        cursor.setPosition(selStart, QTextCursor::MoveMode::MoveAnchor);
+        // set the position - this just selects the text
+        cursor.movePosition(QTextCursor::MoveOperation::NextCharacter, QTextCursor::MoveMode::KeepAnchor, selLength);
+        setTextCursor(cursor);
+    }
+
+    // move vertical scroll to the end or to the saved user's position
     if (save_max)
         sb->setValue(sb->maximum());
     else
