@@ -48,8 +48,8 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
     fillParityCombo();
     fillFlowCombo();
     fillOpenModeCombo();
-    m_check_lineBreak = session.showCtrlCharacters;
-    m_check_timestamp = session.showTimestamp;
+    m_check_lineBreak->setChecked(session.showCtrlCharacters);
+    m_check_timestamp->setChecked(session.showTimestamp);
 
     connect(m_check_lineBreak, &QCheckBox::toggled,
             [=](bool checked) { emit settingChanged(Settings::ShowCtrlCharacters, checked); });
