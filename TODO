@@ -1,7 +1,13 @@
--get rid of Qt3Support
--add function to search for text in the output view (Ctrl+F and RMB menu of
-the output view)
--make font of the output view configurable (RMB menu of the output view)
--add something to measure time between outputs
+-search functionality (issue #6) - Please direct Pull request for this to
+   https://github.com/cyc1ingsir/cutecom/tree/test/search please
 
-Alexander Neundorf <neundorf@kde.org>
+-make font of the output view configurable (RMB menu of the output view ?)
+ -themes like Konsole is offering them would be cool e.g. green on black
+-implement unit tests (using QtTest)
+  -test data display (Ctrl characteras, ....)
+    see DataDisplayTester for details
+  -test settings are stored and reloaded correctly
+-provide a workaround for #22 (Flow Control)
+-add translations
+-improve CMakeList (automate release procedure)
+
