@@ -29,6 +29,7 @@ class TimeView;
 class SearchPanel;
 class DataDisplayPrivate;
 class QAction;
+class DataHighlighter;
 
 class DataDisplay : public QWidget
 {
@@ -36,7 +37,6 @@ class DataDisplay : public QWidget
 
     struct DisplayLine
     {
-        QString prefix;
         QString data;
         QString trailer;
     };
@@ -50,7 +50,7 @@ public:
 
     void setUndoRedoEnabled(bool enabled);
 
-    void showSearchPanel();
+    void startSearch();
 
     void displayData(const QByteArray &data);
 
@@ -60,8 +60,10 @@ public:
 
     void setDisplayCtrlCharacters(bool displayCtrlCharacters);
 
+    QTextDocument *getTextDocument();
+
 private:
-    void showSearchPanel(bool visible);
+    void find(const QString &, QTextDocument::FindFlags);
     void insertSpaces(QString &data, unsigned int step = 1);
     bool formatHexData(const QByteArray &inData);
     void constructDisplayLine(const QByteArray &inData);
@@ -72,8 +74,6 @@ private:
     SearchPanel *m_searchPanel;
 
     int m_searchAreaHeight;
-
-    QAction *findAction;
 
     /**
      * @brief m_timestamp
@@ -116,12 +116,12 @@ private:
 
     bool m_previous_ended_with_nl;
 
-    QTextCharFormat *m_format_prefix;
     QTextCharFormat *m_format_data;
     QTextCharFormat *m_format_hex;
     QTextCharFormat *m_format_ascii;
 
     QVector<QTime> *m_timestamps;
+    DataHighlighter *m_highlighter;
 };
 
 class DataDisplayPrivate : public QPlainTextEdit
@@ -137,7 +137,7 @@ public:
 
     void setTimestampFormat(const QString &timestampFormat);
 
-    void setPrefixFormat(QTextCharFormat *format_prefix);
+    void setTimeFormat(QTextCharFormat *format_time);
 
     QVector<QTime> *timestamps();
 
@@ -148,14 +148,14 @@ protected:
     void updateTimeView(const QRect &, int);
 
 private:
-    QTextCharFormat *m_format_prefix;
+    QTextCharFormat *m_format_time;
 
     /**
      * @brief m_timestampFormat
      */
     QString m_timestampFormat;
 
-    int m_prefix_width;
+    int m_time_width;
     TimeView *m_timeView;
     QVector<QTime> *m_timestamps;
 };

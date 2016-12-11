@@ -32,6 +32,7 @@ SOURCES += main.cpp\
     statusbar.cpp \
     sessionmanager.cpp \
     datadisplay.cpp \
+    datahighlighter.cpp \
     searchpanel.cpp \
     timeview.cpp
 
@@ -43,6 +44,7 @@ HEADERS  += mainwindow.h \
     statusbar.h \
     sessionmanager.h \
     datadisplay.h \
+    datahighlighter.h \
     searchpanel.h \
     timeview.h
 

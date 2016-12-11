@@ -203,8 +203,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     });
     connect(m_check_logging, &QCheckBox::toggled, this, &MainWindow::toggleLogging);
 
-    connect(actionFind, &QAction::triggered, m_output_display,
-            static_cast<void (DataDisplay::*)()>(&DataDisplay::showSearchPanel));
+    actionFind->setShortcut(QKeySequence::Find);
+    connect(actionFind, &QAction::triggered, m_output_display, &DataDisplay::startSearch);
 
     connect(actionAbout_CuteCom, &QAction::triggered, this, &MainWindow::showAboutMsg);
     connect(actionAbout_Qt, &QAction::triggered, &QApplication::aboutQt);

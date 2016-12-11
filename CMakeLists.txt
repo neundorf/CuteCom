@@ -28,7 +28,7 @@ find_package(Qt5Gui REQUIRED)
 qt5_wrap_ui(uiHeaders controlpanel.ui  mainwindow.ui statusbar.ui sessionmanager.ui searchpanel.ui)
 set(cutecomSrcs main.cpp mainwindow.cpp controlpanel.cpp  devicecombo.cpp
     serialdevicelistmodel.cpp  settings.cpp statusbar.cpp sessionmanager.cpp
-    datadisplay.cpp searchpanel.cpp timeview.cpp)
+    datadisplay.cpp datahighlighter.cpp searchpanel.cpp timeview.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # C++14: set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")

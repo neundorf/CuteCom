@@ -27,11 +27,16 @@ SearchPanel::SearchPanel(QWidget *parent)
 {
     setupUi(this);
     le_searchText->setPlaceholderText(tr("with no selection, search is started at end of text"));
-    connect(btn_close, &QToolButton::clicked, [=]() { emit closing(); });
+    connect(btn_close, &QToolButton::clicked, [=]() {
+        emit closing();
+        showPanel(false);
+    });
     connect(btn_next, &QToolButton::clicked, [=]() { emit findNext(le_searchText->text(), 0); });
     connect(btn_prev, &QToolButton::clicked,
             [=]() { emit findNext(le_searchText->text(), QTextDocument::FindBackward); });
+    installEventFilter(this);
     le_searchText->installEventFilter(this);
+    m_original_format = le_searchText->styleSheet();
 }
 
 /*!
@@ -45,10 +50,23 @@ void SearchPanel::showPanel(bool visible)
         hide();
     } else {
         le_searchText->setFocus();
+        if (!le_searchText->text().isEmpty())
+            le_searchText->selectAll();
         if (isVisible())
             return;
         setVisible(true);
     }
+}
+
+/*!
+ * Changes appearance of the font to indicate if
+ * the search pattern is found or not
+ * \brief SearchPanel::setFound
+ * \param patternFound
+ */
+void SearchPanel::setPatternFound(bool patternFound)
+{
+    le_searchText->setStyleSheet(((patternFound) ? m_original_format : QStringLiteral("color: red;")));
 }
 
 bool SearchPanel::eventFilter(QObject *obj, QEvent *event)
@@ -62,11 +80,13 @@ bool SearchPanel::eventFilter(QObject *obj, QEvent *event)
             } else if (ke->modifiers() == Qt::ShiftModifier) {
                 emit findNext(le_searchText->text(), QTextDocument::FindBackward);
             }
-        } else if (obj == le_searchText) {
-            if (ke->modifiers() == Qt::NoModifier) {
-                if (ke->key() == Qt::Key_Escape) {
-                    showPanel(false);
-                    return true;
+        } else if (ke->modifiers() == Qt::NoModifier) {
+            if (ke->key() == Qt::Key_Escape) {
+                showPanel(false);
+                return true;
+            } else if (obj == le_searchText) {
+                if (ke->key() == Qt::Key_Return) {
+                    emit textEntered(le_searchText->text());
                 }
             }
         }

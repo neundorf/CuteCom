@@ -2,6 +2,8 @@
  * Copyright (C) 2004-2009 Alexander Neundorf <neundorf@kde.org> (code used from original CuteCom)
  * Copyright (c) 2015-2016 Meinhard Ritscher <cyc1ingsir@gmail.com>
  * Copyright (c) 2015 Antoine Calando <acalando@free.fr> (displaying Ctrl-characters and ascii for hex)
+ * Copyright (c) 2016 Pauli Sundberg <https://github.com/susundberg> (Make several non-printable characters to be
+ *grouped)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +26,7 @@
 #include "datadisplay.h"
 #include "timeview.h"
 #include "searchpanel.h"
+#include "datahighlighter.h"
 
 #include <QScrollBar>
 #include <QPainter>
@@ -34,7 +37,6 @@ DataDisplay::DataDisplay(QWidget *parent)
     : QWidget(parent)
     , m_dataDisplay(new DataDisplayPrivate(this))
     , m_searchPanel(new SearchPanel(this))
-    , m_searchAreaHeight(0)
     , m_hexBytes(0)
     , m_hexLeftOver(0)
     , m_displayHex(false)
@@ -42,8 +44,8 @@ DataDisplay::DataDisplay(QWidget *parent)
     , m_previous_ended_with_nl(true)
 {
     setupTextFormats();
-    m_dataDisplay->setPrefixFormat(m_format_prefix);
     m_timestamps = m_dataDisplay->timestamps();
+    m_highlighter = new DataHighlighter(m_dataDisplay->document());
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     // to remove any margin around the layout
@@ -54,13 +56,8 @@ DataDisplay::DataDisplay(QWidget *parent)
     layout->addWidget(m_searchPanel);
     m_searchPanel->hide();
 
-    findAction = new QAction(this);
-    findAction->setShortcut(QKeySequence::Find);
-    this->addAction(findAction);
-    connect(findAction, &QAction::triggered, [=]() { showSearchPanel(true); });
-    connect(m_searchPanel, &SearchPanel::closing, [=]() { showSearchPanel(false); });
-    connect(m_searchPanel, &SearchPanel::findNext, m_dataDisplay,
-            static_cast<bool (QPlainTextEdit::*)(const QString &, QTextDocument::FindFlags)>(&QPlainTextEdit::find));
+    connect(m_searchPanel, &SearchPanel::findNext, this, &DataDisplay::find);
+    connect(m_searchPanel, &SearchPanel::textEntered, m_highlighter, &DataHighlighter::setSearchString);
 }
 
 void DataDisplay::clear()
@@ -73,8 +70,6 @@ void DataDisplay::clear()
 void DataDisplay::setReadOnly(bool readonly) { m_dataDisplay->setReadOnly(readonly); }
 
 void DataDisplay::setUndoRedoEnabled(bool enable) { m_dataDisplay->setUndoRedoEnabled(enable); }
-
-void DataDisplay::showSearchPanel() { m_searchPanel->showPanel(true); }
 
 /*!
  * Prepare data and finally append it to the end of text edit's
@@ -145,7 +140,6 @@ void DataDisplay::displayData(const QByteArray &data)
 
         if (m_displayHex) {
             m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.prefix, *m_format_prefix);
 
             m_dataDisplay->moveCursor(QTextCursor::End);
             m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
@@ -153,10 +147,6 @@ void DataDisplay::displayData(const QByteArray &data)
             m_dataDisplay->moveCursor(QTextCursor::End);
             m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
         } else {
-            if (line.prefix.size() > 0) {
-                m_dataDisplay->moveCursor(QTextCursor::End);
-                m_dataDisplay->textCursor().insertText(line.prefix, *m_format_prefix);
-            }
             m_dataDisplay->moveCursor(QTextCursor::End);
             m_dataDisplay->textCursor().insertText(line.data, *m_format_data);
         }
@@ -205,43 +195,54 @@ void DataDisplay::constructDisplayLine(const QByteArray &inData)
             }
 
         } else {
-            // Check if we have multiple zeros here -- concatenate them to a single printe
-            int nbreaks = 0;
-            
-            QString to_print;
-            
-            if (b == '\0') {
-               to_print="break";
-            }
-            else {
-               to_print = QString("0x%1").arg(b & 0xff, 2, 16, QChar('0'));
-            }
-            
-            for ( int nbreaks_loop = i; nbreaks_loop < inData.size(); nbreaks_loop++)             {
-               if ( inData.at( nbreaks_loop ) != (int)b )
-                  break;
-               
-               nbreaks += 1;
-               if ( nbreaks > 999 ) {  // make sure our padding to 3 characters dont go over
-                  line.data += QString("<%1 x %2>\n").arg( to_print ).arg( 999, 3, 10, QChar('0') );
-                  nbreaks -= 999;
-               }
-               
-            }
 
-            if ( nbreaks == 1 ) {
-               // Nice single '<break>' print
-               line.data += QString("<%1>\n").arg( to_print );
+            /* testcases:
+             *   0
+             *   0000
+             *   0x999
+             *   0x1024
+             *   abc0  plus all above (2-3) with leading abc
+             *   0z  plus all above (2-3) with trailing z
+             *   abc0z plus all above (2-3) with leading abc and trailing z
+             */
+
+            if (b == '\0') {
+                // Check if we have multiple zeros here -- concatenate them to a single printe
+                int nbreaks = 0;
+
+                for (int nbreaks_loop = i; nbreaks_loop < inData.size(); nbreaks_loop++) {
+                    if (inData.at(nbreaks_loop) != (int)b)
+                        break;
+
+                    nbreaks += 1;
+                    if (nbreaks > 999) { // make sure our padding to 3 characters dont go over
+                        line.data += QString("<break x %2>\n").arg(999, 3, 10, QChar('0'));
+                        m_data.append(line);
+                        line = DisplayLine();
+                        m_timestamps->append(m_timestamp);
+                        nbreaks -= 999;
+                        i += 999;
+                    }
+                }
+
+                if (nbreaks == 1) {
+                    // Nice single '<break>' print
+                    line.data += QString("<break>\n");
+                } else {
+                    // and multi print when needed
+                    line.data += QString("<break x %2>\n").arg(nbreaks, 3, 10, QChar('0'));
+                    i += (nbreaks - 1);
+                }
+
+                if (i < (inData.size() - 1)) {
+                    // append line as there are trailing characters after the break
+                    m_data.append(line);
+                    line = DisplayLine();
+                    m_timestamps->append(m_timestamp);
+                }
+            } else {
+                line.data += QString("<0x%1>").arg(b & 0xff, 2, 16, QChar('0'));
             }
-            else  { 
-               // and multi print when needed
-               line.data += QString("<%1 x %2>\n").arg( to_print ).arg( nbreaks, 3, 10, QChar('0') );
-               i += (nbreaks - 1);
-            }
-            
-            m_previous_ended_with_nl = true;
-            m_data.append(line);
-            line = DisplayLine();
         }
     }
     if (!line.data.isEmpty()) {
@@ -286,19 +287,21 @@ void DataDisplay::setDisplayCtrlCharacters(bool displayCtrlCharacters)
     m_displayCtrlCharacters = displayCtrlCharacters;
 }
 
+QTextDocument *DataDisplay::getTextDocument() { return m_dataDisplay->document(); }
+
 /*!
- * \brief DataDisplay::showSearchPanel
- * \param visible
+ * \brief DataDisplay::find
  */
-void DataDisplay::showSearchPanel(bool visible)
+void DataDisplay::find(const QString &text, QTextDocument::FindFlags flags)
 {
-    if (visible) {
-        m_searchAreaHeight = m_searchPanel->height();
-    } else {
-        m_searchAreaHeight = 0;
-    }
-    m_searchPanel->showPanel(visible);
+    bool found = m_dataDisplay->find(text, flags);
+    m_searchPanel->setPatternFound(found);
 }
+
+/*!
+ * \brief DataDisplay::startSearch
+ */
+void DataDisplay::startSearch() { m_searchPanel->showPanel(true); }
 
 /*!
  * Setting up different formats for displaying
@@ -320,10 +323,9 @@ void DataDisplay::setupTextFormats()
     m_format_data = new QTextCharFormat(format);
     //    qDebug() << m_format_data->foreground();
 
-    col = QColor(120, 180, 200);
+    col = QColor(100, 100, 200);
     format.setForeground(col);
-    m_format_prefix = new QTextCharFormat(format);
-    //    qDebug() << m_format_prefix->foreground();
+    m_dataDisplay->setTimeFormat(new QTextCharFormat(format));
 
     col = QColor(Qt::black);
     format.setForeground(col);
@@ -408,8 +410,7 @@ bool DataDisplay::formatHexData(const QByteArray &inData)
             asciiText.insert(8, QStringLiteral("  "));
 
         DisplayLine line;
-        line.prefix = QString("%1 ").arg(m_hexBytes, 8, 10, QChar('0'));
-        line.data = QString("%1\t").arg(hexJunk, -50);
+        line.data = QString("%1 %2\t").arg(m_hexBytes, 8, 10, QChar('0')).arg(hexJunk, -50);
         line.trailer = QString(asciiText);
         if (!redisplay || pos > 0)
             m_timestamps->append(m_timestamp);
@@ -440,7 +441,7 @@ bool DataDisplay::formatHexData(const QByteArray &inData)
 DataDisplayPrivate::DataDisplayPrivate(DataDisplay *parent)
     : QPlainTextEdit(parent)
     , m_timestampFormat(QStringLiteral("HH:mm:ss:zzz"))
-    , m_prefix_width(0)
+    , m_time_width(0)
     , m_timeView(new TimeView(this))
 {
     m_timestamps = new QVector<QTime>();
@@ -457,7 +458,7 @@ void DataDisplayPrivate::resizeEvent(QResizeEvent *event)
     QPlainTextEdit::resizeEvent(event);
 
     QRect cr = contentsRect();
-    m_timeView->setGeometry(QRect(cr.left(), cr.top(), m_prefix_width, cr.height()));
+    m_timeView->setGeometry(QRect(cr.left(), cr.top(), m_time_width, cr.height()));
 }
 
 /*!
@@ -469,9 +470,9 @@ void DataDisplayPrivate::resizeEvent(QResizeEvent *event)
 void DataDisplayPrivate::timeViewPaintEvent(QPaintEvent *event)
 {
     QPainter painter(m_timeView);
-    painter.fillRect(event->rect(), QColor(233,233,233));
-    painter.setPen(m_format_prefix->foreground().color());
-    painter.setFont(m_format_prefix->font());
+    painter.fillRect(event->rect(), QColor(233, 233, 233));
+    painter.setPen(m_format_time->foreground().color());
+    painter.setFont(m_format_time->font());
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int)blockBoundingGeometry(block).translated(contentOffset()).top();
@@ -510,7 +511,7 @@ void DataDisplayPrivate::updateTimeView(const QRect &rect, int dy)
     //        setViewportMargins(m_prefix_width,0,0,0);
 }
 
-int DataDisplayPrivate::timeViewWidth() { return m_prefix_width; }
+int DataDisplayPrivate::timeViewWidth() { return m_time_width; }
 
 /*!
  * \brief OutputTerminal::setDisplayTime
@@ -519,17 +520,17 @@ int DataDisplayPrivate::timeViewWidth() { return m_prefix_width; }
 void DataDisplayPrivate::setDisplayTime(bool displayTime)
 {
     if (displayTime) {
-        QFontMetrics *metric = new QFontMetrics(m_format_prefix->font());
-        m_prefix_width = 3 + metric->width(QStringLiteral("00:00:00:000"));
+        QFontMetrics *metric = new QFontMetrics(m_format_time->font());
+        m_time_width = 3 + metric->width(QStringLiteral("00:00:00:000"));
     } else {
-        m_prefix_width = 0;
+        m_time_width = 0;
     }
-    setViewportMargins(m_prefix_width, 0, 0, 0);
+    setViewportMargins(m_time_width, 0, 0, 0);
 }
 
 QVector<QTime> *DataDisplayPrivate::timestamps() { return m_timestamps; }
 
-void DataDisplayPrivate::setPrefixFormat(QTextCharFormat *format_prefix) { m_format_prefix = format_prefix; }
+void DataDisplayPrivate::setTimeFormat(QTextCharFormat *format_time) { m_format_time = format_time; }
 
 /*!
  * \brief OutputTerminal::setTimestampFormat

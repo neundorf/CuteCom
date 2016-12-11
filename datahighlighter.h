@@ -19,34 +19,37 @@
  * http://www.gnu.org/copyleft/gpl.html
  */
 
-#ifndef SEARCHPANEL_H
-#define SEARCHPANEL_H
+#ifndef DATAHIGHLIGHTER_H
+#define DATAHIGHLIGHTER_H
 
-#include "ui_searchpanel.h"
-#include <QTextDocument>
+#include <QSyntaxHighlighter>
 
-class SearchPanel : public QWidget, private Ui::SearchPanel
+class DataHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
 
 public:
-    explicit SearchPanel(QWidget *parent = 0);
-    void showPanel(bool setVisible);
-    void setPatternFound(bool patternFound);
+    enum Formats { HEX };
+
+    DataHighlighter(QTextDocument *parent = 0);
+    void setSearchString(const QString &search);
+    void setCharFormat(QTextCharFormat *format, Formats type);
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-
-signals:
-    void closing();
-    void findNext(QString searchText, QTextDocument::FindFlags);
-    void textEntered(QString searchText);
+    void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
 
 private:
-    /*!
-     * \brief m_original_format
-     */
-    QString m_original_format;
+    QRegExp *m_pattern_time;
+    QTextCharFormat m_format_time;
+    QRegExp *m_pattern_bytes;
+    QTextCharFormat m_format_bytes;
+    QRegExp *m_pattern_ctrl;
+    QTextCharFormat m_format_ctrl;
+    QRegExp *m_pattern_hex;
+    QTextCharFormat m_format_hex;
+    QTextCharFormat m_format_search;
+
+    QString m_searchString;
 };
 
-#endif // SEARCHPANEL_H
+#endif // DATAHIGHLIGHTER_H
