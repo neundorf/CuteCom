@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sat Oct 15 20:05:20 UTC 2016 - cyc1ingsir@gmail.com 
+
+-update to release 0.30.4
+ *Disable RTS/DTR when no flow control is used
+ *man page update
+ *licenses cleanup
+
+-------------------------------------------------------------------
 Mon Feb 15 20:20:20 UTC 2016 - cyc1ingsir@gmail.com 
 
 -update to release 0.30.3

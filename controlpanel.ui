@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>628</width>
-    <height>129</height>
+    <height>130</height>
    </rect>
   </property>
   <property name="autoFillBackground">
@@ -241,6 +241,32 @@
      </item>
      <item>
       <widget class="DeviceCombo" name="m_combo_device" native="true"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="m_rts_line">
+       <property name="toolTip">
+        <string>The RTS line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
+       </property>
+       <property name="locale">
+        <locale language="English" country="UnitedStates"/>
+       </property>
+       <property name="text">
+        <string>RTS</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="m_dtr_line">
+       <property name="toolTip">
+        <string>The DTR line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
+       </property>
+       <property name="locale">
+        <locale language="English" country="UnitedStates"/>
+       </property>
+       <property name="text">
+        <string>DTR</string>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">

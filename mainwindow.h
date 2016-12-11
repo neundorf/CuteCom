@@ -62,6 +62,12 @@ private:
     void setHexOutputFormat(bool checked);
     void saveCommandHistory();
 
+private slots:
+    /**
+     * @brief Action to handle QAction::triggered signal. It removes selected items from inputs history list.
+     */
+    void removeSelectedInputItems(bool remove);
+
 protected:
     void prevCmd();
     void nextCmd();
@@ -74,6 +80,17 @@ protected:
     void readFromStdErr();
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
     void resizeEvent(QResizeEvent *event);
+
+protected slots:
+    /**
+     * @brief Handles QCheckBox::stateChanged signal received from RTS checkbox (placed in control panel).
+     */
+    void setRTSLineState(int checked);
+
+    /**
+     * @brief Handles QCheckBox::stateChanged signal recieved from DTR checkbox (placed in control panel).
+     */
+    void setDTRLineState(int checked);
 
 private:
     void toggleLogging(bool start);

@@ -1,3 +1,7 @@
+0.30.4, October 15th, 2016
+-Disable RTS/DTR when no flow control is used
+-man page update
+-licenses cleanup
 0.30.3, February 15th, 2016
 -now builds and runs using Qt5 versions less than 5.3
 -performance tuning by switching to QPlainTextEdit

@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     m_bt_sendfile->setEnabled(false);
     m_command_history->setEnabled(false);
+    m_command_history->setSelectionMode(QAbstractItemView::SelectionMode::ExtendedSelection);
 
     m_lb_logfile->setStyleSheet(" QLabel:hover{color: blue;} ");
 
@@ -106,17 +107,32 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
 
-    // adds a custom context menu with a single entry to clear the command history
+    // adds a custom context menu with a entry to clear whole the command history or just remove selected items
     m_command_history->setContextMenuPolicy(Qt::CustomContextMenu);
     m_command_history_menu = new QMenu(this);
+    QAction *removeSelected = new QAction(tr("Remove selected"), m_command_history);
     QAction *clearAction = new QAction(tr("Clear History"), m_command_history);
+
+    // make the 'remove selected' action invisible at start-up, it will be shown only when user points to the valid row
+    removeSelected->setVisible(false);
+    m_command_history_menu->addAction(removeSelected);
     m_command_history_menu->addAction(clearAction);
     connect(clearAction, &QAction::triggered, m_command_history, [=]() {
         m_command_history->clear();
         saveCommandHistory();
     });
-    connect(m_command_history, &QListWidget::customContextMenuRequested,
-            [=](const QPoint &pos) { m_command_history_menu->exec(mapToParent(pos)); });
+
+    // define an action to delete the selected row from the list
+    connect(removeSelected, &QAction::triggered, this, &MainWindow::removeSelectedInputItems);
+
+    connect(m_command_history, &QListWidget::customContextMenuRequested, [=](const QPoint &pos) {
+        // show the 'remove selected' action in the context menu only when row in the list is selected
+        if (true == m_command_history->selectionModel()->hasSelection()) {
+            removeSelected->setVisible(true);
+        }
+        m_command_history_menu->exec(QCursor::pos());
+        removeSelected->setVisible(false);
+    });
 
     fillLineTerminationChooser(m_settings->getLineTerminator());
 
@@ -199,6 +215,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     connect(m_sessionManager, &SessionManager::sessionRenamed, m_settings, &Settings::renameSession);
     connect(m_sessionManager, &SessionManager::sessionCloned, m_settings, &Settings::cloneSession);
     connect(actionManager, &QAction::triggered, m_sessionManager, &QDialog::show);
+
+    connect(controlPanel->m_rts_line, &QCheckBox::stateChanged, this, &MainWindow::setRTSLineState);
+    connect(controlPanel->m_dtr_line, &QCheckBox::stateChanged, this, &MainWindow::setDTRLineState);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -309,11 +328,16 @@ void MainWindow::openDevice()
         m_device->setStopBits(session.stopBits);
         m_device->setFlowControl(session.flowControl);
 
-        /* Disable RTS/DTR when no flow control is used */
-        if (session.flowControl == QSerialPort::NoFlowControl) {
-            m_device->setDataTerminalReady(false);
-            m_device->setRequestToSend(false);
-        }        
+        /* Disable RTS/DTR when no flow control or software flow control is used */
+        if (QSerialPort::FlowControl::HardwareControl != session.flowControl) {
+            // Force to emit QCheckBox::stateChanged signals to set proper logic levels on DTR/RTS lines.
+            // Note that on Linux when opening serial device even with no flow control, DTR and RTS lines are set to
+            // logic high, in RS232 that means a negative voltage on these lines (or just 0V for TTL based USB-UARTs).
+            // So this applies the same settings after reopen the device, and sets RTS/DTR to logic low when opening for
+            // first time when no flow control or software flow control is set.
+            emit controlPanel->m_dtr_line->stateChanged(controlPanel->m_dtr_line->checkState());
+            emit controlPanel->m_rts_line->stateChanged(controlPanel->m_rts_line->checkState());
+        }
 
         m_device->flush();
 
@@ -889,6 +913,46 @@ void MainWindow::processData()
         m_logFile.write(data);
     }
     m_output_display->displayData(data);
+}
+
+void MainWindow::removeSelectedInputItems(bool checked)
+{
+    if (true == m_command_history->selectionModel()->hasSelection()) {
+        QList<QModelIndex> selectedItems = m_command_history->selectionModel()->selectedIndexes();
+        // sort indexes in descending order - sorting is required to properly delete from the qlistwidget
+        std::sort(selectedItems.begin(), selectedItems.end(),
+                  [](const QModelIndex &a, const QModelIndex &b) { return b.row() < a.row(); });
+        m_command_history->setUpdatesEnabled(false);
+        for (auto item = selectedItems.begin(); item != selectedItems.end(); ++item) {
+            if (true == item->isValid()) {
+                delete m_command_history->takeItem(item->row());
+            }
+        }
+        m_command_history->setUpdatesEnabled(true);
+        saveCommandHistory();
+    }
+}
+
+void MainWindow::setRTSLineState(int checked)
+{
+    if ((nullptr != m_device) && (true == m_device->isOpen())) {
+        if (Qt::CheckState::Checked == static_cast<Qt::CheckState>(checked)) {
+            m_device->setRequestToSend(true);
+        } else {
+            m_device->setRequestToSend(false);
+        }
+    }
+}
+
+void MainWindow::setDTRLineState(int checked)
+{
+    if ((nullptr != m_device) && (true == m_device->isOpen())) {
+        if (Qt::CheckState::Checked == static_cast<Qt::CheckState>(checked)) {
+            m_device->setDataTerminalReady(true);
+        } else {
+            m_device->setDataTerminalReady(false);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
