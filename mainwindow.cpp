@@ -377,7 +377,7 @@ void MainWindow::closeDevice()
 
 /**
  * This is connected to the error signal of the serial port
- * beeing used.
+ * being used.
  * @brief MainWindow::handleError
  * @param error
  */
