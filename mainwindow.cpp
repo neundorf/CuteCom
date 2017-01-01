@@ -452,20 +452,20 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
     int index = m_combo_lineterm->findData((setting > Settings::HEX) ? Settings::LF : setting);
     if (index != -1) {
         m_combo_lineterm->setCurrentIndex(index);
-		if (setting == Settings::CR) {
-			m_output_display->setLinebreakChars("\r");
-		} else {
-			m_output_display->setLinebreakChars("\n");
-		}
+        if (setting == Settings::CR) {
+            m_output_display->setLinebreakChars("\r");
+        } else {
+            m_output_display->setLinebreakChars("\n");
+        }
     }
-	connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
-		m_settings->settingChanged(Settings::LineTermination, m_combo_lineterm->currentData());
-		if (m_settings->getLineTerminator() == Settings::CR) {
-			m_output_display->setLinebreakChars("\r");
-		} else {
-			m_output_display->setLinebreakChars("\n");
-		}
-	});
+    connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
+        m_settings->settingChanged(Settings::LineTermination, m_combo_lineterm->currentData());
+        if (m_settings->getLineTerminator() == Settings::CR) {
+            m_output_display->setLinebreakChars("\r");
+        } else {
+            m_output_display->setLinebreakChars("\n");
+        }
+    });
 }
 
 /**
