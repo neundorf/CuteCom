@@ -458,9 +458,11 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
             m_output_display->setLinebreakChars("\n");
         }
     }
+    /* Assumption:
+       If the connected device expects CR ('\r') as line termination, it will send CR as line 
+       termination as well. Setup the DataDisplay to break lines on CR instaed of LF accordingly */
     connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
-        m_settings->settingChanged(Settings::LineTermination, m_combo_lineterm->currentData());
-        if (m_settings->getLineTerminator() == Settings::CR) {
+        if(m_combo_lineterm->currentData().value<Settings::LineTerminator>() == Settings::CR)
             m_output_display->setLinebreakChars("\r");
         } else {
             m_output_display->setLinebreakChars("\n");
