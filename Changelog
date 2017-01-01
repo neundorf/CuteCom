@@ -1,3 +1,7 @@
+under development
+-Linked line termination of displayed data 
+with the option (LF, CRLF, CR, ...) for user input.
+
 0.30.4, October 15th, 2016
 -Disable RTS/DTR when no flow control is used
 -man page update

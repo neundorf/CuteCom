@@ -43,6 +43,11 @@ Henrik Hautakoski <henrik@tickoff.se>
 https://github.com/pnx/CuteCom.git
 Option for prefixing each line with a timestamp
 
+Karl Zeilhofer <karl@zeilhofer.co.at>
+https://github.com/KarlZeilhofer/cutecom.git
+Linked line termination of displayed data 
+with the option (LF, CRLF, CR, ...) for user input.
+
 
 IDEAS - still a ToDo:
 ====================================

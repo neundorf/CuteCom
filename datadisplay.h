@@ -60,6 +60,8 @@ public:
 
     void setDisplayCtrlCharacters(bool displayCtrlCharacters);
 
+	void setLinebreakChars(const QString &chars);
+
     QTextDocument *getTextDocument();
 
 private:
@@ -106,6 +108,11 @@ private:
      * @brief m_displayCtrlCharacters
      */
     bool m_displayCtrlCharacters;
+
+	/**
+	 * defines characters at which a new line is generated.
+	 */
+	QString m_linebreakChars;
 
     /**
      * The container to store multiple formated
