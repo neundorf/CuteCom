@@ -577,17 +577,25 @@ bool MainWindow::sendString(const QString &s)
     if (lineMode == Settings::HEX) // hex
     {
         QString hex = s;
-        hex.remove(QRegExp("\\s"));
+        hex.remove(QRegExp("\\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")); //spaces except that in quotes
         if ((hex.startsWith("0x")) || (hex.startsWith("0X"))) {
             hex = hex.mid(2);
         }
 
-        if (hex.length() % 2 != 0) {
-            hex = "0" + hex;
-        }
-
-        for (int i = 0; i < hex.length() / 2; i++) {
-            QString nextByte = hex.mid(i * 2, 2);
+        bool ascii = false;
+        for (int i=0; i<hex.length();) {
+            QString nextByte=hex.mid(i, ascii ? 1 : 2);
+            i += ascii ? 1 : 2;
+            if (nextByte.left(1) == "\"") {
+                if (!ascii)
+                    ascii = true;
+                else {
+                    ascii = false;
+                    continue;
+                }
+            }
+            if (ascii)
+                continue;
             bool ok = true;
             nextByte.toUInt(&ok, 16);
             if (!ok) {
@@ -597,9 +605,29 @@ bool MainWindow::sendString(const QString &s)
             }
         }
 
-        for (int i = 0; i < hex.length() / 2; i++) {
-            QString nextByte = hex.mid(i * 2, 2);
-            unsigned int byte = nextByte.toUInt(0, 16);
+        if (ascii) {
+            QMessageBox::information(this, tr("Invalid format"), tr("No closing quote"));
+            return false;
+        }
+
+        for (int i = 0; i < hex.length();) {
+            QString nextByte = hex.mid(i, ascii ? 1 : 2);
+            i += ascii ? 1 : 2;
+            if (nextByte.left(1) == "\"") {
+                if (!ascii) {
+                    ascii = true;
+                    nextByte = nextByte.right(1);
+                } else {
+                    ascii = false;
+                    continue;
+                }
+            }
+            unsigned int byte;
+            if (ascii)
+                byte=(nextByte.toLatin1())[0];
+            else
+                byte=nextByte.toUInt(0, 16);
+
             sendByte(byte & 0xff, charDelay);
             // fprintf(stderr, " 0x%x d:%d ", byte & 0xff, charDelay);
         }
