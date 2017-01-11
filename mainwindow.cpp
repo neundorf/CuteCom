@@ -520,7 +520,7 @@ void MainWindow::nextCmd()
 void MainWindow::execCmd()
 {
     m_cmdBufIndex = 0;
-    QString cmd = m_input_edit->text().trimmed();
+    QString cmd = m_input_edit->text();
     m_input_edit->clear();
     if (!cmd.isEmpty()) {
         bool found = false;
