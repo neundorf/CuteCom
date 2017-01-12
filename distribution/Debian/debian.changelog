@@ -1,7 +1,18 @@
+cutecom (0.40.0-0) unstable; urgency=low
+  * First implementation of searching the output
+  * Linked line termination of displayed data 
+    with the option (LF, CRLF, CR, ...) for user input.
+  * compress/combine multiple non printable characters into one expression
+    in case the same non printable characters is beeing received multiple
+    times in a sequence
+  * enable a mix from hex and ascii characters in hex input mode
+
+ -- Meinhard Ritscher <cyc1ingsir@gmail.com>  Thu, 12 Jan 2017 18:04:00 +0100
+
 cutecom (0.30.4-0) unstable; urgency=low
-  *Disable RTS/DTR when no flow control is used
-  *man page update
-  *licenses cleanup
+  * Disable RTS/DTR when no flow control is used
+  * man page update
+  * licenses cleanup
 
  -- Meinhard Ritscher <cyc1ingsir@gmail.com>  Sat, 16 Oct 2016 22:05:00 +0100
 

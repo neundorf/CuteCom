@@ -1,6 +1,14 @@
 ## Contributing
 
 Pull requests are welcome.
+Please do not hesitate to add yourselfs to CREDITS file!
+If you are looking for ideas check the TODO file.
+Automated (unit) tests would be a real cool feature.
+
+### Travis
+This project uses Travis CI (https://travis-ci.org/).
+Unfortunately this has not been setup for the main repository (and I can't do it myself)
+If you do it to your fork, a centralized build will start and your changes will be checked.
 
 ### Supported Qt Version
 CuteCom Version 0.3x was the first version based on Qt5. Originally it was developed using Qt 5.3.
