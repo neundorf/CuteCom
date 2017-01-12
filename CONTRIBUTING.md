@@ -13,7 +13,7 @@ Please verify, that your CRs don't rely on a higher Qt version.
 ### Consistent Formatting
 
 CuteCom is being developed with a code styleguide in place since I 
-believe that a consisten coding style is important.
+believe that a consistent coding style is important.
 To achive that, clang-format is beeing used.
 For a great talk on that you may want to watch this video
 https://www.youtube.com/watch?v=s7JmdCfI__c
@@ -28,7 +28,7 @@ BreakConstructorInitializersBeforeComma: true, AccessModifierOffset: -4,
 BreakBeforeBinaryOperators: true
 ```
 
-You may do so by using the Qt Creator beautifier.
+You may do so by using the Qt Creator beautifier or the CLI (see below)
 
 (To get the menu entry displayed, the beautifier plugin needs to be enablde under Help -> About Plugins.)
 
@@ -42,7 +42,7 @@ For __Qt Creator version 4.x__ and above the syntax is different. Each setting n
 BasedOnStyle: llvm 
 ColumnLimit: 120
 IndentWidth: 4
-Standard: Cpp11,
+Standard: Cpp11
 PointerBindsToType: false
 BreakBeforeBraces: Linux
 BreakConstructorInitializersBeforeComma: true
@@ -52,8 +52,14 @@ BreakBeforeBinaryOperators: true
 
 ### clang-format on CLI
 This is based on clang-format version 3.5.0:
+
 >clang-format --version
+
 clang-format version 3.5.0 (tags/RELEASE_350/final 216961)
 
+```
 > clang-format  -i -style="{BasedOnStyle: llvm, ColumnLimit: 120, IndentWidth: 4, Standard: Cpp11, PointerBindsToType: false, BreakBeforeBraces: Linux, BreakConstructorInitializersBeforeComma: true, AccessModifierOffset: -4, BreakBeforeBinaryOperators: true}" mainwindow.cpp
+```
+
+You may use the provided scirpt `format.sh` e.g. `./format.sh mainwindow.cpp`
 
