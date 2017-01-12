@@ -78,7 +78,8 @@ public:
         , m_list(list)
     {
     }
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const Q_DECL_OVERRIDE;
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                          const QModelIndex &index) const Q_DECL_OVERRIDE;
 
 signals:
     void editingFinished(QString newSessionName) const;
