@@ -102,7 +102,7 @@ void StatusBar::setToolTip(const QSerialPort *port)
                                  .arg(info.vendorIdentifier())
                                  .arg(info.productIdentifier())
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-                ;
+            ;
 #else
                                  .arg(info.serialNumber());
 #endif

@@ -38,12 +38,7 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 {
     Q_OBJECT
 
-    enum DeviceState {
-        DEVICE_CLOSED,
-        DEVICE_OPENING,
-        DEVICE_OPEN,
-        DEVICE_CLOSING
-    };
+    enum DeviceState { DEVICE_CLOSED, DEVICE_OPENING, DEVICE_OPEN, DEVICE_CLOSING };
 
 public:
     explicit MainWindow(QWidget *parent = 0, const QString &session = "");

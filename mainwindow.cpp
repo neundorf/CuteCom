@@ -203,6 +203,9 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     });
     connect(m_check_logging, &QCheckBox::toggled, this, &MainWindow::toggleLogging);
 
+    actionFind->setShortcut(QKeySequence::Find);
+    connect(actionFind, &QAction::triggered, m_output_display, &DataDisplay::startSearch);
+
     connect(actionAbout_CuteCom, &QAction::triggered, this, &MainWindow::showAboutMsg);
     connect(actionAbout_Qt, &QAction::triggered, &QApplication::aboutQt);
 
@@ -449,9 +452,22 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
     int index = m_combo_lineterm->findData((setting > Settings::HEX) ? Settings::LF : setting);
     if (index != -1) {
         m_combo_lineterm->setCurrentIndex(index);
+        if (setting == Settings::CR) {
+            m_output_display->setLinebreakChar("\r");
+        } else {
+            m_output_display->setLinebreakChar("\n");
+        }
     }
-    connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            [=]() { m_settings->settingChanged(Settings::LineTermination, m_combo_lineterm->currentData()); });
+    /* Assumption:
+       If the connected device expects CR ('\r') as line termination, it will send CR as line
+       termination as well. Setup the DataDisplay to break lines on CR instaed of LF accordingly */
+    connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
+        if (m_combo_lineterm->currentData().value<Settings::LineTerminator>() == Settings::CR) {
+            m_output_display->setLinebreakChar("\r");
+        } else {
+            m_output_display->setLinebreakChar("\n");
+        }
+    });
 }
 
 /**
