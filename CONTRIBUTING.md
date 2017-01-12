@@ -53,7 +53,7 @@ BreakBeforeBinaryOperators: true
 ### clang-format on CLI
 This is based on clang-format version 3.5.0:
 
->clang-format --version
+`>clang-format --version`
 
 clang-format version 3.5.0 (tags/RELEASE_350/final 216961)
 
@@ -61,5 +61,5 @@ clang-format version 3.5.0 (tags/RELEASE_350/final 216961)
 > clang-format  -i -style="{BasedOnStyle: llvm, ColumnLimit: 120, IndentWidth: 4, Standard: Cpp11, PointerBindsToType: false, BreakBeforeBraces: Linux, BreakConstructorInitializersBeforeComma: true, AccessModifierOffset: -4, BreakBeforeBinaryOperators: true}" mainwindow.cpp
 ```
 
-You may use the provided scirpt `format.sh` e.g. `./format.sh mainwindow.cpp`
+You may use the provided script `format.sh` e.g. `./format.sh mainwindow.cpp`
 
