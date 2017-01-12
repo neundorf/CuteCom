@@ -577,14 +577,14 @@ bool MainWindow::sendString(const QString &s)
     if (lineMode == Settings::HEX) // hex
     {
         QString hex = s;
-        hex.remove(QRegExp("\\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")); //spaces except that in quotes
+        hex.remove(QRegExp("\\s+(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")); // spaces except that in quotes
         if ((hex.startsWith("0x")) || (hex.startsWith("0X"))) {
             hex = hex.mid(2);
         }
 
         bool ascii = false;
-        for (int i=0; i<hex.length();) {
-            QString nextByte=hex.mid(i, ascii ? 1 : 2);
+        for (int i = 0; i < hex.length();) {
+            QString nextByte = hex.mid(i, ascii ? 1 : 2);
             i += ascii ? 1 : 2;
             if (nextByte.left(1) == "\"") {
                 if (!ascii)
@@ -624,9 +624,9 @@ bool MainWindow::sendString(const QString &s)
             }
             unsigned int byte;
             if (ascii)
-                byte=(nextByte.toLatin1())[0];
+                byte = (nextByte.toLatin1())[0];
             else
-                byte=nextByte.toUInt(0, 16);
+                byte = nextByte.toUInt(0, 16);
 
             sendByte(byte & 0xff, charDelay);
             // fprintf(stderr, " 0x%x d:%d ", byte & 0xff, charDelay);
