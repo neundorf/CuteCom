@@ -43,13 +43,27 @@ Henrik Hautakoski <henrik@tickoff.se>
 https://github.com/pnx/CuteCom.git
 Option for prefixing each line with a timestamp
 
-
-IDEAS - still a ToDo:
-====================================
-
 Toni Jovanoski <minimoog77@gmail.com>
 https://github.com/minimoog/qcom.git
 Added completer for history commands.
+
+Contributors via PRs
+======================================
+
+Karl Zeilhofer <karl@zeilhofer.co.at>
+https://github.com/KarlZeilhofer/cutecom.git
+Linked line termination of displayed data 
+with the option (LF, CRLF, CR, ...) for user input.
+
+P Sundberg
+compress multiple non printable characters
+
+Dmitry Mastykin
+mix hex and ascii input
+
+
+IDEAS - still a ToDo:
+====================================
 
 Ivan A-R <ivan@tuxotronic.org>
 https://github.com/plumbum/Cutecom-my.git

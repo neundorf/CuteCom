@@ -1,10 +1,22 @@
 -------------------------------------------------------------------
+Thu Jan 12 19:04:34 UTC 2017 - cyc1ingsir@gmail.com 
+
+-update to release 0.40.0
+ * implementation of searching the output
+ * Linked line termination of displayed data 
+   with the option (LF, CRLF, CR, ...) for user input.
+ * compress/combine multiple non printable characters into one expression
+   in case the same non printable characters is beeing received multiple
+   times in a sequence
+ * enable a mix from hex and ascii characters in hex input mode
+
+--------------------------------------------------------------------
 Sat Oct 15 20:05:20 UTC 2016 - cyc1ingsir@gmail.com 
 
 -update to release 0.30.4
- *Disable RTS/DTR when no flow control is used
- *man page update
- *licenses cleanup
+ * Disable RTS/DTR when no flow control is used
+ * man page update
+ * licenses cleanup
 
 -------------------------------------------------------------------
 Mon Feb 15 20:20:20 UTC 2016 - cyc1ingsir@gmail.com 

@@ -48,6 +48,8 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
     fillParityCombo();
     fillFlowCombo();
     fillOpenModeCombo();
+    m_check_lineBreak->setChecked(session.showCtrlCharacters);
+    m_check_timestamp->setChecked(session.showTimestamp);
 
     connect(m_check_lineBreak, &QCheckBox::toggled,
             [=](bool checked) { emit settingChanged(Settings::ShowCtrlCharacters, checked); });
@@ -267,7 +269,7 @@ void ControlPanel::fillDeviceCombo(const QString &deviceName)
                                      .arg(info.vendorIdentifier())
                                      .arg(info.productIdentifier())
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)
-                    ;
+                ;
 #else
                                      .arg(info.serialNumber());
 #endif
@@ -316,10 +318,10 @@ void ControlPanel::fillBaudCombo()
     m_combo_Baud->insertSeparator(90); // append this separator at the end
     m_combo_Baud->addItem(QStringLiteral("Custom"), -1);
 
-    connect(m_combo_Baud, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-            [=]() { int custom = m_combo_Baud->currentData().toInt();
-                    emit settingChanged(Settings::BaudRate,
-                                        (custom == -1) ? m_combo_Baud->currentText() : m_combo_Baud->currentData());
+    connect(m_combo_Baud, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
+        int custom = m_combo_Baud->currentData().toInt();
+        emit settingChanged(Settings::BaudRate,
+                            (custom == -1) ? m_combo_Baud->currentText() : m_combo_Baud->currentData());
     });
 }
 

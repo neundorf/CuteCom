@@ -1,3 +1,12 @@
+0.40.0, January 12, 2017
+-First implementation of searching the output
+-Linked line termination of displayed data 
+ with the option (LF, CRLF, CR, ...) for user input.
+-compress/combine multiple non printable characters into one expression
+ in case the same non printable characters is beeing received multiple
+ times in a sequence
+-enable a mix from hex and ascii characters in hex input mode
+
 0.30.4, October 15th, 2016
 -Disable RTS/DTR when no flow control is used
 -man page update

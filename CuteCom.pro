@@ -31,7 +31,10 @@ SOURCES += main.cpp\
     serialdevicelistmodel.cpp \
     statusbar.cpp \
     sessionmanager.cpp \
-    datadisplay.cpp
+    datadisplay.cpp \
+    datahighlighter.cpp \
+    searchpanel.cpp \
+    timeview.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -40,12 +43,17 @@ HEADERS  += mainwindow.h \
     serialdevicelistmodel.h \
     statusbar.h \
     sessionmanager.h \
-    datadisplay.h
+    datadisplay.h \
+    datahighlighter.h \
+    searchpanel.h \
+    timeview.h
+
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \
     statusbar.ui \
-    sessionmanager.ui
+    sessionmanager.ui \
+    searchpanel.ui
 
 RESOURCES += \
     resources.qrc
