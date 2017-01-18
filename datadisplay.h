@@ -24,6 +24,7 @@
 
 #include <QPlainTextEdit>
 #include <QTime>
+#include <QTimer>
 
 class TimeView;
 class SearchPanel;
@@ -129,6 +130,10 @@ private:
 
     QVector<QTime> *m_timestamps;
     DataHighlighter *m_highlighter;
+    QTimer m_timer;
+
+private slots:
+    void BlockReady(void);
 };
 
 class DataDisplayPrivate : public QPlainTextEdit

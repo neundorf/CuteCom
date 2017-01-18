@@ -59,6 +59,9 @@ DataDisplay::DataDisplay(QWidget *parent)
 
     connect(m_searchPanel, &SearchPanel::findNext, this, &DataDisplay::find);
     connect(m_searchPanel, &SearchPanel::textEntered, m_highlighter, &DataHighlighter::setSearchString);
+
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(BlockReady()));
+    m_timer.start(100);
 }
 
 void DataDisplay::clear()
@@ -72,15 +75,10 @@ void DataDisplay::setReadOnly(bool readonly) { m_dataDisplay->setReadOnly(readon
 
 void DataDisplay::setUndoRedoEnabled(bool enable) { m_dataDisplay->setUndoRedoEnabled(enable); }
 
-/*!
- * Prepare data and finally append it to the end of text edit's
- * view port.
- * \brief OutputTerminal::displayData
- * \param data
- */
-void DataDisplay::displayData(const QByteArray &data)
+void DataDisplay::BlockReady(void)
 {
-    m_timestamp = QTime::currentTime();
+    if (m_data.isEmpty())
+        return;
 
     // Store selection position before appending new data
     QTextCursor cursor = m_dataDisplay->textCursor();
@@ -93,19 +91,60 @@ void DataDisplay::displayData(const QByteArray &data)
     int save_scroll = sb->value();
     bool save_max = (save_scroll == sb->maximum());
 
-    if (m_displayHex) {
-        if (formatHexData(data)) {
-            // the last line was incomplete
-            // we remove it from the display before redrawing it
-            // with the current data added
-            QTextCursor storeCursorPos = m_dataDisplay->textCursor();
+    m_dataDisplay->moveCursor(QTextCursor::End);
+    if (!m_displayHex) {
+        m_dataDisplay->textCursor().beginEditBlock();
+        // append the data to end of the parent's TextEdit
+        // each part of the line with it's set format
+        foreach (DisplayLine line, m_data) {
+            m_dataDisplay->textCursor().insertText(line.data, *m_format_data);
+        }
+        m_dataDisplay->textCursor().endEditBlock();
+    } else {
+        // the last line was incomplete
+        // we remove it from the display before redrawing it
+        // with the current data added
+        foreach (DisplayLine line, m_data) {
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
             m_dataDisplay->textCursor().removeSelectedText();
             // textCursor().deletePreviousChar();
-            m_dataDisplay->setTextCursor(storeCursorPos);
+            //------------------------------------------
+            m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
+            m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
         }
+    }
+    //        qDebug() << "last TextBlock # " << blockCount() << " length: " << m_timestamps.length();
+    //        Q_ASSERT(blockCount() == m_timestamps.length());
+    m_data.clear();
+
+    // if any text was selected before appending new data then restore that selection
+    if (selLength > 0) {
+        // set the anchor - start of the selection
+        cursor.setPosition(selStart, QTextCursor::MoveMode::MoveAnchor);
+        // set the position - this just selects the text
+        cursor.movePosition(QTextCursor::MoveOperation::NextCharacter, QTextCursor::MoveMode::KeepAnchor, selLength);
+        m_dataDisplay->setTextCursor(cursor);
+    }
+
+    if (save_max)
+        sb->setValue(sb->maximum());
+    else
+        sb->setValue(save_scroll);
+}
+/*!
+ * Prepare data and finally append it to the end of text edit's
+ * view port.
+ * \brief OutputTerminal::displayData
+ * \param data
+ */
+void DataDisplay::displayData(const QByteArray &data)
+{
+    m_timestamp = QTime::currentTime();
+
+    if (m_displayHex) {
+        formatHexData(data);
     } else if (!data.contains(m_linebreakChar)) {
         constructDisplayLine(data);
     } else {
@@ -147,39 +186,7 @@ void DataDisplay::displayData(const QByteArray &data)
 
     // append the data to end of the parent's TextEdit
     // each part of the line with it's set format
-    foreach (DisplayLine line, m_data) {
-
-        if (m_displayHex) {
-            m_dataDisplay->moveCursor(QTextCursor::End);
-
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
-
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
-        } else {
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.data, *m_format_data);
-        }
-        //        qDebug() << "last TextBlock # " << blockCount() << " length: " << m_timestamps.length();
-        //        Q_ASSERT(blockCount() == m_timestamps.length());
-    }
-    m_data.clear();
-
-    // if any text was selected before appending new data then restore that selection
-    if (selLength > 0) {
-        // set the anchor - start of the selection
-        cursor.setPosition(selStart, QTextCursor::MoveMode::MoveAnchor);
-        // set the position - this just selects the text
-        cursor.movePosition(QTextCursor::MoveOperation::NextCharacter, QTextCursor::MoveMode::KeepAnchor, selLength);
-        m_dataDisplay->setTextCursor(cursor);
-    }
-
-    // move vertical scroll to the end or to the saved user's position
-    if (save_max)
-        sb->setValue(sb->maximum());
-    else
-        sb->setValue(save_scroll);
+    // moved to BlockReady()
 }
 
 /*!
