@@ -131,6 +131,7 @@ private:
     QVector<QTime> *m_timestamps;
     DataHighlighter *m_highlighter;
     QTimer m_timer;
+    bool m_redisplay;
 
 private slots:
     void BlockReady(void);

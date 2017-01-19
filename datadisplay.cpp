@@ -43,6 +43,7 @@ DataDisplay::DataDisplay(QWidget *parent)
     , m_displayCtrlCharacters(false)
     , m_linebreakChar('\n')
     , m_previous_ended_with_nl(true)
+    , m_redisplay(false)
 {
     setupTextFormats();
     m_timestamps = m_dataDisplay->timestamps();
@@ -104,16 +105,20 @@ void DataDisplay::BlockReady(void)
         // the last line was incomplete
         // we remove it from the display before redrawing it
         // with the current data added
-        foreach (DisplayLine line, m_data) {
+        if (m_redisplay) {
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
             m_dataDisplay->textCursor().removeSelectedText();
             // textCursor().deletePreviousChar();
-            //------------------------------------------
+        }
+
+        m_dataDisplay->textCursor().beginEditBlock();
+        foreach (DisplayLine line, m_data) {
             m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
             m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
         }
+        m_dataDisplay->textCursor().endEditBlock();
     }
     //        qDebug() << "last TextBlock # " << blockCount() << " length: " << m_timestamps.length();
     //        Q_ASSERT(blockCount() == m_timestamps.length());
@@ -144,7 +149,10 @@ void DataDisplay::displayData(const QByteArray &data)
     m_timestamp = QTime::currentTime();
 
     if (m_displayHex) {
-        formatHexData(data);
+        bool isFirst = m_data.isEmpty();
+        bool redisplay = formatHexData(data);
+        if (isFirst)
+            m_redisplay = redisplay;
     } else if (!data.contains(m_linebreakChar)) {
         constructDisplayLine(data);
     } else {
@@ -418,6 +426,8 @@ bool DataDisplay::formatHexData(const QByteArray &inData)
     if (overflow) {
         data = m_hexLeftOver.append(inData);
         m_hexBytes -= overflow;
+        if (!m_data.isEmpty())
+            m_data.removeLast();
         redisplay = true;
     } else {
         data = inData;
