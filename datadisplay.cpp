@@ -61,8 +61,7 @@ DataDisplay::DataDisplay(QWidget *parent)
     connect(m_searchPanel, &SearchPanel::findNext, this, &DataDisplay::find);
     connect(m_searchPanel, &SearchPanel::textEntered, m_highlighter, &DataHighlighter::setSearchString);
 
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(BlockReady()));
-    m_timer.start(100);
+    startTimer(100);
 }
 
 void DataDisplay::clear()
@@ -76,7 +75,7 @@ void DataDisplay::setReadOnly(bool readonly) { m_dataDisplay->setReadOnly(readon
 
 void DataDisplay::setUndoRedoEnabled(bool enable) { m_dataDisplay->setUndoRedoEnabled(enable); }
 
-void DataDisplay::BlockReady(void)
+void DataDisplay::displayDataGo(void)
 {
     if (m_data.isEmpty())
         return;
@@ -194,7 +193,7 @@ void DataDisplay::displayData(const QByteArray &data)
 
     // append the data to end of the parent's TextEdit
     // each part of the line with it's set format
-    // moved to BlockReady()
+    // moved to displayDataGo();
 }
 
 /*!

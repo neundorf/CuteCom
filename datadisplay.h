@@ -24,7 +24,6 @@
 
 #include <QPlainTextEdit>
 #include <QTime>
-#include <QTimer>
 
 class TimeView;
 class SearchPanel;
@@ -54,6 +53,8 @@ public:
     void startSearch();
 
     void displayData(const QByteArray &data);
+
+    void displayDataGo(void);
 
     void setDisplayTime(bool displayTime);
 
@@ -130,11 +131,10 @@ private:
 
     QVector<QTime> *m_timestamps;
     DataHighlighter *m_highlighter;
-    QTimer m_timer;
     bool m_redisplay;
 
-private slots:
-    void BlockReady(void);
+protected:
+    void timerEvent(QTimerEvent *event) { displayDataGo(); }
 };
 
 class DataDisplayPrivate : public QPlainTextEdit
