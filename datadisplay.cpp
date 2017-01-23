@@ -60,8 +60,9 @@ DataDisplay::DataDisplay(QWidget *parent)
 
     connect(m_searchPanel, &SearchPanel::findNext, this, &DataDisplay::find);
     connect(m_searchPanel, &SearchPanel::textEntered, m_highlighter, &DataHighlighter::setSearchString);
+    connect(&m_bufferingIncomingDataTimer, &QTimer::timeout, this, &DataDisplay::displayDataFromBuffer);
 
-    startTimer(100);
+    m_bufferingIncomingDataTimer.setSingleShot(true);
 }
 
 void DataDisplay::clear()
@@ -75,7 +76,15 @@ void DataDisplay::setReadOnly(bool readonly) { m_dataDisplay->setReadOnly(readon
 
 void DataDisplay::setUndoRedoEnabled(bool enable) { m_dataDisplay->setUndoRedoEnabled(enable); }
 
-void DataDisplay::displayDataGo(void)
+/*!
+ * Append the data, buffered in m_data to end
+ * of the parent's TextEdit view port.
+ * Keep selection and scroll position.
+ * Called on timer's shot
+ *
+ * \brief DataDisplay::displayDataFromBuffer
+ */
+void DataDisplay::displayDataFromBuffer(void)
 {
     if (m_data.isEmpty())
         return;
@@ -138,9 +147,8 @@ void DataDisplay::displayDataGo(void)
         sb->setValue(save_scroll);
 }
 /*!
- * Prepare data and finally append it to the end of text edit's
- * view port.
- * \brief OutputTerminal::displayData
+ * Prepare data and buffer them in m_data.
+ * \brief DataDisplay::displayData
  * \param data
  */
 void DataDisplay::displayData(const QByteArray &data)
@@ -191,9 +199,10 @@ void DataDisplay::displayData(const QByteArray &data)
         }
     }
 
-    // append the data to end of the parent's TextEdit
-    // each part of the line with it's set format
-    // moved to displayDataGo();
+    // now the new data is appended to m_data buffer, and will be
+    // displayed on timer's shot by displayDataFromBuffer()
+    if (!m_bufferingIncomingDataTimer.isActive())
+        m_bufferingIncomingDataTimer.start(70);
 }
 
 /*!
@@ -300,13 +309,15 @@ void DataDisplay::setDisplayTime(bool displayTime) { m_dataDisplay->setDisplayTi
 void DataDisplay::setDisplayHex(bool displayHex)
 {
     if (displayHex) {
-        m_dataDisplay->setLineWrapMode(QPlainTextEdit::NoWrap);
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
         }
+        displayDataFromBuffer();
+        m_dataDisplay->setLineWrapMode(QPlainTextEdit::NoWrap);
         m_hexBytes = 0;
         m_displayHex = displayHex;
     } else {
+        displayDataFromBuffer();
         m_dataDisplay->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         m_displayHex = displayHex;
         // make sure new data arriving after
