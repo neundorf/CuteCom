@@ -43,6 +43,7 @@ DataDisplay::DataDisplay(QWidget *parent)
     , m_displayCtrlCharacters(false)
     , m_linebreakChar('\n')
     , m_previous_ended_with_nl(true)
+    , m_redisplay(false)
 {
     setupTextFormats();
     m_timestamps = m_dataDisplay->timestamps();
@@ -59,6 +60,9 @@ DataDisplay::DataDisplay(QWidget *parent)
 
     connect(m_searchPanel, &SearchPanel::findNext, this, &DataDisplay::find);
     connect(m_searchPanel, &SearchPanel::textEntered, m_highlighter, &DataHighlighter::setSearchString);
+    connect(&m_bufferingIncomingDataTimer, &QTimer::timeout, this, &DataDisplay::displayDataFromBuffer);
+
+    m_bufferingIncomingDataTimer.setSingleShot(true);
 }
 
 void DataDisplay::clear()
@@ -73,14 +77,17 @@ void DataDisplay::setReadOnly(bool readonly) { m_dataDisplay->setReadOnly(readon
 void DataDisplay::setUndoRedoEnabled(bool enable) { m_dataDisplay->setUndoRedoEnabled(enable); }
 
 /*!
- * Prepare data and finally append it to the end of text edit's
- * view port.
- * \brief OutputTerminal::displayData
- * \param data
+ * Append the data, buffered in m_data to end
+ * of the parent's TextEdit view port.
+ * Keep selection and scroll position.
+ * Called on timer's shot
+ *
+ * \brief DataDisplay::displayDataFromBuffer
  */
-void DataDisplay::displayData(const QByteArray &data)
+void DataDisplay::displayDataFromBuffer(void)
 {
-    m_timestamp = QTime::currentTime();
+    if (m_data.isEmpty())
+        return;
 
     // Store selection position before appending new data
     QTextCursor cursor = m_dataDisplay->textCursor();
@@ -93,19 +100,66 @@ void DataDisplay::displayData(const QByteArray &data)
     int save_scroll = sb->value();
     bool save_max = (save_scroll == sb->maximum());
 
-    if (m_displayHex) {
-        if (formatHexData(data)) {
-            // the last line was incomplete
-            // we remove it from the display before redrawing it
-            // with the current data added
-            QTextCursor storeCursorPos = m_dataDisplay->textCursor();
+    m_dataDisplay->moveCursor(QTextCursor::End);
+    if (!m_displayHex) {
+        m_dataDisplay->textCursor().beginEditBlock();
+        // append the data to end of the parent's TextEdit
+        // each part of the line with it's set format
+        foreach (DisplayLine line, m_data) {
+            m_dataDisplay->textCursor().insertText(line.data, *m_format_data);
+        }
+        m_dataDisplay->textCursor().endEditBlock();
+    } else {
+        // the last line was incomplete
+        // we remove it from the display before redrawing it
+        // with the current data added
+        if (m_redisplay) {
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
             m_dataDisplay->moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
             m_dataDisplay->textCursor().removeSelectedText();
             // textCursor().deletePreviousChar();
-            m_dataDisplay->setTextCursor(storeCursorPos);
         }
+
+        m_dataDisplay->textCursor().beginEditBlock();
+        foreach (DisplayLine line, m_data) {
+            m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
+            m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
+        }
+        m_dataDisplay->textCursor().endEditBlock();
+    }
+    //        qDebug() << "last TextBlock # " << blockCount() << " length: " << m_timestamps.length();
+    //        Q_ASSERT(blockCount() == m_timestamps.length());
+    m_data.clear();
+
+    // if any text was selected before appending new data then restore that selection
+    if (selLength > 0) {
+        // set the anchor - start of the selection
+        cursor.setPosition(selStart, QTextCursor::MoveMode::MoveAnchor);
+        // set the position - this just selects the text
+        cursor.movePosition(QTextCursor::MoveOperation::NextCharacter, QTextCursor::MoveMode::KeepAnchor, selLength);
+        m_dataDisplay->setTextCursor(cursor);
+    }
+
+    if (save_max)
+        sb->setValue(sb->maximum());
+    else
+        sb->setValue(save_scroll);
+}
+/*!
+ * Prepare data and buffer them in m_data.
+ * \brief DataDisplay::displayData
+ * \param data
+ */
+void DataDisplay::displayData(const QByteArray &data)
+{
+    m_timestamp = QTime::currentTime();
+
+    if (m_displayHex) {
+        bool isFirst = m_data.isEmpty();
+        bool redisplay = formatHexData(data);
+        if (isFirst)
+            m_redisplay = redisplay;
     } else if (!data.contains(m_linebreakChar)) {
         constructDisplayLine(data);
     } else {
@@ -145,41 +199,10 @@ void DataDisplay::displayData(const QByteArray &data)
         }
     }
 
-    // append the data to end of the parent's TextEdit
-    // each part of the line with it's set format
-    foreach (DisplayLine line, m_data) {
-
-        if (m_displayHex) {
-            m_dataDisplay->moveCursor(QTextCursor::End);
-
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.data, *m_format_hex);
-
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.trailer, *m_format_ascii);
-        } else {
-            m_dataDisplay->moveCursor(QTextCursor::End);
-            m_dataDisplay->textCursor().insertText(line.data, *m_format_data);
-        }
-        //        qDebug() << "last TextBlock # " << blockCount() << " length: " << m_timestamps.length();
-        //        Q_ASSERT(blockCount() == m_timestamps.length());
-    }
-    m_data.clear();
-
-    // if any text was selected before appending new data then restore that selection
-    if (selLength > 0) {
-        // set the anchor - start of the selection
-        cursor.setPosition(selStart, QTextCursor::MoveMode::MoveAnchor);
-        // set the position - this just selects the text
-        cursor.movePosition(QTextCursor::MoveOperation::NextCharacter, QTextCursor::MoveMode::KeepAnchor, selLength);
-        m_dataDisplay->setTextCursor(cursor);
-    }
-
-    // move vertical scroll to the end or to the saved user's position
-    if (save_max)
-        sb->setValue(sb->maximum());
-    else
-        sb->setValue(save_scroll);
+    // now the new data is appended to m_data buffer, and will be
+    // displayed on timer's shot by displayDataFromBuffer()
+    if (!m_bufferingIncomingDataTimer.isActive())
+        m_bufferingIncomingDataTimer.start(70);
 }
 
 /*!
@@ -286,13 +309,15 @@ void DataDisplay::setDisplayTime(bool displayTime) { m_dataDisplay->setDisplayTi
 void DataDisplay::setDisplayHex(bool displayHex)
 {
     if (displayHex) {
-        m_dataDisplay->setLineWrapMode(QPlainTextEdit::NoWrap);
         if (!m_previous_ended_with_nl) {
             displayData(QByteArray(1, '\n'));
         }
+        displayDataFromBuffer();
+        m_dataDisplay->setLineWrapMode(QPlainTextEdit::NoWrap);
         m_hexBytes = 0;
         m_displayHex = displayHex;
     } else {
+        displayDataFromBuffer();
         m_dataDisplay->setLineWrapMode(QPlainTextEdit::WidgetWidth);
         m_displayHex = displayHex;
         // make sure new data arriving after
@@ -411,6 +436,8 @@ bool DataDisplay::formatHexData(const QByteArray &inData)
     if (overflow) {
         data = m_hexLeftOver.append(inData);
         m_hexBytes -= overflow;
+        if (!m_data.isEmpty())
+            m_data.removeLast();
         redisplay = true;
     } else {
         data = inData;
