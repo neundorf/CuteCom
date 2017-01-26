@@ -448,6 +448,8 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
     m_combo_lineterm->addItem(QStringLiteral("CR/LF"), QVariant::fromValue(Settings::CRLF));
     m_combo_lineterm->addItem(tr("None"), QVariant::fromValue(Settings::NONE));
     m_combo_lineterm->addItem(QStringLiteral("Hex"), QVariant::fromValue(Settings::HEX));
+    m_combo_lineterm->setItemData(m_combo_lineterm->findData(Settings::HEX),
+                                  tr("Mixed Hex/ASCII:\n\"ABC\"444546\"GHI\"4a4b4c"), Qt::ToolTipRole);
 
     int index = m_combo_lineterm->findData((setting > Settings::HEX) ? Settings::LF : setting);
     if (index != -1) {
