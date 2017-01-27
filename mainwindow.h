@@ -27,6 +27,7 @@
 #include "sessionmanager.h"
 #include "statusbar.h"
 #include "settings.h"
+#include "ctrlcharacterspopup.h"
 
 #include <QMainWindow>
 #include <QFont>
@@ -83,7 +84,7 @@ protected slots:
     void setRTSLineState(int checked);
 
     /**
-     * @brief Handles QCheckBox::stateChanged signal recieved from DTR checkbox (placed in control panel).
+     * @brief Handles QCheckBox::stateChanged signal received from DTR checkbox (placed in control panel).
      */
     void setDTRLineState(int checked);
 
@@ -112,6 +113,9 @@ private:
     QCompleter *m_commandCompleter;
     QStringListModel *m_command_history_model;
     QMenu *m_command_history_menu;
+
+    /// @brief Popup widget that provides graphical way to enter ASCII control characters into input field.
+    popup_widget::CtrlCharactersPopup *m_ctrlCharactersPopup;
 
     /**
      * @brief m_keyRepeatTimer
