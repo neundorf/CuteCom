@@ -453,16 +453,14 @@ bool DataDisplay::formatHexData(const QByteArray &inData)
         junkSize = junk.size();
         QString hexJunk = QString(junk.toHex());
         QString asciiText;
-        char *c = junk.data();
-        while (*c) {
-            unsigned int b = *c;
+        for (char c : junk) {
+            unsigned int b = c;
             if (b < 0x20) {
                 b += 0x2400;
             } else if (0x7F <= b) {
                 b = '.';
             }
             asciiText += QChar(b);
-            ++c;
         }
         if (junkSize == 16)
             asciiText.append('\n');
