@@ -4,6 +4,7 @@
  *                                                          from https://github.com/preet/cutecom-qt5)
  * Copyright (c) 2015 Meinhard Ritscher <cyc1ingsir@gmail.com>
  * Copyright (c) 2015 Antoine Calando <acalando@free.fr> (improvements added to original CuteCom)
+ * Copyright (c) 2017 Slawomir Pabian <sla.pab.dev@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2017 Slawomir Pabian <sla.pab.dev@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * For more information on the GPL, please go to:
+ * http://www.gnu.org/copyleft/gpl.html
+ */
+
 #include "ctrlcharacterspopup.h"
 #include <QApplication>
 #include <QKeyEvent>
@@ -342,40 +363,40 @@ void CtrlCharactersPopup::fillCtrlCharsContainer()
 {
     // Append first most common used control characters and their shortcuts
     m_ctrlChars.insert(m_ctrlChars.begin(),
-                {
-                    {0x00, Qt::CTRL + Qt::Key_At, nullptr},
-                    {0x01, Qt::CTRL + Qt::Key_A, nullptr},
-                    {0x02, Qt::CTRL + Qt::Key_B, nullptr},
-                    {0x03, Qt::CTRL + Qt::Key_C, nullptr},
-                    {0x04, Qt::CTRL + Qt::Key_D, nullptr},
-                    {0x05, Qt::CTRL + Qt::Key_E, nullptr},
-                    {0x06, Qt::CTRL + Qt::Key_F, nullptr},
-                    {0x07, Qt::CTRL + Qt::Key_G, nullptr},
-                    {0x08, Qt::CTRL + Qt::Key_H, nullptr},
-                    {0x09, Qt::CTRL + Qt::Key_I, nullptr},
-                    {0x0A, Qt::CTRL + Qt::Key_J, nullptr},
-                    {0x0B, Qt::CTRL + Qt::Key_K, nullptr},
-                    {0x0C, Qt::CTRL + Qt::Key_L, nullptr},
-                    {0x0D, Qt::CTRL + Qt::Key_M, nullptr},
-                    {0x0E, Qt::CTRL + Qt::Key_N, nullptr},
-                    {0x0F, Qt::CTRL + Qt::Key_O, nullptr},
-                    {0x10, Qt::CTRL + Qt::Key_P, nullptr},
-                    {0x11, Qt::CTRL + Qt::Key_Q, nullptr},
-                    {0x12, Qt::CTRL + Qt::Key_R, nullptr},
-                    {0x13, Qt::CTRL + Qt::Key_S, nullptr},
-                    {0x14, Qt::CTRL + Qt::Key_T, nullptr},
-                    {0x15, Qt::CTRL + Qt::Key_U, nullptr},
-                    {0x16, Qt::CTRL + Qt::Key_V, nullptr},
-                    {0x17, Qt::CTRL + Qt::Key_W, nullptr},
-                    {0x18, Qt::CTRL + Qt::Key_X, nullptr},
-                    {0x19, Qt::CTRL + Qt::Key_Y, nullptr},
-                    {0x1A, Qt::CTRL + Qt::Key_Z, nullptr},
-                    {0x1B, Qt::CTRL + Qt::Key_BracketLeft, nullptr},  // Ctrl+[
-                    {0x1C, Qt::CTRL + Qt::Key_Backslash, nullptr},
-                    {0x1D, Qt::CTRL + Qt::Key_BracketRight, nullptr}, // Ctrl+]
-                    {0x1E, Qt::CTRL + Qt::Key_AsciiCircum, nullptr},  // Ctrl+^
-                    {0x1F, Qt::CTRL + Qt::Key_Underscore, nullptr}    // Ctrl+_
-                });
+                       {
+                           std::make_tuple(0x00, Qt::CTRL + Qt::Key_At, nullptr),
+                           std::make_tuple(0x01, Qt::CTRL + Qt::Key_A, nullptr),
+                           std::make_tuple(0x02, Qt::CTRL + Qt::Key_B, nullptr),
+                           std::make_tuple(0x03, Qt::CTRL + Qt::Key_C, nullptr),
+                           std::make_tuple(0x04, Qt::CTRL + Qt::Key_D, nullptr),
+                           std::make_tuple(0x05, Qt::CTRL + Qt::Key_E, nullptr),
+                           std::make_tuple(0x06, Qt::CTRL + Qt::Key_F, nullptr),
+                           std::make_tuple(0x07, Qt::CTRL + Qt::Key_G, nullptr),
+                           std::make_tuple(0x08, Qt::CTRL + Qt::Key_H, nullptr),
+                           std::make_tuple(0x09, Qt::CTRL + Qt::Key_I, nullptr),
+                           std::make_tuple(0x0A, Qt::CTRL + Qt::Key_J, nullptr),
+                           std::make_tuple(0x0B, Qt::CTRL + Qt::Key_K, nullptr),
+                           std::make_tuple(0x0C, Qt::CTRL + Qt::Key_L, nullptr),
+                           std::make_tuple(0x0D, Qt::CTRL + Qt::Key_M, nullptr),
+                           std::make_tuple(0x0E, Qt::CTRL + Qt::Key_N, nullptr),
+                           std::make_tuple(0x0F, Qt::CTRL + Qt::Key_O, nullptr),
+                           std::make_tuple(0x10, Qt::CTRL + Qt::Key_P, nullptr),
+                           std::make_tuple(0x11, Qt::CTRL + Qt::Key_Q, nullptr),
+                           std::make_tuple(0x12, Qt::CTRL + Qt::Key_R, nullptr),
+                           std::make_tuple(0x13, Qt::CTRL + Qt::Key_S, nullptr),
+                           std::make_tuple(0x14, Qt::CTRL + Qt::Key_T, nullptr),
+                           std::make_tuple(0x15, Qt::CTRL + Qt::Key_U, nullptr),
+                           std::make_tuple(0x16, Qt::CTRL + Qt::Key_V, nullptr),
+                           std::make_tuple(0x17, Qt::CTRL + Qt::Key_W, nullptr),
+                           std::make_tuple(0x18, Qt::CTRL + Qt::Key_X, nullptr),
+                           std::make_tuple(0x19, Qt::CTRL + Qt::Key_Y, nullptr),
+                           std::make_tuple(0x1A, Qt::CTRL + Qt::Key_Z, nullptr),
+                           std::make_tuple(0x1B, Qt::CTRL + Qt::Key_BracketLeft, nullptr), // Ctrl+[
+                           std::make_tuple(0x1C, Qt::CTRL + Qt::Key_Backslash, nullptr),
+                           std::make_tuple(0x1D, Qt::CTRL + Qt::Key_BracketRight, nullptr), // Ctrl+]
+                           std::make_tuple(0x1E, Qt::CTRL + Qt::Key_AsciiCircum, nullptr),  // Ctrl+^
+                           std::make_tuple(0x1F, Qt::CTRL + Qt::Key_Underscore, nullptr)    // Ctrl+_
+                       });
 }
 
 void CtrlCharactersPopup::createControlButtons()
