@@ -4,6 +4,7 @@
  *                                                          from https://github.com/preet/cutecom-qt5)
  * Copyright (c) 2015 Meinhard Ritscher <cyc1ingsir@gmail.com>
  * Copyright (c) 2015 Antoine Calando <acalando@free.fr> (improvements added to original CuteCom)
+ * Copyright (c) 2017 Slawomir Pabian <sla.pab.dev@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     , m_sz(nullptr)
     , m_previousChar('\0')
     , m_command_history_model(nullptr)
+    , m_ctrlCharactersPopup(nullptr)
     , m_keyRepeatTimer(this)
     , m_keyCode('\0')
     , m_cmdBufIndex(0)
@@ -106,6 +108,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_commandCompleter->setCompletionMode(QCompleter::InlineCompletion);
     m_input_edit->setCompleter(m_commandCompleter);
     updateCommandHistory();
+
+    m_ctrlCharactersPopup = new popup_widget::CtrlCharactersPopup(*m_input_edit);
 
     // adds a custom context menu with a entry to clear whole the command history or just remove selected items
     m_command_history->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -248,6 +252,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 break;
             }
         } else if (ke->modifiers() == Qt::ControlModifier) {
+            m_ctrlCharactersPopup->timedShow(500);
+
             switch (ke->key()) {
             case Qt::Key_C:
                 // std::cerr<<"c";
@@ -464,11 +470,15 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
        If the connected device expects CR ('\r') as line termination, it will send CR as line
        termination as well. Setup the DataDisplay to break lines on CR instaed of LF accordingly */
     connect(m_combo_lineterm, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [=]() {
-        if (m_combo_lineterm->currentData().value<Settings::LineTerminator>() == Settings::CR) {
+        auto currentValue = m_combo_lineterm->currentData().value<Settings::LineTerminator>();
+        if (Settings::LineTerminator::CR == currentValue) {
             m_output_display->setLinebreakChar("\r");
         } else {
             m_output_display->setLinebreakChar("\n");
         }
+
+        // inform CtrlCharactersPopup widget about this change
+        m_ctrlCharactersPopup->setHexInsertionMode(Settings::LineTerminator::HEX == currentValue);
     });
 }
 
@@ -642,7 +652,7 @@ bool MainWindow::sendString(const QString &s)
             }
             unsigned int byte;
             if (ascii)
-                byte = (nextByte.toLatin1())[0];
+                byte = nextByte.at(0).unicode() & 0xFF;
             else
                 byte = nextByte.toUInt(0, 16);
 
@@ -652,7 +662,14 @@ bool MainWindow::sendString(const QString &s)
         return true;
     }
 
-    const QByteArray bytes = s.toLatin1();
+    // converts QString into QByteArray, this supports converting control characters being shown in input field as QChars
+    // of Control Pictures from Unicode block.
+    QByteArray bytes;
+    bytes.reserve(s.size());
+    for (auto &c : s) {
+        bytes.append(static_cast<char>(c.unicode()));
+    }
+
     for (int i = 0; i < bytes.length(); i++) {
         if (!sendByte(bytes[i], charDelay))
             return false;
