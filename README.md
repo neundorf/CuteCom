@@ -77,7 +77,7 @@ Please check the [contribution guidelines](CONTRIBUTING.md).
 
 Ok, here comes the inevitable screenshot:  
 
-![](cutecom.png)
+![Screenshots](cutecom.png)
 
 The control panel for adjusting the device settings slides out when pressing the Settings button.
 At the upper half, commands issued are accumulated. 
@@ -86,6 +86,9 @@ Right below command line situated right in the middle, the output view can be fo
 It will autoscroll to the end of the date sent from the connected device.
 Autoscolling will stop, once a certain section of the data is scrolled to.
 PageUp and PageDown are working for moving through the output view.
+
+![Pressing Ctrl will open a widget allowing you to add control characters into the input field](ctr_characters.png)    
+Pressing Ctrl will open a widget allowing you to add control characters into the input field.
 
 ## Previous versions:
 
