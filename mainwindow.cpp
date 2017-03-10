@@ -825,8 +825,8 @@ void MainWindow::sendFile()
         default:
             break;
         }
-        QString device = controlPanel->m_combo_device->currentText();
-        tmp = tmp + "-vv \"" + filename + "\" < " + device + " > " + device;
+        const QString device = controlPanel->m_combo_device->currentText();
+        tmp = tmp + " -vv \"" + filename + "\" > " + device + " < " + device;
         listProcessArgs.append(tmp);
 
         m_sz->setReadChannel(QProcess::StandardError);
@@ -836,13 +836,13 @@ void MainWindow::sendFile()
                 &MainWindow::sendDone);
 
         m_sz->start("sh", listProcessArgs);
-        if (!!m_sz->waitForStarted()) {
+        if (false == m_sz->waitForStarted()) {
             QMessageBox::information(this, tr("Comm error"), tr("Could not start sz"));
             delete m_sz;
             openDevice();
             return;
         }
-        m_progress = new QProgressDialog(tr("Sending file via %1 ...").arg(protocol), tr("Cancel"), 0, 100, this);
+        m_progress = new QProgressDialog(tr("Sending file via %1 ...").arg(m_combo_protocol->currentText()), tr("Cancel"), 0, 100, this);
         connect(m_progress, &QProgressDialog::canceled, this, &MainWindow::killSz);
         m_progress->setMinimumDuration(100);
         QFileInfo fi(filename);
