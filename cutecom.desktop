@@ -3,6 +3,7 @@ Encoding=UTF-8
 Name=CuteCom
 MimeType=
 GenericName=Serial Terminal
+Comment=A graphical serial terminal
 Exec=cutecom
 Icon=cutecom
 Path=
