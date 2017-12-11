@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     datadisplay.cpp \
     datahighlighter.cpp \
     searchpanel.cpp \
-    timeview.cpp
+    timeview.cpp \
+    ctrlcharacterspopup.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h \
     datadisplay.h \
     datahighlighter.h \
     searchpanel.h \
-    timeview.h
+    timeview.h \
+    ctrlcharacterspopup.h
 
 
 FORMS    += mainwindow.ui \
