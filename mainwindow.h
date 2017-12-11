@@ -76,7 +76,7 @@ protected:
     void sendFile();
     void readFromStdErr();
     void sendDone(int exitCode, QProcess::ExitStatus exitStatus);
-    void resizeEvent(QResizeEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 protected slots:
     /**

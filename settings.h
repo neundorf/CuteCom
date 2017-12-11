@@ -42,6 +42,7 @@ public:
         ShowTimestamp,
         CommandHistory,
         WindowGeometry,
+        WindowState,
         LogFileLocation,
         LineTermination,
         CharacterDelay,
@@ -77,7 +78,9 @@ public:
     QString getCurrentSessionName() const { return m_current_session; }
     void settingChanged(Settings::Options option, QVariant setting);
 
-    QRect getWindowGeometry() const;
+    QByteArray getWindowGeometry() const;
+
+    QByteArray getWindowState() const;
 
     QString getLogFileLocation() const;
 
@@ -106,7 +109,8 @@ private:
     void saveSessionSettings();
     bool readUIntSetting(QSettings &settings, QString const &name, quint32 *i);
 
-    QRect m_windowGeometry;
+    QByteArray m_windowGeometry;
+    QByteArray m_windowState;
     QString m_logFileLocation;
     /**
      * The location QFileDialog displayed for choosing a file
