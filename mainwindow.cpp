@@ -93,11 +93,11 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     // restore window geometry and state from the settings
     QByteArray geometry = m_settings->getWindowGeometry();
-    if ( geometry.size() > 0) {
+    if (geometry.size() > 0) {
         restoreGeometry(geometry);
     }
     QByteArray winState = m_settings->getWindowState();
-    if ( winState.size() > 0) {
+    if (winState.size() > 0) {
         restoreState(winState);
     }
 
