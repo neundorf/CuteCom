@@ -62,3 +62,5 @@ RESOURCES += \
 
 DISTFILES += \
     qt.astylerc
+
+RC_ICONS = images/cutecom.ico
