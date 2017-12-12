@@ -36,7 +36,11 @@ void DeviceCombo::refill()
     clear();
     int numberDevices = 0;
     for (auto info : QSerialPortInfo::availablePorts()) {
+#ifdef Q_OS_WIN
+        addItem(info.portName());
+#else
         addItem(info.systemLocation());
+#endif
         if (info.isValid()) {
             QString deviceInfo = QString("%1 %2\n%3:%4 "
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)

@@ -256,7 +256,11 @@ void ControlPanel::fillDeviceCombo(const QString &deviceName)
     m_combo_device->clear();
     int numberDevices = 0;
     for (auto info : QSerialPortInfo::availablePorts()) {
+#ifdef Q_OS_WIN
+        m_combo_device->addItem(info.portName());
+#else
         m_combo_device->addItem(info.systemLocation());
+#endif
         if (info.isValid()) {
             QString deviceInfo = QString("%1 %2\n%3:%4 "
 #if QT_VERSION < QT_VERSION_CHECK(5, 3, 0)

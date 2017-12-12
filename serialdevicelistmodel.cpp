@@ -66,7 +66,11 @@ void SerialDeviceListModel::fetchMore(const QModelIndex &parent)
     Q_UNUSED(parent)
     m_devices.clear();
     for (auto info : QSerialPortInfo::availablePorts()) {
+#ifdef Q_OS_WIN
+        m_devices.append(info.portName());
+#else
         m_devices.append(info.systemLocation());
+#endif
     }
     m_device_count = m_devices.size();
 }
