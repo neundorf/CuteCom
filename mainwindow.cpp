@@ -485,6 +485,8 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
 
         // inform CtrlCharactersPopup widget about this change
         m_ctrlCharactersPopup->setHexInsertionMode(Settings::LineTerminator::HEX == currentValue);
+
+        m_settings->settingChanged(Settings::LineTermination, currentValue);
     });
 }
 
