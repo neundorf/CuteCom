@@ -91,10 +91,15 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_settings->readSettings(session);
     this->setWindowTitle("CuteCom - " + m_settings->getCurrentSessionName());
 
-    // restore window size from the settings
-    QRect geometry = m_settings->getWindowGeometry();
-    if (geometry.width() > 0)
-        setGeometry(geometry);
+    // restore window geometry and state from the settings
+    QByteArray geometry = m_settings->getWindowGeometry();
+    if (geometry.size() > 0) {
+        restoreGeometry(geometry);
+    }
+    QByteArray winState = m_settings->getWindowState();
+    if (winState.size() > 0) {
+        restoreState(winState);
+    }
 
     QStringList history = m_settings->getCurrentSession().command_history;
     if (!history.empty()) {
@@ -304,10 +309,11 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
     return false;
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMainWindow::resizeEvent(event);
-    m_settings->settingChanged(Settings::WindowGeometry, this->frameGeometry());
+    m_settings->settingChanged(Settings::WindowGeometry, this->saveGeometry());
+    m_settings->settingChanged(Settings::WindowState, this->saveState());
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::openDevice()
@@ -479,6 +485,8 @@ void MainWindow::fillLineTerminationChooser(const Settings::LineTerminator setti
 
         // inform CtrlCharactersPopup widget about this change
         m_ctrlCharactersPopup->setHexInsertionMode(Settings::LineTerminator::HEX == currentValue);
+
+        m_settings->settingChanged(Settings::LineTermination, currentValue);
     });
 }
 

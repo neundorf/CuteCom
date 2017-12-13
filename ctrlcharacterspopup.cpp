@@ -226,7 +226,8 @@ void CtrlCharactersPopup::timedShowTimerExpiredHandler()
 {
     // check if Ctrl key is pressed
     QFlags<Qt::KeyboardModifier> modifiers = QApplication::queryKeyboardModifiers();
-    if (true == modifiers.testFlag(Qt::ControlModifier)) {
+
+    if (Qt::ControlModifier == modifiers) {
         // show and move window
         show();
     }
