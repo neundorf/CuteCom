@@ -24,14 +24,14 @@
  */
 
 #include "datadisplay.h"
-#include "timeview.h"
-#include "searchpanel.h"
 #include "datahighlighter.h"
+#include "searchpanel.h"
+#include "timeview.h"
 
-#include <QScrollBar>
-#include <QPainter>
-#include <QTextBlock>
 #include <QDebug>
+#include <QPainter>
+#include <QScrollBar>
+#include <QTextBlock>
 
 DataDisplay::DataDisplay(QWidget *parent)
     : QWidget(parent)

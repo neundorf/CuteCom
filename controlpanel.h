@@ -22,8 +22,8 @@
 #ifndef CONTROLPANEL_H
 #define CONTROLPANEL_H
 
-#include "ui_controlpanel.h"
 #include "settings.h"
+#include "ui_controlpanel.h"
 
 #include <QFrame>
 #include <QSerialPort>

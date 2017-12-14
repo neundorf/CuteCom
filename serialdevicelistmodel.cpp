@@ -21,8 +21,8 @@
 
 #include "serialdevicelistmodel.h"
 
-#include <QSerialPortInfo>
 #include "qdebug.h"
+#include <QSerialPortInfo>
 
 SerialDeviceListModel::SerialDeviceListModel(QObject *parent)
     : QAbstractListModel(parent)

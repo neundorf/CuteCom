@@ -23,15 +23,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ui_mainwindow.h"
 #include "controlpanel.h"
-#include "sessionmanager.h"
-#include "statusbar.h"
-#include "settings.h"
 #include "ctrlcharacterspopup.h"
+#include "sessionmanager.h"
+#include "settings.h"
+#include "statusbar.h"
+#include "ui_mainwindow.h"
 
-#include <QMainWindow>
 #include <QFont>
+#include <QMainWindow>
 #include <QProgressDialog>
 #include <QPropertyAnimation>
 #include <QtSerialPort/QSerialPort>

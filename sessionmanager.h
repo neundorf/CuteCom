@@ -22,8 +22,8 @@
 #ifndef SESSIONMANAGER_H
 #define SESSIONMANAGER_H
 
-#include "ui_sessionmanager.h"
 #include "settings.h"
+#include "ui_sessionmanager.h"
 
 #include <QItemDelegate>
 
