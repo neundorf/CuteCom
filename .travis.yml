@@ -4,27 +4,44 @@ language: cpp
 env:
   - CONFIG=Release
 
+matrix:
+  include:
+    # Linux, GCC 5.1
+    # Qt 3.9.3 : https://launchpad.net/~beineri/+archive/ubuntu/opt-qt593-trusty
+    - os: linux
+      env: COMPILER_C=gcc-5 COMPILER_CXX=g++-5 USE_CUDA="false" CMAKE_OPTIONS="-DUSER_PATH_QT=~/opt/qt59"
+      compiler: g++
+      addons:
+        apt:
+          packages:
+          - g++-5
+          - qt59base
+          - qt59svg
+          - qt59tools
+          - qt59serialport
+          sources:
+          - sourceline: 'ppa:ubuntu-toolchain-r/test'
+          - sourceline: 'ppa:beineri/opt-qt593-trusty'
 
 install:
-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-         wget --no-check-certificate http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-i386.tar.gz
-      && tar -xzf cmake-3.3.2-Linux-i386.tar.gz
-      && sudo cp -fR cmake-3.3.2-Linux-i386/* /usr
-      && sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
-      && sudo apt-add-repository -y ppa:beineri/opt-qt542
-      && sudo apt-get -qq update
-      && sudo apt-get -qq install g++-4.8 libc6-i386    qt54svg qt54tools  qt54serialport
-      && export CXX="g++-4.8"
-      && export CC="gcc-4.8"
-      ;
+  # Setup default versions and override compiler if needed
+  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.9.0; fi
+  # Install a recent CMake
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+      mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+      CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+      export CC=${COMPILER_C} CXX=${COMPILER_CXX}
+      source /opt/qt59/bin/qt59-env.sh
     fi
 
 script:
-  -    mkdir build
-    && cd build
-    && if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-         cmake -DCMAKE_BUILD_TYPE=$CONFIG -DENABLE_TRAVIS_CI=ON -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake ..
-         ;
-       fi
-    && make -j 3
-    && cd ..
+  - cd ${TRAVIS_BUILD_DIR}
+  - |
+    mkdir -p build
+    cd build
+    cmake ${CMAKE_OPTIONS} -DCMAKE_BUILD_TYPE=$CONFIG -DENABLE_TRAVIS_CI=ON ..
+  - make -j 3
