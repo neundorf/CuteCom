@@ -21,8 +21,8 @@
 
 #include "devicecombo.h"
 
-#include <QSerialPortInfo>
 #include "qdebug.h"
+#include <QSerialPortInfo>
 
 void DeviceCombo::showPopup()
 {

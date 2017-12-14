@@ -21,12 +21,12 @@
 
 #include "controlpanel.h"
 
+#include <QFileDialog>
+#include <QIntValidator>
+#include <QLineEdit>
+#include <QPropertyAnimation>
 #include <QSerialPortInfo>
 #include <QtWidgets/QComboBox>
-#include <QLineEdit>
-#include <QIntValidator>
-#include <QPropertyAnimation>
-#include <QFileDialog>
 
 #include "qdebug.h"
 //#include <functional>

@@ -20,9 +20,9 @@
  */
 
 #include "statusbar.h"
+#include <QSerialPortInfo>
 #include <QString>
 #include <QtSerialPort/QtSerialPort>
-#include <QSerialPortInfo>
 
 StatusBar::StatusBar(QWidget *parent)
     : QWidget(parent)

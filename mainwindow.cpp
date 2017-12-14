@@ -26,21 +26,21 @@
 
 #include "mainwindow.h"
 #include "datadisplay.h"
-#include "version.h"
-#include "settings.h"
 #include "qdebug.h"
+#include "settings.h"
+#include "version.h"
 
-#include <QTime>
-#include <QTimer>
-#include <QThread>
 #include <QCompleter>
 #include <QDialog>
 #include <QFileDialog>
-#include <QResizeEvent>
 #include <QMessageBox>
-#include <QSpinBox>
-#include <QScrollBar>
 #include <QProgressDialog>
+#include <QResizeEvent>
+#include <QScrollBar>
+#include <QSpinBox>
+#include <QThread>
+#include <QTime>
+#include <QTimer>
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 
@@ -519,7 +519,8 @@ void MainWindow::showAboutMsg()
     QMessageBox::about(this, tr("About CuteCom"),
                        tr("This is CuteCom %1<br>(c)2004-2009 Alexander Neundorf, &lt;neundorf@kde.org&gt;"
                           "<br>(c)2015 Meinhard Ritscher, &lt;unreachable@gmx.net&gt;<br> and contributors"
-                          "<br>Licensed under the GNU GPL version 3 (or any later version).").arg(CuteCom_VERSION));
+                          "<br>Licensed under the GNU GPL version 3 (or any later version).")
+                           .arg(CuteCom_VERSION));
 }
 
 void MainWindow::prevCmd()
@@ -670,7 +671,8 @@ bool MainWindow::sendString(const QString &s)
         return true;
     }
 
-    // converts QString into QByteArray, this supports converting control characters being shown in input field as QChars
+    // converts QString into QByteArray, this supports converting control characters being shown in input field as
+    // QChars
     // of Control Pictures from Unicode block.
     QByteArray bytes;
     bytes.reserve(s.size());
@@ -850,7 +852,8 @@ void MainWindow::sendFile()
             openDevice();
             return;
         }
-        m_progress = new QProgressDialog(tr("Sending file via %1 ...").arg(m_combo_protocol->currentText()), tr("Cancel"), 0, 100, this);
+        m_progress = new QProgressDialog(tr("Sending file via %1 ...").arg(m_combo_protocol->currentText()),
+                                         tr("Cancel"), 0, 100, this);
         connect(m_progress, &QProgressDialog::canceled, this, &MainWindow::killSz);
         m_progress->setMinimumDuration(100);
         QFileInfo fi(filename);

@@ -20,10 +20,10 @@
  */
 #include "settings.h"
 
-#include <QSettings>
 #include <QHash>
-#include <QVariant>
 #include <QSerialPort>
+#include <QSettings>
+#include <QVariant>
 
 #include <qdebug.h>
 

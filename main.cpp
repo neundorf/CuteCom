@@ -25,8 +25,8 @@
 // if you use qmake, please cp version.h.in to version.h
 #include "version.h"
 #include <QApplication>
-#include <QIcon>
 #include <QCommandLineParser>
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {

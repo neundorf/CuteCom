@@ -51,8 +51,7 @@ public:
         CurrentSession
     };
 
-    struct Session
-    {
+    struct Session {
         QString device;
         quint32 baudRate;
         QSerialPort::DataBits dataBits;

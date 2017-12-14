@@ -36,8 +36,7 @@ class DataDisplay : public QWidget
 {
     Q_OBJECT
 
-    struct DisplayLine
-    {
+    struct DisplayLine {
         QString data;
         QString trailer;
     };

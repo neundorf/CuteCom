@@ -22,8 +22,8 @@
 #ifndef STATUSBAR_H
 #define STATUSBAR_H
 
-#include "ui_statusbar.h"
 #include "settings.h"
+#include "ui_statusbar.h"
 
 class StatusBar : public QWidget, private Ui::StatusBar
 {
