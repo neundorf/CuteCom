@@ -9,7 +9,11 @@ Release:        @CPACK_PACKAGE_RELEASE@
 Url:            https://github.com/aneundorf/cutecom
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
+%if %{defined suse_version}
 BuildRequires:  libqt5-qtbase-devel
+%else
+BuildRequires:  qt5-qtbase-devel
+%endif
 Summary:        Serial terminal
 License:        GPL-3.0+
 Group:          Applications/Communications
