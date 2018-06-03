@@ -23,7 +23,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
-#find_package(Serialport REQUIRED)
+find_package(Qt5SerialPort REQUIRED)
 
 qt5_wrap_ui(uiHeaders controlpanel.ui  mainwindow.ui statusbar.ui sessionmanager.ui searchpanel.ui)
 set(cutecomSrcs main.cpp mainwindow.cpp controlpanel.cpp  devicecombo.cpp
@@ -45,7 +45,7 @@ endif(APPLE)
 add_executable(cutecom ${exeType} ${cutecomSrcs} ${uiHeaders} resources.qrc)
 
 
-qt5_use_modules(cutecom Core Gui Widgets SerialPort)
+target_link_libraries(cutecom Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort)
 
 if (APPLE)
    set_target_properties(cutecom PROPERTIES OUTPUT_NAME CuteCom)

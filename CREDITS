@@ -61,6 +61,9 @@ compress multiple non printable characters
 Dmitry Mastykin
 mix hex and ascii input
 
+Javier Carnero
+https://github.com/emepetres/CuteCom
+Support of Qt5>=5.11
 
 IDEAS - still a ToDo:
 ====================================
