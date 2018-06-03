@@ -35,4 +35,12 @@ Makefile*
 *.qmlproject.user
 *.qmlproject.user.*
 
-
+# Build
+CMakeCache.txt
+CMakeFiles/*
+CPackConfig.cmake
+CPackSourceConfig.cmake
+cmake_install.cmake
+cutecom
+cutecom.spec
+cutecom_autogen/*
