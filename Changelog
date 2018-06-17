@@ -1,4 +1,5 @@
-0.50.0, tba , 2017
+0.50.0, tba , 2018
+0.45.0, June 17 , 2018
 -Enable input of Crl characters using a popup or Ctrl+<x>
 -Windows support added
 -line termination was not saved in settings - FIX

@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Jun 17 19:44:34 UTC 2017 - cyc1ingsir@gmail.com 
+
+-update to release 0.45.0
+ * Enable input of Crl characters using a popup or Ctrl+<x>
+ * Windows support added
+ * line termination was not saved in settings - FIX
+ * upgrading to clang-format to version 3.8.0
+ * updating travis ci instructions - FIX
+ * support for Qt5>=5.11
+
+ -------------------------------------------------------------------
 Thu Jan 12 19:04:34 UTC 2017 - cyc1ingsir@gmail.com 
 
 -update to release 0.40.0
