@@ -100,6 +100,9 @@ void Settings::settingChanged(Settings::Options option, QVariant setting)
         m_sendingStartDir = setting.toString();
         sessionSettings = false;
         break;
+    case MacroFile:
+        session.macroFile = setting.toString();
+        break;
     case CurrentSession:
         m_current_session = setting.toString();
         emit sessionChanged(getCurrentSession());
@@ -177,6 +180,7 @@ void Settings::readSessionSettings(QSettings &settings)
         session.showCtrlCharacters = settings.value("showCtrlCharacters", false).toBool();
         session.showTimestamp = settings.value("showTimestamp", false).toBool();
         session.command_history = settings.value("History").toStringList();
+        session.macroFile = settings.value("MacroFile", "").toString();
 
         m_sessions.insert(name, session);
     }
@@ -252,7 +256,6 @@ const Settings::Session Settings::getCurrentSession()
         session.flowControl = QSerialPort::NoFlowControl;
         m_sessions.insert(m_current_session, session);
     }
-
     return m_sessions.value(m_current_session);
 }
 
@@ -305,6 +308,7 @@ void Settings::saveSessionSettings()
             settings.setValue("showCtrlCharacters", session.showCtrlCharacters);
             settings.setValue("showTimestamp", session.showTimestamp);
             settings.setValue("History", session.command_history);
+            settings.setValue("MacroFile", session.macroFile);
         }
         settings.endArray();
     }

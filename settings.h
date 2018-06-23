@@ -48,6 +48,7 @@ public:
         CharacterDelay,
         SendStartDir,
         ProtocolOption,
+        MacroFile,
         CurrentSession
     };
 
@@ -62,6 +63,7 @@ public:
         bool showCtrlCharacters;
         bool showTimestamp;
         QStringList command_history;
+        QString macroFile;
     };
 
     enum LineTerminator { LF = 0, CR, CRLF, NONE, HEX };
