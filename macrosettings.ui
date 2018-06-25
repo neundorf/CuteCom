@@ -6,15 +6,33 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
-    <height>578</height>
+    <width>542</width>
+    <height>600</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>542</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>542</width>
+    <height>600</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <property name="sizeGripEnabled">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
@@ -37,6 +55,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string extracomment="Load a macro file">Load a macro settings file (tmf)</string>
+    </property>
     <property name="text">
      <string>Load</string>
     </property>
@@ -50,6 +71,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string extracomment="Save to a macro file">Save macros to file</string>
+    </property>
     <property name="text">
      <string>Save</string>
     </property>
@@ -57,14 +81,30 @@
    <widget class="QLabel" name="m_lbl_macros_path">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>200</x>
       <y>35</y>
-      <width>351</width>
-      <height>17</height>
+      <width>321</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="m_bt_macro_help">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>30</y>
+      <width>21</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Help</string>
+    </property>
+    <property name="text">
+     <string>?</string>
     </property>
    </widget>
   </widget>
@@ -74,7 +114,7 @@
      <x>5</x>
      <y>60</y>
      <width>531</width>
-     <height>511</height>
+     <height>531</height>
     </rect>
    </property>
    <property name="title">
@@ -83,21 +123,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_1">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>30</y>
+      <x>5</x>
+      <y>50</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="m_le_macro_bt_txt_1">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>30</y>
+      <x>285</x>
+      <y>50</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -106,8 +152,8 @@
    <widget class="QPushButton" name="m_bt_macro_1">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>30</y>
+      <x>355</x>
+      <y>50</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -119,11 +165,14 @@
    <widget class="QSpinBox" name="m_sb_macro_tmr_1">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>30</y>
+      <x>430</x>
+      <y>50</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -135,11 +184,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_1">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>30</y>
+      <x>505</x>
+      <y>50</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -148,11 +200,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_2">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>60</y>
+      <x>285</x>
+      <y>80</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -161,21 +216,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_2">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>60</y>
+      <x>5</x>
+      <y>80</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_2">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>60</y>
+      <x>430</x>
+      <y>80</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -187,8 +248,8 @@
    <widget class="QPushButton" name="m_bt_macro_2">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>60</y>
+      <x>355</x>
+      <y>80</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -200,11 +261,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_2">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>60</y>
+      <x>505</x>
+      <y>80</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -213,11 +277,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_3">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>90</y>
+      <x>285</x>
+      <y>110</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -226,21 +293,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_3">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>90</y>
+      <x>5</x>
+      <y>110</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_3">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>90</y>
+      <x>430</x>
+      <y>110</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -252,8 +325,8 @@
    <widget class="QPushButton" name="m_bt_macro_3">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>90</y>
+      <x>355</x>
+      <y>110</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -265,11 +338,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_3">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>90</y>
+      <x>505</x>
+      <y>110</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -278,11 +354,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_4">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>120</y>
+      <x>285</x>
+      <y>140</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -291,21 +370,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_4">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>120</y>
+      <x>5</x>
+      <y>140</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_4">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>120</y>
+      <x>430</x>
+      <y>140</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -317,8 +402,8 @@
    <widget class="QPushButton" name="m_bt_macro_4">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>120</y>
+      <x>355</x>
+      <y>140</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -330,11 +415,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_4">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>120</y>
+      <x>505</x>
+      <y>140</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -343,11 +431,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_5">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>150</y>
+      <x>285</x>
+      <y>170</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -356,21 +447,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_5">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>150</y>
+      <x>5</x>
+      <y>170</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_5">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>150</y>
+      <x>430</x>
+      <y>170</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -382,8 +479,8 @@
    <widget class="QPushButton" name="m_bt_macro_5">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>150</y>
+      <x>355</x>
+      <y>170</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -395,11 +492,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_5">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>150</y>
+      <x>505</x>
+      <y>170</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -408,11 +508,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_6">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>180</y>
+      <x>285</x>
+      <y>200</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -421,21 +524,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_6">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>180</y>
+      <x>5</x>
+      <y>200</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_6">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>180</y>
+      <x>430</x>
+      <y>200</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -447,8 +556,8 @@
    <widget class="QPushButton" name="m_bt_macro_6">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>180</y>
+      <x>355</x>
+      <y>200</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -460,11 +569,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_6">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>180</y>
+      <x>505</x>
+      <y>200</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -473,11 +585,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_7">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>210</y>
+      <x>285</x>
+      <y>230</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -486,21 +601,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_7">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>210</y>
+      <x>5</x>
+      <y>230</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_7">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>210</y>
+      <x>430</x>
+      <y>230</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -512,8 +633,8 @@
    <widget class="QPushButton" name="m_bt_macro_7">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>210</y>
+      <x>355</x>
+      <y>230</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -525,11 +646,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_7">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>210</y>
+      <x>505</x>
+      <y>230</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -538,11 +662,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_8">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>240</y>
+      <x>285</x>
+      <y>260</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -551,21 +678,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_8">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>240</y>
+      <x>5</x>
+      <y>260</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_8">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>240</y>
+      <x>430</x>
+      <y>260</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -577,8 +710,8 @@
    <widget class="QPushButton" name="m_bt_macro_8">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>240</y>
+      <x>355</x>
+      <y>260</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -590,11 +723,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_8">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>240</y>
+      <x>505</x>
+      <y>260</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -603,11 +739,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_9">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>270</y>
+      <x>285</x>
+      <y>290</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -616,21 +755,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_9">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>270</y>
+      <x>5</x>
+      <y>290</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_9">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>270</y>
+      <x>430</x>
+      <y>290</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -642,8 +787,8 @@
    <widget class="QPushButton" name="m_bt_macro_9">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>270</y>
+      <x>355</x>
+      <y>290</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -655,11 +800,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_9">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>270</y>
+      <x>505</x>
+      <y>290</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -668,11 +816,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_10">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>300</y>
+      <x>285</x>
+      <y>320</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -681,21 +832,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_10">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>300</y>
+      <x>5</x>
+      <y>320</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_10">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>300</y>
+      <x>430</x>
+      <y>320</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -707,8 +864,8 @@
    <widget class="QPushButton" name="m_bt_macro_10">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>300</y>
+      <x>355</x>
+      <y>320</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -720,11 +877,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_10">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>300</y>
+      <x>505</x>
+      <y>320</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -733,11 +893,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_11">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>330</y>
+      <x>285</x>
+      <y>350</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -746,21 +909,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_11">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>330</y>
+      <x>5</x>
+      <y>350</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_11">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>330</y>
+      <x>430</x>
+      <y>350</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -772,8 +941,8 @@
    <widget class="QPushButton" name="m_bt_macro_11">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>330</y>
+      <x>355</x>
+      <y>350</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -785,11 +954,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_11">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>330</y>
+      <x>505</x>
+      <y>350</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -798,11 +970,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_12">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>360</y>
+      <x>285</x>
+      <y>380</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -811,21 +986,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_12">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>360</y>
+      <x>5</x>
+      <y>380</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_12">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>360</y>
+      <x>430</x>
+      <y>380</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -837,8 +1018,8 @@
    <widget class="QPushButton" name="m_bt_macro_12">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>360</y>
+      <x>355</x>
+      <y>380</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -850,11 +1031,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_12">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>360</y>
+      <x>505</x>
+      <y>380</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -863,11 +1047,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_13">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>390</y>
+      <x>285</x>
+      <y>410</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -876,21 +1063,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_13">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>390</y>
+      <x>5</x>
+      <y>410</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_13">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>390</y>
+      <x>430</x>
+      <y>410</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -902,8 +1095,8 @@
    <widget class="QPushButton" name="m_bt_macro_13">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>390</y>
+      <x>355</x>
+      <y>410</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -915,11 +1108,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_13">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>390</y>
+      <x>505</x>
+      <y>410</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -928,11 +1124,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_14">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>420</y>
+      <x>285</x>
+      <y>440</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -941,21 +1140,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_14">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>420</y>
+      <x>5</x>
+      <y>440</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_14">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>420</y>
+      <x>430</x>
+      <y>440</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -967,8 +1172,8 @@
    <widget class="QPushButton" name="m_bt_macro_14">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>420</y>
+      <x>355</x>
+      <y>440</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -980,11 +1185,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_14">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>420</y>
+      <x>505</x>
+      <y>440</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -993,11 +1201,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_15">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>450</y>
+      <x>285</x>
+      <y>470</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -1006,21 +1217,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_15">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>450</y>
+      <x>5</x>
+      <y>470</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_15">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>450</y>
+      <x>430</x>
+      <y>470</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -1032,8 +1249,8 @@
    <widget class="QPushButton" name="m_bt_macro_15">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>450</y>
+      <x>355</x>
+      <y>470</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -1045,11 +1262,14 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_15">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>450</y>
+      <x>505</x>
+      <y>470</y>
       <width>21</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
     </property>
     <property name="text">
      <string/>
@@ -1058,11 +1278,14 @@
    <widget class="QLineEdit" name="m_le_macro_bt_txt_16">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>480</y>
+      <x>285</x>
+      <y>500</y>
       <width>65</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Macro name</string>
     </property>
     <property name="text">
      <string/>
@@ -1071,21 +1294,27 @@
    <widget class="QLineEdit" name="m_le_macro_txt_16">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>480</y>
+      <x>5</x>
+      <y>500</y>
       <width>275</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Serial command to send when macro is triggered.</string>
     </property>
    </widget>
    <widget class="QSpinBox" name="m_sb_macro_tmr_16">
     <property name="geometry">
      <rect>
-      <x>435</x>
-      <y>480</y>
+      <x>430</x>
+      <y>500</y>
       <width>70</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>Timer interval (ms)</string>
     </property>
     <property name="maximum">
      <number>300000</number>
@@ -1097,8 +1326,8 @@
    <widget class="QPushButton" name="m_bt_macro_16">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>480</y>
+      <x>355</x>
+      <y>500</y>
       <width>70</width>
       <height>25</height>
      </rect>
@@ -1110,14 +1339,85 @@
    <widget class="QCheckBox" name="m_cb_enable_macro_tmr_16">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>480</y>
+      <x>505</x>
+      <y>500</y>
       <width>21</width>
       <height>25</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>Enable timer</string>
+    </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_lbl_macro_serial_command">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>25</y>
+      <width>261</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Serial command</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_lbl_macro_name">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>25</y>
+      <width>61</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_lbl_macro_trigger">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>25</y>
+      <width>67</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Trigger&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_lbl_macro_interval">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>25</y>
+      <width>51</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>(msec)</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_lbl_macro_tmr">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>25</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Tmr</string>
     </property>
    </widget>
   </widget>

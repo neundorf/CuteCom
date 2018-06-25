@@ -76,6 +76,7 @@ private:
     QLineEdit *m_inputEdit;
     QString m_macroFilename;
     struct macro_item **m_macros;
+    void helpMsg(void);
 };
 
 #endif // MACROSETTINGS_H

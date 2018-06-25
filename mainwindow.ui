@@ -226,6 +226,9 @@
                <height>50</height>
               </rect>
              </property>
+             <property name="toolTip">
+              <string>Open macro settings dialog</string>
+             </property>
              <property name="text">
               <string>Set Macros</string>
              </property>

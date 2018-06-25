@@ -96,6 +96,7 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QW
     }
     connect(m_bt_load_macros, &QPushButton::clicked, this, &MacroSettings::openFile);
     connect(m_bt_save_macros, &QPushButton::clicked, this, &MacroSettings::saveFile);
+    connect(m_bt_macro_help, &QPushButton::clicked, this, &MacroSettings::helpMsg);
 
     m_lbl_macros_path->setText("");
 }
@@ -230,4 +231,26 @@ void MacroSettings::saveFile()
         m_lbl_macros_path->setText(m_macroFilename);
         emit fileChanged(m_macroFilename);
     }
+}
+
+void MacroSettings::helpMsg(void)
+{
+    QString help_str =
+        "In order to use macros you need to need to\n"
+        "fill the serial command you want to send in\n"
+        "the first column. Then you can name the macro\n"
+        "in the second column. This name will also be\n"
+        "applied on the button label.\n\n"
+        "To trigger the macro you can press the button\n"
+        "on this dialog or in the main interface.\n\n"
+        "If you want to auto-trigger the macro on time\n"
+        "intervals then you can set the (msec) timer\n"
+        "interval and then enable/disable the macro timer\n"
+        "using the checkbox. Note that each timer is\n"
+        "autonomous.\n\n"
+        "The macro format is compatible with the tmf\n"
+        "format of Bray's terminal."
+        ;
+
+    QMessageBox::information(this, "How to use", help_str);
 }
