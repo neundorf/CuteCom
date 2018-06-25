@@ -26,7 +26,7 @@
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
 
-MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton ** mainButtons, QWidget *parent)
+MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QWidget *parent)
     : QDialog(parent)
     , m_mainForm(parent)
     , m_inputEdit(inputEdit)
@@ -102,7 +102,8 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton ** mainButtons, Q
 
 MacroSettings::~MacroSettings()
 {
-    if (m_macros) delete [] m_macros;
+    if (m_macros)
+        delete[] m_macros;
 }
 
 /**
