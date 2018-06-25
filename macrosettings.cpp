@@ -26,7 +26,7 @@
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
 
-MacroSettings::MacroSettings(QLineEdit *inputEdit, QWidget *parent)
+MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton ** mainButtons, QWidget *parent)
     : QDialog(parent)
     , m_mainForm(parent)
     , m_inputEdit(inputEdit)
@@ -71,6 +71,10 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QWidget *parent)
 
     /* Setup signal/slots */
     for (size_t i = 0; i < NUM_OF_BUTTONS; i++) {
+        connect(mainButtons[i], SIGNAL(clicked(bool)), this, SLOT(macroPress()));
+        connect(m_macros[i]->name, &QLineEdit::textChanged, this,
+                [=]() { mainButtons[i]->setText(m_macros[i]->name->text()); });
+
         connect(m_macros[i]->button, &QPushButton::clicked, this, &MacroSettings::macroPress);
         connect(m_macros[i]->name, &QLineEdit::textChanged, this,
                 [=]() { m_macros[i]->button->setText(m_macros[i]->name->text()); });
@@ -94,6 +98,11 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QWidget *parent)
     connect(m_bt_save_macros, &QPushButton::clicked, this, &MacroSettings::saveFile);
 
     m_lbl_macros_path->setText("");
+}
+
+MacroSettings::~MacroSettings()
+{
+    if (m_macros) delete [] m_macros;
 }
 
 /**

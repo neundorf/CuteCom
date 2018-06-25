@@ -30,10 +30,11 @@ class MacroSettings : public QDialog, private Ui::MacroSettings
 {
     Q_OBJECT
 
-    enum { NUM_OF_BUTTONS = 16 };
 
 public:
-    explicit MacroSettings(QLineEdit *inputEdit, QWidget *parent = 0);
+    enum { NUM_OF_BUTTONS = 16 };
+    explicit MacroSettings(QLineEdit *inputEdit, QPushButton ** mainButtons, QWidget *parent = 0);
+    virtual ~MacroSettings();
     void showPanel(bool setVisible);
     QString getMacroFilename(void) { return m_macroFilename; }
     void loadFile(QString fname);
