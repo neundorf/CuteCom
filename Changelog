@@ -1,11 +1,11 @@
 0.50.0, tba , 2017
+-added macros support similar to br@y's terminal
 -Enable input of Crl characters using a popup or Ctrl+<x>
 -Windows support added
 -line termination was not saved in settings - FIX
 -upgrading to clang-format to version 3.8.0
 -updating travis ci instructions - FIX
 -support for Qt5>=5.11
--added macros support similar to br@y's terminal
 0.40.0, January 12, 2017
 -First implementation of searching the output
 -Linked line termination of displayed data 
