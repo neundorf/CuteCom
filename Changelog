@@ -1,5 +1,6 @@
 0.50.0, tba , 2017
 -added macros support similar to br@y's terminal
+0.45.0, June 17 , 2018
 -Enable input of Crl characters using a popup or Ctrl+<x>
 -Windows support added
 -line termination was not saved in settings - FIX
