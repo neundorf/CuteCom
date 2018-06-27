@@ -5,6 +5,7 @@
  * Copyright (c) 2015 Meinhard Ritscher <cyc1ingsir@gmail.com>
  * Copyright (c) 2015 Antoine Calando <acalando@free.fr> (improvements added to original CuteCom)
  * Copyright (c) 2017 Slawomir Pabian <sla.pab.dev@gmail.com>
+ * Copyright (c) 2018 Dimitris Tassopoulos <dimtass@gmail.com> (added macros)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -227,6 +228,23 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     connect(controlPanel->m_rts_line, &QCheckBox::stateChanged, this, &MainWindow::setRTSLineState);
     connect(controlPanel->m_dtr_line, &QCheckBox::stateChanged, this, &MainWindow::setDTRLineState);
+
+    QPushButton **macro_buttons = new QPushButton *[MacroSettings::NUM_OF_BUTTONS] {
+        m_bt_macro_1, m_bt_macro_2, m_bt_macro_3, m_bt_macro_4, m_bt_macro_5, m_bt_macro_6, m_bt_macro_7, m_bt_macro_8,
+            m_bt_macro_9, m_bt_macro_10, m_bt_macro_11, m_bt_macro_12, m_bt_macro_13, m_bt_macro_14, m_bt_macro_15,
+            m_bt_macro_16,
+    };
+    m_macroSettings = new MacroSettings(m_input_edit, macro_buttons, this);
+    m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
+    connect(m_macroSettings, &MacroSettings::sendCmd, this, &MainWindow::execCmd);
+    connect(m_bt_set_macros, SIGNAL(clicked(bool)), m_macroSettings, SLOT(show()));
+    connect(m_macroSettings, &MacroSettings::fileChanged, m_settings, [=]() {
+        m_settings->settingChanged(Settings::MacroFile, m_macroSettings->getMacroFilename());
+        m_macroSettings->loadFile(m_macroSettings->getMacroFilename());
+        qDebug() << "L1 session: " << m_settings->getCurrentSessionName()
+                 << ", fname: " << m_macroSettings->getMacroFilename()
+                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
+    });
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
@@ -893,6 +911,10 @@ void MainWindow::switchSession(const QString &session)
         closeDevice();
     m_settings->settingChanged(Settings::CurrentSession, session);
     controlPanel->applySessionSettings(m_settings->getCurrentSession());
+    m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
+    qDebug() << "L2 session: " << m_settings->getCurrentSessionName()
+             << ", fname: " << m_macroSettings->getMacroFilename()
+             << ", sfname: " << m_settings->getCurrentSession().macroFile;
     m_command_history->clear();
     QStringList history = m_settings->getCurrentSession().command_history;
     if (!history.empty()) {

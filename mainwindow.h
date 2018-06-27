@@ -28,6 +28,7 @@
 #include "sessionmanager.h"
 #include "settings.h"
 #include "statusbar.h"
+#include "macrosettings.h"
 #include "ui_mainwindow.h"
 
 #include <QFont>
@@ -99,6 +100,7 @@ private:
 
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
+    MacroSettings *m_macroSettings;
     QSerialPort *m_device;
     DeviceState m_deviceState;
     StatusBar *m_device_statusbar;

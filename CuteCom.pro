@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     datahighlighter.cpp \
     searchpanel.cpp \
     timeview.cpp \
-    ctrlcharacterspopup.cpp
+    ctrlcharacterspopup.cpp \
+    macrosettings.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -48,14 +49,16 @@ HEADERS  += mainwindow.h \
     datahighlighter.h \
     searchpanel.h \
     timeview.h \
-    ctrlcharacterspopup.h
+    ctrlcharacterspopup.h \
+    macrosettings.h
 
 
 FORMS    += mainwindow.ui \
     controlpanel.ui \
     statusbar.ui \
     sessionmanager.ui \
-    searchpanel.ui
+    searchpanel.ui \
+    macrosettings.ui
 
 RESOURCES += \
     resources.qrc

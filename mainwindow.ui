@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>320</height>
+    <width>675</width>
+    <height>684</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,6 +199,253 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QGroupBox" name="m_gb_macros">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>Macros</string>
+            </property>
+            <widget class="QPushButton" name="m_bt_set_macros">
+             <property name="geometry">
+              <rect>
+               <x>5</x>
+               <y>25</y>
+               <width>81</width>
+               <height>50</height>
+              </rect>
+             </property>
+             <property name="toolTip">
+              <string>Open macro settings dialog</string>
+             </property>
+             <property name="text">
+              <string>Set Macros</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_1">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M1</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_2">
+             <property name="geometry">
+              <rect>
+               <x>160</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M2</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_3">
+             <property name="geometry">
+              <rect>
+               <x>230</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M3</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_4">
+             <property name="geometry">
+              <rect>
+               <x>300</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M4</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_5">
+             <property name="geometry">
+              <rect>
+               <x>370</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M5</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_6">
+             <property name="geometry">
+              <rect>
+               <x>440</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M6</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_7">
+             <property name="geometry">
+              <rect>
+               <x>510</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M7</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_8">
+             <property name="geometry">
+              <rect>
+               <x>580</x>
+               <y>25</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M8</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_9">
+             <property name="geometry">
+              <rect>
+               <x>90</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M9</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_10">
+             <property name="geometry">
+              <rect>
+               <x>160</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M10</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_11">
+             <property name="geometry">
+              <rect>
+               <x>230</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M11</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_12">
+             <property name="geometry">
+              <rect>
+               <x>300</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M12</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_13">
+             <property name="geometry">
+              <rect>
+               <x>370</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M13</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_14">
+             <property name="geometry">
+              <rect>
+               <x>440</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M14</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_15">
+             <property name="geometry">
+              <rect>
+               <x>510</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M15</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="m_bt_macro_16">
+             <property name="geometry">
+              <rect>
+               <x>580</x>
+               <y>50</y>
+               <width>70</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>M16</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="m_output_layout_h">
           <property name="topMargin">
            <number>2</number>
@@ -287,8 +534,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>500</width>
-     <height>19</height>
+     <width>675</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSessions">
