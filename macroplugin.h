@@ -41,7 +41,10 @@ public:
     explicit MacroPlugin(QWidget *parent, Ui::MainWindow * main_ui, Settings * m_settings);
     ~MacroPlugin();
     const Plugin * pluginData();
-    int processData(const QString * text, QString * new_text);
+    int processCmd(const QString * text);
+
+signals:
+    void sendCmd(QString);
 
 private:
     Ui::MacroPlugin *ui;

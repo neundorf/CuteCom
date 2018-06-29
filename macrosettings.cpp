@@ -26,10 +26,9 @@
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
 
-MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QWidget *parent)
+MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
     : QDialog(parent)
     , m_mainForm(parent)
-    , m_inputEdit(inputEdit)
 {
     setupUi(this);
     this->setWindowTitle("Macro Settings");
@@ -71,13 +70,17 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QW
 
     /* Setup signal/slots */
     for (size_t i = 0; i < NUM_OF_BUTTONS; i++) {
+        /* Click events from the panel in the main menu */
         connect(mainButtons[i], SIGNAL(clicked(bool)), this, SLOT(macroPress()));
-        connect(m_macros[i]->name, &QLineEdit::textChanged, this,
-                [=]() { mainButtons[i]->setText(m_macros[i]->name->text()); });
-
-        connect(m_macros[i]->button, &QPushButton::clicked, this, &MacroSettings::macroPress);
+        /* events to change this dialog's buttons text */
         connect(m_macros[i]->name, &QLineEdit::textChanged, this,
                 [=]() { m_macros[i]->button->setText(m_macros[i]->name->text()); });
+        /* events to change the buttons text on main menu */
+        connect(m_macros[i]->name, &QLineEdit::textChanged, this,
+                [=]() { mainButtons[i]->setText(m_macros[i]->name->text()); });
+        /* event handling for this dialog's buttons */
+        connect(m_macros[i]->button, &QPushButton::clicked, this, &MacroSettings::macroPress);
+        /* timer enable/disable events */
         connect(m_macros[i]->tmr_active, &QCheckBox::stateChanged, [=](int state) {
             if (state == Qt::Checked) {
                 m_macros[i]->tmr->stop();
@@ -89,9 +92,9 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QW
                 qDebug() << "Timer " << i << " stopped.";
             }
         });
+        /* timer events */
         connect(m_macros[i]->tmr, &QTimer::timeout, [=]() {
-            m_inputEdit->setText(m_macros[i]->cmd->text());
-            emit sendCmd();
+            emit sendCmd(m_macros[i]->cmd->text());
         });
     }
     connect(m_bt_load_macros, &QPushButton::clicked, this, &MacroSettings::openFile);
@@ -136,10 +139,8 @@ void MacroSettings::macroPress()
             return;
 
         qDebug() << "Sender: " << m_macros[idx]->button->objectName();
-        /* Get macro text */
-        QString cmd = m_macros[idx]->cmd->text();
-        m_inputEdit->setText(cmd);
-        emit sendCmd();
+        /* Send macro text */
+        emit sendCmd(m_macros[idx]->cmd->text());
     }
 }
 

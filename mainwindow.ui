@@ -199,15 +199,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="m_pluginsLayout">
-          <item>
-           <widget class="QPushButton" name="pushButton">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QVBoxLayout" name="m_pluginsLayout"/>
         </item>
         <item>
          <layout class="QHBoxLayout" name="m_output_layout_h">

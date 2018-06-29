@@ -28,16 +28,16 @@
 class Plugin {
 
 public:
-    typedef int (*process_fp)(const QString * text, QString * new_text);
+    typedef int (*processCmd_fp)(const QString * text, QString * new_text);
     Plugin(QString name, bool enable = false, bool inject = false,
-           QFrame * frame = NULL, process_fp fp = NULL)
-        : name(name), enable(enable), inject(inject), frame(frame), process(fp) {}
+           QFrame * frame = NULL, processCmd_fp fp = NULL)
+        : name(name), enable(enable), inject(inject), frame(frame), processCmd(fp) {}
 
     QString name;
     bool enable;
     bool inject;
     QFrame * frame;
-    process_fp process;
+    processCmd_fp processCmd;
 };
 
 #endif // PLUGIN_H

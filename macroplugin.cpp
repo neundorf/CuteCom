@@ -17,16 +17,21 @@ MacroPlugin::MacroPlugin(QWidget *parent, Ui::MainWindow * main_ui, Settings * s
             ui->m_bt_macro_13, ui->m_bt_macro_14, ui->m_bt_macro_15,
             ui->m_bt_macro_16,
     };
-    m_macroSettings = new MacroSettings(m_main_ui->m_input_edit, macro_buttons, this);
+    m_macroSettings = new MacroSettings(macro_buttons, this);
     m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
-//    connect(m_macroSettings, &MacroSettings::sendCmd, this, &MainWindow::execCmd);
+    /* event to show the macro dialog */
     connect(ui->m_bt_set_macros, SIGNAL(clicked(bool)), m_macroSettings, SLOT(show()));
+    /* event for when session changes and a new file needs to be loaded */
     connect(m_macroSettings, &MacroSettings::fileChanged, m_settings, [=]() {
         m_settings->settingChanged(Settings::MacroFile, m_macroSettings->getMacroFilename());
         m_macroSettings->loadFile(m_macroSettings->getMacroFilename());
 //        qDebug() << "L1 session: " << m_settings->getCurrentSessionName()
 //                 << ", fname: " << m_macroSettings->getMacroFilename()
 //                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
+    });
+    connect(m_macroSettings, &MacroSettings::sendCmd, this, [=](QString cmd_str) {
+        qDebug() << "MacroSettings::sendCmd";
+        emit sendCmd(cmd_str);
     });
 }
 

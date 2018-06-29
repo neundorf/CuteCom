@@ -42,16 +42,28 @@ void PluginManager::removePlugin(const Plugin * item)
 //    m_list.removeOne(item);
 }
 
-void PluginManager::process(QString * text)
+void PluginManager::processCmd(QString * text)
 {
     QListIterator<const Plugin *> i(m_list);
     while (i.hasNext()) {
         const Plugin* item = static_cast<const Plugin*>(i.next());
-        if (item->inject && item->process) {
+        if (item->inject && item->processCmd) {
             QString new_text;
-            if (item->process(text, &new_text)) {
+            if (item->processCmd(text, &new_text)) {
                 *text = new_text;
             }
         }
     }
+}
+
+/**
+ * @brief Plugins that need to send commands to the serial
+ *  port should use this call function and pass the QString.
+ *  This function will actually emulate the procedure of
+ *  writting the string in the m_input_edit of the
+ * @param outStr The string to send to the serial
+ */
+void PluginManager::proxyCmd(QString * outStr)
+{
+    emit sendCmd(*outStr);
 }

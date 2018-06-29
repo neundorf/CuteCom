@@ -231,10 +231,17 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
 
     /* Load plugin manager */
     m_plugin_manager = new PluginManager(this->m_pluginsLayout);
+    connect(m_plugin_manager, &PluginManager::sendCmd, this, [=](QString outData) {
+        qDebug() << "send...";
+        m_input_edit->setText(outData);
+        execCmd();
+    });
     /* Load macro plugin */
     m_macro_plugin = new MacroPlugin(frame_output, this, m_settings);
+    connect(m_macro_plugin, &MacroPlugin::sendCmd, this, &MainWindow::execCmd);
     /* Add macro plugin in the manager */
     m_plugin_manager->addPlugin(m_macro_plugin->pluginData());
+
 
 //    m_pluginsLayout->addWidget(new MacroPlugin(frame_output));
 
@@ -622,7 +629,7 @@ void MainWindow::execCmd()
     if (!m_device->isOpen()) {
         return;
     }
-
+    qDebug() << "Sending string";
     sendString(cmd);
 }
 

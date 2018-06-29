@@ -38,7 +38,11 @@ public:
 
     void addPlugin(const Plugin * item);
     void removePlugin(const Plugin * item);
-    void process(QString * text);
+    void processCmd(QString * text);
+    void proxyCmd(QString * outStr);
+
+signals:
+    void sendCmd(QString);
 
 private:
     QVBoxLayout * m_layout;
