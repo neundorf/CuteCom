@@ -229,6 +229,16 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     connect(controlPanel->m_rts_line, &QCheckBox::stateChanged, this, &MainWindow::setRTSLineState);
     connect(controlPanel->m_dtr_line, &QCheckBox::stateChanged, this, &MainWindow::setDTRLineState);
 
+    /* Load plugin manager */
+    m_plugin_manager = new PluginManager(this->m_pluginsLayout);
+    /* Load macro plugin */
+    m_macro_plugin = new MacroPlugin(frame_output, this, m_settings);
+    /* Add macro plugin in the manager */
+    m_plugin_manager->addPlugin(m_macro_plugin->pluginData());
+
+//    m_pluginsLayout->addWidget(new MacroPlugin(frame_output));
+
+    /*
     QPushButton **macro_buttons = new QPushButton *[MacroSettings::NUM_OF_BUTTONS] {
         m_bt_macro_1, m_bt_macro_2, m_bt_macro_3, m_bt_macro_4, m_bt_macro_5, m_bt_macro_6, m_bt_macro_7, m_bt_macro_8,
             m_bt_macro_9, m_bt_macro_10, m_bt_macro_11, m_bt_macro_12, m_bt_macro_13, m_bt_macro_14, m_bt_macro_15,
@@ -245,6 +255,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
                  << ", fname: " << m_macroSettings->getMacroFilename()
                  << ", sfname: " << m_settings->getCurrentSession().macroFile;
     });
+    */
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

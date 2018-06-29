@@ -36,7 +36,9 @@ SOURCES += main.cpp\
     searchpanel.cpp \
     timeview.cpp \
     ctrlcharacterspopup.cpp \
-    macrosettings.cpp
+    macrosettings.cpp \
+    pluginmanager.cpp \
+    macroplugin.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -50,7 +52,10 @@ HEADERS  += mainwindow.h \
     searchpanel.h \
     timeview.h \
     ctrlcharacterspopup.h \
-    macrosettings.h
+    macrosettings.h \
+    pluginmanager.h \
+    macroplugin.h \
+    plugin.h
 
 
 FORMS    += mainwindow.ui \
@@ -58,7 +63,8 @@ FORMS    += mainwindow.ui \
     statusbar.ui \
     sessionmanager.ui \
     searchpanel.ui \
-    macrosettings.ui
+    macrosettings.ui \
+    macroplugin.ui
 
 RESOURCES += \
     resources.qrc
