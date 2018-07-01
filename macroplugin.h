@@ -24,7 +24,6 @@
 
 #include <QDebug>
 #include <QFrame>
-#include "ui_mainwindow.h"
 #include "settings.h"
 #include "macrosettings.h"
 #include "plugin.h"
@@ -38,19 +37,22 @@ class MacroPlugin : public QFrame
     Q_OBJECT
 
 public:
-    explicit MacroPlugin(QWidget *parent, Ui::MainWindow * main_ui, Settings * m_settings);
-    ~MacroPlugin();
-    const Plugin * pluginData();
+    explicit MacroPlugin(QFrame *parent, Settings * settings);
+    virtual ~MacroPlugin();
+    const Plugin * plugin();
     int processCmd(const QString * text);
 
 signals:
     void sendCmd(QString);
+    void unload(Plugin*);
+
+public slots:
+    void removePlugin(bool);
 
 private:
     Ui::MacroPlugin *ui;
-    Plugin *m_pluginData;
+    Plugin *m_plugin;
     MacroSettings * m_macroSettings;
-    Ui::MainWindow * m_main_ui;
     Settings * m_settings;
 };
 

@@ -15,7 +15,7 @@
 QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4){
-  QT += widgets
+  QT += widgets network
   CONFIG += c++11
 }
 
@@ -38,7 +38,9 @@ SOURCES += main.cpp\
     ctrlcharacterspopup.cpp \
     macrosettings.cpp \
     pluginmanager.cpp \
-    macroplugin.cpp
+    macroplugin.cpp \
+    netproxyplugin.cpp \
+    netproxysettings.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -55,7 +57,9 @@ HEADERS  += mainwindow.h \
     macrosettings.h \
     pluginmanager.h \
     macroplugin.h \
-    plugin.h
+    plugin.h \
+    netproxyplugin.h \
+    netproxysettings.h
 
 
 FORMS    += mainwindow.ui \
@@ -64,7 +68,9 @@ FORMS    += mainwindow.ui \
     sessionmanager.ui \
     searchpanel.ui \
     macrosettings.ui \
-    macroplugin.ui
+    macroplugin.ui \
+    netproxyplugin.ui \
+    netproxysettings.ui
 
 RESOURCES += \
     resources.qrc

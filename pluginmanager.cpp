@@ -21,49 +21,102 @@
 
 #include "pluginmanager.h"
 
-PluginManager::PluginManager(QVBoxLayout * parent)
-    : m_layout(parent)
+#define TRACE if (!debug) {} else qDebug()
+static bool debug = true;
+
+PluginManager::PluginManager(QFrame * parent, QVBoxLayout * layout, Settings * settings) :
+    m_parent(parent),
+    m_layout(layout),
+    m_settings(settings)
 {
 
 }
 
-void PluginManager::addPlugin(const Plugin * item)
+PluginManager::~PluginManager()
 {
-    m_list.append(item);
-    QMargins mainMargins = m_layout->contentsMargins();
-    item->frame->setContentsMargins(mainMargins);
-    m_layout->addWidget(item->frame);
-    item->frame->show();
-    qDebug() << "name: " << item->name;
-}
-
-void PluginManager::removePlugin(const Plugin * item)
-{
-//    m_list.removeOne(item);
-}
-
-void PluginManager::processCmd(QString * text)
-{
-    QListIterator<const Plugin *> i(m_list);
+    QListIterator<Plugin*> i(m_list);
     while (i.hasNext()) {
-        const Plugin* item = static_cast<const Plugin*>(i.next());
-        if (item->inject && item->processCmd) {
-            QString new_text;
-            if (item->processCmd(text, &new_text)) {
-                *text = new_text;
-            }
-        }
+        Plugin* item = static_cast<Plugin*>(i.next());
+        removePlugin(item);
     }
 }
 
 /**
- * @brief Plugins that need to send commands to the serial
- *  port should use this call function and pass the QString.
- *  This function will actually emulate the procedure of
- *  writting the string in the m_input_edit of the
- * @param outStr The string to send to the serial
+ * @brief [SLOT] Add a new plugin and initialize it depending its type
+ * @param type Supported plugin type (see: en_plugin_type)
  */
-void PluginManager::proxyCmd(QString * outStr)
+void PluginManager::addPluginType(en_plugin_type type)
 {
-    emit sendCmd(*outStr);
+    TRACE << "[PluginManager] Adding new plugin: " << type;
+    if (type == en_plugin_type::PLUGIN_TYPE_MACROS) {
+        /* specific plugin initialization */
+        MacroPlugin * macro = new MacroPlugin(m_parent, m_settings);
+        connect(macro, SIGNAL(unload(Plugin*)), this, SLOT(removePlugin(Plugin*)));
+        connect(macro, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
+        /* common plugin initialization */
+        addPlugin((Plugin*) macro->plugin());
+    }
+    else if (type == en_plugin_type::PLUGIN_TYPE_NET_PROXY) {
+        NetProxyPlugin * proxy = new NetProxyPlugin(m_parent, m_settings);
+        connect(proxy, SIGNAL(unload(Plugin*)), this, SLOT(removePlugin(Plugin*)));
+        connect(proxy, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
+        connect(this, SIGNAL(recvCmd(QByteArray)), proxy, SIGNAL(proxyCmd(QByteArray)));
+        /* common plugin initialization */
+        addPlugin((Plugin*) proxy->plugin());
+    }
+}
+
+/**
+ * @brief [SLOT] Remove an existing plugin
+ * @param plugin A pointer to the plugin to delete
+ */
+void PluginManager::removePlugin(Plugin * plugin)
+{
+    TRACE << "[PluginManager] Removing plugin: " << plugin->name;
+    if (!plugin) return;
+
+    if (plugin->frame) {
+        plugin->frame->close();
+    }
+    plugin->deleteLater();
+}
+
+/**
+ * @brief Adds a plugin in the manager list and also does the
+ *  additional initialization
+ * @param item The plugin to add
+ */
+void PluginManager::addPlugin(Plugin * item)
+{
+    if (!item) return;
+
+    m_list.append(item);
+    /* if the plugin has also a frame then add it */
+    if (item->frame) {
+        QMargins mainMargins = m_layout->contentsMargins();
+        item->frame->setContentsMargins(mainMargins);
+        m_layout->addWidget(item->frame);
+        item->frame->show();
+    }
+    TRACE << "[PluginManager] Added new plugin: " << item->name;
+}
+
+/**
+ * @brief Inject and process the cmd data before they sent
+ * @param cmd The data
+ */
+void PluginManager::processCmd(QString * cmd)
+{
+    TRACE << "[PluginManager] process: " << cmd;
+    QListIterator<Plugin *> i(m_list);
+    while (i.hasNext()) {
+        const Plugin* item = static_cast<const Plugin*>(i.next());
+        if (item->processCmd) {
+            QString new_cmd;
+            if (item->processCmd(cmd, &new_cmd)) {
+//                new_cmd = cmd + QString("_ADD");
+                *cmd = new_cmd;
+            }
+        }
+    }
 }

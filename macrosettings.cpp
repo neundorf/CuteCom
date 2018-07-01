@@ -23,6 +23,10 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#define TRACE if (!debug) {} else qDebug()
+static bool debug = true;
+
+
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
 
@@ -138,9 +142,10 @@ void MacroSettings::macroPress()
         if (idx < 0)
             return;
 
-        qDebug() << "Sender: " << m_macros[idx]->button->objectName();
         /* Send macro text */
         emit sendCmd(m_macros[idx]->cmd->text());
+        TRACE << "[MacroSettings] macroPress " << m_macros[idx]->button->objectName()
+              << " : " << m_macros[idx]->cmd->text();
     }
 }
 

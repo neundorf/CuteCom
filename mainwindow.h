@@ -28,10 +28,8 @@
 #include "sessionmanager.h"
 #include "settings.h"
 #include "statusbar.h"
-#include "pluginmanager.h"
-#include "macroplugin.h"
-#include "macrosettings.h"
 #include "ui_mainwindow.h"
+#include "pluginmanager.h"
 
 #include <QFont>
 #include <QMainWindow>
@@ -102,9 +100,7 @@ private:
 
     ControlPanel *controlPanel;
     SessionManager *m_sessionManager;
-    MacroSettings *m_macroSettings;
     PluginManager *m_plugin_manager;
-    MacroPlugin * m_macro_plugin;
     QSerialPort *m_device;
     DeviceState m_deviceState;
     StatusBar *m_device_statusbar;

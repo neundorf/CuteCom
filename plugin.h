@@ -22,22 +22,33 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
+#include <QObject>
 #include <QFrame>
 #include <QString>
 
-class Plugin {
-
+class Plugin : public QObject
+{
+    Q_OBJECT
 public:
     typedef int (*processCmd_fp)(const QString * text, QString * new_text);
-    Plugin(QString name, bool enable = false, bool inject = false,
-           QFrame * frame = NULL, processCmd_fp fp = NULL)
-        : name(name), enable(enable), inject(inject), frame(frame), processCmd(fp) {}
 
+    Plugin(QObject * owner,         /* who owns the plugin */
+           QString name,            /* name of plugin */
+           QFrame * frame = NULL,   /* Does the plugin has a UI interface? */
+           processCmd_fp processCmd = NULL /* function that injects the cmd */
+            )
+        :owner(owner), name(name), frame(frame),
+            processCmd(processCmd) {}
+
+    ~Plugin() {}
+
+    QObject * owner;
     QString name;
-    bool enable;
-    bool inject;
     QFrame * frame;
     processCmd_fp processCmd;
+
+signals:
+    void sendCmd(QString);
 };
 
 #endif // PLUGIN_H

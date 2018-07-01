@@ -314,9 +314,17 @@
     </property>
     <addaction name="actionFind"/>
    </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugins</string>
+    </property>
+    <addaction name="m_actionAddPluginMacros"/>
+    <addaction name="m_actionAddPluginIpProxy"/>
+   </widget>
    <addaction name="menuSessions"/>
    <addaction name="menuEdit"/>
    <addaction name="menu_Help"/>
+   <addaction name="menuPlugins"/>
   </widget>
   <widget class="QStatusBar" name="m_statusBar"/>
   <action name="actionOpen">
@@ -357,6 +365,27 @@
   <action name="actionFind">
    <property name="text">
     <string>Find</string>
+   </property>
+  </action>
+  <action name="m_actionPluginMacros">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Add macros</string>
+   </property>
+  </action>
+  <action name="m_actionAddPluginMacros">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>New macros</string>
+   </property>
+  </action>
+  <action name="m_actionAddPluginIpProxy">
+   <property name="text">
+    <string>New IP Proxy</string>
    </property>
   </action>
  </widget>

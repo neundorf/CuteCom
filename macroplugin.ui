@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>655</width>
-    <height>99</height>
+    <width>673</width>
+    <height>98</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,8 +36,8 @@
        <rect>
         <x>5</x>
         <y>25</y>
-        <width>81</width>
-        <height>50</height>
+        <width>80</width>
+        <height>25</height>
        </rect>
       </property>
       <property name="toolTip">
@@ -253,6 +253,22 @@
       </property>
       <property name="text">
        <string>M16</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="m_bt_unload">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>50</y>
+        <width>80</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Open macro settings dialog</string>
+      </property>
+      <property name="text">
+       <string>Unload</string>
       </property>
      </widget>
     </widget>
