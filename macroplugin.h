@@ -22,13 +22,14 @@
 #ifndef MACROPLUGIN_H
 #define MACROPLUGIN_H
 
-#include <QDebug>
-#include <QFrame>
-#include "settings.h"
 #include "macrosettings.h"
 #include "plugin.h"
+#include "settings.h"
+#include <QDebug>
+#include <QFrame>
 
-namespace Ui {
+namespace Ui
+{
 class MacroPlugin;
 }
 
@@ -37,14 +38,14 @@ class MacroPlugin : public QFrame
     Q_OBJECT
 
 public:
-    explicit MacroPlugin(QFrame *parent, Settings * settings);
+    explicit MacroPlugin(QFrame *parent, Settings *settings);
     virtual ~MacroPlugin();
-    const Plugin * plugin();
-    int processCmd(const QString * text);
+    const Plugin *plugin();
+    int processCmd(const QString *text);
 
 signals:
     void sendCmd(QString);
-    void unload(Plugin*);
+    void unload(Plugin *);
 
 public slots:
     void removePlugin(bool);
@@ -52,8 +53,8 @@ public slots:
 private:
     Ui::MacroPlugin *ui;
     Plugin *m_plugin;
-    MacroSettings * m_macroSettings;
-    Settings * m_settings;
+    MacroSettings *m_macroSettings;
+    Settings *m_settings;
 };
 
 #endif // MACROPLUGIN_H

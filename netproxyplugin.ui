@@ -108,7 +108,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_7">
+     <widget class="QLabel" name="m_lbl_udp_tx">
       <property name="geometry">
        <rect>
         <x>460</x>
@@ -140,7 +140,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_8">
+     <widget class="QLabel" name="m_lbl_udp_rx">
       <property name="geometry">
        <rect>
         <x>510</x>
@@ -153,7 +153,7 @@
        <string>Rx:</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_6">
+     <widget class="QLabel" name="m_lbl_udp_en">
       <property name="geometry">
        <rect>
         <x>410</x>
@@ -166,7 +166,7 @@
        <string>En:</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_9">
+     <widget class="QLabel" name="m_lbl_tcp_rx">
       <property name="geometry">
        <rect>
         <x>510</x>
@@ -198,7 +198,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_10">
+     <widget class="QLabel" name="m_lbl_tcp_en">
       <property name="geometry">
        <rect>
         <x>410</x>
@@ -230,7 +230,7 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QLabel" name="label_11">
+     <widget class="QLabel" name="m_lbl_tcp_tx">
       <property name="geometry">
        <rect>
         <x>460</x>

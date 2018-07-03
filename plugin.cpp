@@ -18,35 +18,12 @@
  * For more information on the GPL, please go to:
  * http://www.gnu.org/copyleft/gpl.html
  */
+#include <plugin.h>
 
-#ifndef PLUGIN_H
-#define PLUGIN_H
-
-#include <QFrame>
-#include <QObject>
-#include <QString>
-
-class Plugin : public QObject
+Plugin::Plugin(QObject *owner, QString name, QFrame *frame, processCmd_fp processCmd)
+    : owner(owner)
+    , name(name)
+    , frame(frame)
+    , processCmd(processCmd)
 {
-    Q_OBJECT
-public:
-    typedef int (*processCmd_fp)(const QString *text, QString *new_text);
-
-    Plugin(QObject *owner,                 /* who owns the plugin */
-           QString name,                   /* name of plugin */
-           QFrame *frame = NULL,           /* Does the plugin has a UI interface? */
-           processCmd_fp processCmd = NULL /* function that injects the cmd */
-    );
-
-    ~Plugin() {}
-
-    QObject *owner;
-    QString name;
-    QFrame *frame;
-    processCmd_fp processCmd;
-
-signals:
-    void sendCmd(QString);
-};
-
-#endif // PLUGIN_H
+}

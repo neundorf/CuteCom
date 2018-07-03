@@ -103,6 +103,18 @@ void Settings::settingChanged(Settings::Options option, QVariant setting)
     case MacroFile:
         session.macroFile = setting.toString();
         break;
+    case UdpLocalPort:
+        session.udpLocalPort = setting.toUInt();
+        break;
+    case UdpRemoteHost:
+        session.udpRemoteHost = setting.toString();
+        break;
+    case UdpRemotePort:
+        session.udpRemotePort = setting.toUInt();
+        break;
+    case TcpLocalPort:
+        session.tcpLocalPort = setting.toUInt();
+        break;
     case CurrentSession:
         m_current_session = setting.toString();
         emit sessionChanged(getCurrentSession());
@@ -181,6 +193,10 @@ void Settings::readSessionSettings(QSettings &settings)
         session.showTimestamp = settings.value("showTimestamp", false).toBool();
         session.command_history = settings.value("History").toStringList();
         session.macroFile = settings.value("MacroFile", "").toString();
+        session.udpLocalPort = settings.value("UdpLocalPort", 7755).toUInt();
+        session.udpRemoteHost = settings.value("UdpRemoteHost", "").toString();
+        session.udpRemotePort = settings.value("UdpRemotePort", 7756).toUInt();
+        session.tcpLocalPort = settings.value("TcpLocalPort", 7755).toUInt();
 
         m_sessions.insert(name, session);
     }
@@ -309,6 +325,10 @@ void Settings::saveSessionSettings()
             settings.setValue("showTimestamp", session.showTimestamp);
             settings.setValue("History", session.command_history);
             settings.setValue("MacroFile", session.macroFile);
+            settings.setValue("UdpLocalPort", session.udpLocalPort);
+            settings.setValue("UdpRemoteHost", session.udpRemoteHost);
+            settings.setValue("UdpRemotePort", session.udpRemotePort);
+            settings.setValue("TcpLocalPort", session.tcpLocalPort);
         }
         settings.endArray();
     }

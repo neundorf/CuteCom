@@ -49,6 +49,10 @@ public:
         SendStartDir,
         ProtocolOption,
         MacroFile,
+        UdpLocalPort,
+        UdpRemoteHost,
+        UdpRemotePort,
+        TcpLocalPort,
         CurrentSession
     };
 
@@ -64,6 +68,10 @@ public:
         bool showTimestamp;
         QStringList command_history;
         QString macroFile;
+        quint16 udpLocalPort;
+        QString udpRemoteHost;
+        quint16 udpRemotePort;
+        quint16 tcpLocalPort;
     };
 
     enum LineTerminator { LF = 0, CR, CRLF, NONE, HEX };

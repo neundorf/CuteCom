@@ -22,14 +22,17 @@
 #include "macroplugin.h"
 #include "ui_macroplugin.h"
 
-#define TRACE if (!debug) {} else qDebug()
+#define TRACE                                                                                                          \
+    if (!debug) {                                                                                                      \
+    } else                                                                                                             \
+        qDebug()
 
 static bool debug = false;
 
-MacroPlugin::MacroPlugin(QFrame *parent, Settings * settings) :
-    QFrame(parent),
-    ui(new Ui::MacroPlugin),
-    m_settings(settings)
+MacroPlugin::MacroPlugin(QFrame *parent, Settings *settings)
+    : QFrame(parent)
+    , ui(new Ui::MacroPlugin)
+    , m_settings(settings)
 {
     ui->setupUi(this);
     /* Plugin by default disabled, no injection, has QFrame, no injection process cmd */
@@ -41,11 +44,9 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings * settings) :
      * and we handle all buttons there.
      */
     QPushButton **macro_buttons = new QPushButton *[MacroSettings::NUM_OF_BUTTONS] {
-        ui->m_bt_macro_1,ui-> m_bt_macro_2, ui->m_bt_macro_3, ui->m_bt_macro_4, ui->m_bt_macro_5,
-            ui->m_bt_macro_6, ui->m_bt_macro_7, ui->m_bt_macro_8,
-            ui->m_bt_macro_9, ui->m_bt_macro_10, ui->m_bt_macro_11, ui->m_bt_macro_12,
-            ui->m_bt_macro_13, ui->m_bt_macro_14, ui->m_bt_macro_15,
-            ui->m_bt_macro_16,
+        ui->m_bt_macro_1, ui->m_bt_macro_2, ui->m_bt_macro_3, ui->m_bt_macro_4, ui->m_bt_macro_5, ui->m_bt_macro_6,
+            ui->m_bt_macro_7, ui->m_bt_macro_8, ui->m_bt_macro_9, ui->m_bt_macro_10, ui->m_bt_macro_11,
+            ui->m_bt_macro_12, ui->m_bt_macro_13, ui->m_bt_macro_14, ui->m_bt_macro_15, ui->m_bt_macro_16,
     };
     /* Create the macro dialog */
     m_macroSettings = new MacroSettings(macro_buttons, this);
@@ -59,9 +60,9 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings * settings) :
         m_settings->settingChanged(Settings::MacroFile, m_macroSettings->getMacroFilename());
         /* load file */
         m_macroSettings->loadFile(m_macroSettings->getMacroFilename());
-//        qDebug() << "L1 session: " << m_settings->getCurrentSessionName()
-//                 << ", fname: " << m_macroSettings->getMacroFilename()
-//                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
+        //        qDebug() << "L1 session: " << m_settings->getCurrentSessionName()
+        //                 << ", fname: " << m_macroSettings->getMacroFilename()
+        //                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
     });
     /* send serial string */
     connect(m_macroSettings, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
@@ -81,15 +82,9 @@ MacroPlugin::~MacroPlugin()
  * @brief Return a pointer to the plugin data
  * @return
  */
-const Plugin * MacroPlugin::plugin()
-{
-    return m_plugin;
-}
+const Plugin *MacroPlugin::plugin() { return m_plugin; }
 
 /**
  * @brief [SLOT] Send unload command to the plugin manager
  */
-void MacroPlugin::removePlugin(bool)
-{
-    emit unload(m_plugin);
-}
+void MacroPlugin::removePlugin(bool) { emit unload(m_plugin); }

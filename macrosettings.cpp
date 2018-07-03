@@ -23,9 +23,11 @@
 #include <QDebug>
 #include <QMessageBox>
 
-#define TRACE if (!debug) {} else qDebug()
+#define TRACE                                                                                                          \
+    if (!debug) {                                                                                                      \
+    } else                                                                                                             \
+        qDebug()
 static bool debug = true;
-
 
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
@@ -97,9 +99,7 @@ MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
             }
         });
         /* timer events */
-        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() {
-            emit sendCmd(m_macros[i]->cmd->text());
-        });
+        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() { emit sendCmd(m_macros[i]->cmd->text()); });
     }
     connect(m_bt_load_macros, &QPushButton::clicked, this, &MacroSettings::openFile);
     connect(m_bt_save_macros, &QPushButton::clicked, this, &MacroSettings::saveFile);
@@ -144,8 +144,8 @@ void MacroSettings::macroPress()
 
         /* Send macro text */
         emit sendCmd(m_macros[idx]->cmd->text());
-        TRACE << "[MacroSettings] macroPress " << m_macros[idx]->button->objectName()
-              << " : " << m_macros[idx]->cmd->text();
+        TRACE << "[MacroSettings] macroPress " << m_macros[idx]->button->objectName() << " : "
+              << m_macros[idx]->cmd->text();
     }
 }
 

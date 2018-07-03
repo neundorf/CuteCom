@@ -21,22 +21,24 @@
 
 #include "pluginmanager.h"
 
-#define TRACE if (!debug) {} else qDebug()
+#define TRACE                                                                                                          \
+    if (!debug) {                                                                                                      \
+    } else                                                                                                             \
+        qDebug()
 static bool debug = true;
 
-PluginManager::PluginManager(QFrame * parent, QVBoxLayout * layout, Settings * settings) :
-    m_parent(parent),
-    m_layout(layout),
-    m_settings(settings)
+PluginManager::PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings)
+    : m_parent(parent)
+    , m_layout(layout)
+    , m_settings(settings)
 {
-
 }
 
 PluginManager::~PluginManager()
 {
-    QListIterator<Plugin*> i(m_list);
+    QListIterator<Plugin *> i(m_list);
     while (i.hasNext()) {
-        Plugin* item = static_cast<Plugin*>(i.next());
+        Plugin *item = static_cast<Plugin *>(i.next());
         removePlugin(item);
     }
 }
@@ -50,19 +52,18 @@ void PluginManager::addPluginType(en_plugin_type type)
     TRACE << "[PluginManager] Adding new plugin: " << type;
     if (type == en_plugin_type::PLUGIN_TYPE_MACROS) {
         /* specific plugin initialization */
-        MacroPlugin * macro = new MacroPlugin(m_parent, m_settings);
-        connect(macro, SIGNAL(unload(Plugin*)), this, SLOT(removePlugin(Plugin*)));
-        connect(macro, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
+        MacroPlugin *macro = new MacroPlugin(m_parent, m_settings);
+        connect(macro, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
+        connect(macro, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
         /* common plugin initialization */
-        addPlugin((Plugin*) macro->plugin());
-    }
-    else if (type == en_plugin_type::PLUGIN_TYPE_NET_PROXY) {
-        NetProxyPlugin * proxy = new NetProxyPlugin(m_parent, m_settings);
-        connect(proxy, SIGNAL(unload(Plugin*)), this, SLOT(removePlugin(Plugin*)));
-        connect(proxy, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
+        addPlugin((Plugin *)macro->plugin());
+    } else if (type == en_plugin_type::PLUGIN_TYPE_NET_PROXY) {
+        NetProxyPlugin *proxy = new NetProxyPlugin(m_parent, m_settings);
+        connect(proxy, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
+        connect(proxy, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
         connect(this, SIGNAL(recvCmd(QByteArray)), proxy, SIGNAL(proxyCmd(QByteArray)));
         /* common plugin initialization */
-        addPlugin((Plugin*) proxy->plugin());
+        addPlugin((Plugin *)proxy->plugin());
     }
 }
 
@@ -70,10 +71,11 @@ void PluginManager::addPluginType(en_plugin_type type)
  * @brief [SLOT] Remove an existing plugin
  * @param plugin A pointer to the plugin to delete
  */
-void PluginManager::removePlugin(Plugin * plugin)
+void PluginManager::removePlugin(Plugin *plugin)
 {
     TRACE << "[PluginManager] Removing plugin: " << plugin->name;
-    if (!plugin) return;
+    if (!plugin)
+        return;
 
     if (plugin->frame) {
         plugin->frame->close();
@@ -86,9 +88,10 @@ void PluginManager::removePlugin(Plugin * plugin)
  *  additional initialization
  * @param item The plugin to add
  */
-void PluginManager::addPlugin(Plugin * item)
+void PluginManager::addPlugin(Plugin *item)
 {
-    if (!item) return;
+    if (!item)
+        return;
 
     m_list.append(item);
     /* if the plugin has also a frame then add it */
@@ -105,16 +108,16 @@ void PluginManager::addPlugin(Plugin * item)
  * @brief Inject and process the cmd data before they sent
  * @param cmd The data
  */
-void PluginManager::processCmd(QString * cmd)
+void PluginManager::processCmd(QString *cmd)
 {
     TRACE << "[PluginManager] process: " << cmd;
     QListIterator<Plugin *> i(m_list);
     while (i.hasNext()) {
-        const Plugin* item = static_cast<const Plugin*>(i.next());
+        const Plugin *item = static_cast<const Plugin *>(i.next());
         if (item->processCmd) {
             QString new_cmd;
             if (item->processCmd(cmd, &new_cmd)) {
-//                new_cmd = cmd + QString("_ADD");
+                //                new_cmd = cmd + QString("_ADD");
                 *cmd = new_cmd;
             }
         }

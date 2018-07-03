@@ -38,19 +38,19 @@
  * Also every pluging can send a serial command with the `sendCmd()` signal.
  *
  * Make sure that plugins clean up themselves properly when unloaded.
-*/
+ */
 
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
-#include <QDebug>
-#include <QObject>
-#include <QFrame>
-#include <QVBoxLayout>
-#include "settings.h"
-#include "plugin.h"
 #include "macroplugin.h"
 #include "netproxyplugin.h"
+#include "plugin.h"
+#include "settings.h"
+#include <QDebug>
+#include <QFrame>
+#include <QObject>
+#include <QVBoxLayout>
 
 class PluginManager : public QObject
 {
@@ -58,31 +58,28 @@ class PluginManager : public QObject
 
 public:
     /* Every plug in has its own type */
-    enum en_plugin_type {
-        PLUGIN_TYPE_MACROS,
-        PLUGIN_TYPE_NET_PROXY
-    };
-    PluginManager(QFrame * parent, QVBoxLayout * layout, Settings * settings);
+    enum en_plugin_type { PLUGIN_TYPE_MACROS, PLUGIN_TYPE_NET_PROXY };
+    PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings);
     virtual ~PluginManager();
 
 public slots:
     void addPluginType(en_plugin_type);
-    void removePlugin(Plugin*);
+    void removePlugin(Plugin *);
 
 signals:
-    void recvCmd(QByteArray);   /* mainwindow -> manager */
-    void sendCmd(QString);      /* manager -> mainwindow */
+    void recvCmd(QByteArray); /* mainwindow -> manager */
+    void sendCmd(QByteArray); /* manager -> mainwindow */
 
 protected:
-    void addPlugin(Plugin * item);
-    void processCmd(QString * text);
+    void addPlugin(Plugin *item);
+    void processCmd(QString *text);
 
 private:
-    QFrame * m_parent;
-    QVBoxLayout * m_layout;
-    QList<Plugin*> m_list;
-    Settings * m_settings;
+    QFrame *m_parent;
+    QVBoxLayout *m_layout;
+    QList<Plugin *> m_list;
+    Settings *m_settings;
     /* Supported plugins */
-    MacroPlugin * m_macro_plugin;
+    MacroPlugin *m_macro_plugin;
 };
 #endif // PLUGINMANAGER_H
