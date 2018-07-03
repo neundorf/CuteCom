@@ -25,7 +25,7 @@
     if (!debug) {                                                                                                      \
     } else                                                                                                             \
         qDebug()
-static bool debug = true;
+static bool debug = false;
 
 PluginManager::PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings)
     : m_parent(parent)

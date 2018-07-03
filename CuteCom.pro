@@ -36,12 +36,12 @@ SOURCES += main.cpp\
     searchpanel.cpp \
     timeview.cpp \
     ctrlcharacterspopup.cpp \
-    plugin.cpp
+    plugin.cpp \
     pluginmanager.cpp \
     macroplugin.cpp \
     macrosettings.cpp \
     netproxyplugin.cpp \
-    netproxysettings.cpp \
+    netproxysettings.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \

@@ -11,7 +11,7 @@
     if (!debug) {                                                                                                      \
     } else                                                                                                             \
         qDebug()
-static bool debug = true;
+static bool debug = false;
 
 NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
     : QDialog(parent)
@@ -20,8 +20,8 @@ NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->m_btn_udp->setText("Listen");
-    ui->m_btn_tcp->setText("Listen");
+    ui->m_btn_udp->setText(tr("Listen"));
+    ui->m_btn_tcp->setText(tr("Listen"));
 
     /* Set validators for the IP inputs */
     QString ipRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";

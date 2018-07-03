@@ -27,7 +27,8 @@
     if (!debug) {                                                                                                      \
     } else                                                                                                             \
         qDebug()
-static bool debug = true;
+
+static bool debug = false;
 
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
@@ -92,10 +93,10 @@ MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
                 m_macros[i]->tmr->stop();
                 m_macros[i]->tmr->setInterval(m_macros[i]->tmr_interval->text().toInt());
                 m_macros[i]->tmr->start();
-                qDebug() << "Timer " << i << " started.";
+                TRACE << "Timer " << i << " started.";
             } else {
                 m_macros[i]->tmr->stop();
-                qDebug() << "Timer " << i << " stopped.";
+                TRACE << "Timer " << i << " stopped.";
             }
         });
         /* timer events */
@@ -161,7 +162,7 @@ void MacroSettings::loadFile(QString fname)
     QFile file(fname);
 
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Could not open file", file.errorString());
+        QMessageBox::critical(this, tr("Could not open file"), file.errorString());
         return;
     }
     QTextStream in(&file);
@@ -178,7 +179,7 @@ void MacroSettings::loadFile(QString fname)
 
 void MacroSettings::openFile()
 {
-    QString fname = QFileDialog::getOpenFileName(this, "Open a bray's terminal macro settings file", QDir::homePath(),
+    QString fname = QFileDialog::getOpenFileName(this, tr("Open a bray's terminal macro settings file"), QDir::homePath(),
                                                  "Macros (*.tmf)");
     if (!fname.isEmpty())
         loadFile(fname);
@@ -204,7 +205,7 @@ bool MacroSettings::parseFile(QTextStream &in)
             m_macros[i]->cmd->setText(line);
         }
     } else {
-        QMessageBox::warning(this, "Error", "Unsupported macro file!");
+        QMessageBox::warning(this, tr("Error"), tr("Unsupported macro file!"));
         return false;
     }
     return true;
@@ -213,15 +214,16 @@ bool MacroSettings::parseFile(QTextStream &in)
 void MacroSettings::saveFile()
 {
     QDir dir(QDir::homePath());
-    QString fname = QFileDialog::getSaveFileName(this, "Open a bray's terminal macro settings file",
+    QString fname = QFileDialog::getSaveFileName(this,
+                                                 tr("Open a bray's terminal macro settings file"),
                                                  dir.filePath(m_macroFilename), "Macros (*.tmf)");
     if (fname.isEmpty())
         return;
 
-    qDebug() << "Save to: " << fname;
+    TRACE << "Save to: " << fname;
     QFile file(fname);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Could not open file", file.errorString());
+        QMessageBox::warning(this, tr("Could not open file"), file.errorString());
         return;
     }
     QTextStream out(&file);
@@ -241,7 +243,7 @@ void MacroSettings::saveFile()
 
 void MacroSettings::helpMsg(void)
 {
-    QString help_str = "In order to use macros you need to need to\n"
+    QString help_str = tr("In order to use macros you need to need to\n"
                        "fill the serial command you want to send in\n"
                        "the first column. Then you can name the macro\n"
                        "in the second column. This name will also be\n"
@@ -254,7 +256,7 @@ void MacroSettings::helpMsg(void)
                        "using the checkbox. Note that each timer is\n"
                        "autonomous.\n\n"
                        "The macro format is compatible with the tmf\n"
-                       "format of Bray's terminal.";
+                       "format of Bray's terminal.");
 
-    QMessageBox::information(this, "How to use", help_str);
+    QMessageBox::information(this, tr("How to use"), help_str);
 }
