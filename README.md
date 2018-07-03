@@ -38,6 +38,7 @@ Version 0.30.0 is the first public release after the reimplementation.
 *   optionally show control characters like line feed or tabs in output
 *   optionally prefix each line in output with a timestamp
 *   open the device without changing its settings (was not ported but could be added if demand arrises )
+*   plugins (macros, netproxy)
 
 
 ### Build instructions
