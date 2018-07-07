@@ -1,5 +1,7 @@
 0.50.0, tba , 2018
--added macros support similar to br@y's terminal
+-added a plugin manager
+-added macros plugin to support similar to br@y's terminal
+-added netproxy plugin
 -improved logfile handling
 
 0.45.0, June 17 , 2018

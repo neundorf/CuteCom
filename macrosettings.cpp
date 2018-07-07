@@ -23,13 +23,19 @@
 #include <QDebug>
 #include <QMessageBox>
 
+#define TRACE                                                                                                          \
+    if (!debug) {                                                                                                      \
+    } else                                                                                                             \
+        qDebug()
+
+static bool debug = false;
+
 #define MACRO_ITEM(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)                                                   \
     new macro_item(CMD, NAME, TMR_INTERVAL, BUTTON, TMR_ACTIVE, TMR)
 
-MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QWidget *parent)
+MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
     : QDialog(parent)
     , m_mainForm(parent)
-    , m_inputEdit(inputEdit)
 {
     setupUi(this);
     this->setWindowTitle("Macro Settings");
@@ -71,28 +77,30 @@ MacroSettings::MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QW
 
     /* Setup signal/slots */
     for (size_t i = 0; i < NUM_OF_BUTTONS; i++) {
+        /* Click events from the panel in the main menu */
         connect(mainButtons[i], SIGNAL(clicked(bool)), this, SLOT(macroPress()));
-        connect(m_macros[i]->name, &QLineEdit::textChanged, this,
-                [=]() { mainButtons[i]->setText(m_macros[i]->name->text()); });
-
-        connect(m_macros[i]->button, &QPushButton::clicked, this, &MacroSettings::macroPress);
+        /* events to change this dialog's buttons text */
         connect(m_macros[i]->name, &QLineEdit::textChanged, this,
                 [=]() { m_macros[i]->button->setText(m_macros[i]->name->text()); });
+        /* events to change the buttons text on main menu */
+        connect(m_macros[i]->name, &QLineEdit::textChanged, this,
+                [=]() { mainButtons[i]->setText(m_macros[i]->name->text()); });
+        /* event handling for this dialog's buttons */
+        connect(m_macros[i]->button, &QPushButton::clicked, this, &MacroSettings::macroPress);
+        /* timer enable/disable events */
         connect(m_macros[i]->tmr_active, &QCheckBox::stateChanged, [=](int state) {
             if (state == Qt::Checked) {
                 m_macros[i]->tmr->stop();
                 m_macros[i]->tmr->setInterval(m_macros[i]->tmr_interval->text().toInt());
                 m_macros[i]->tmr->start();
-                qDebug() << "Timer " << i << " started.";
+                TRACE << "Timer " << i << " started.";
             } else {
                 m_macros[i]->tmr->stop();
-                qDebug() << "Timer " << i << " stopped.";
+                TRACE << "Timer " << i << " stopped.";
             }
         });
-        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() {
-            m_inputEdit->setText(m_macros[i]->cmd->text());
-            emit sendCmd();
-        });
+        /* timer events */
+        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() { emit sendCmd(m_macros[i]->cmd->text()); });
     }
     connect(m_bt_load_macros, &QPushButton::clicked, this, &MacroSettings::openFile);
     connect(m_bt_save_macros, &QPushButton::clicked, this, &MacroSettings::saveFile);
@@ -135,11 +143,10 @@ void MacroSettings::macroPress()
         if (idx < 0)
             return;
 
-        qDebug() << "Sender: " << m_macros[idx]->button->objectName();
-        /* Get macro text */
-        QString cmd = m_macros[idx]->cmd->text();
-        m_inputEdit->setText(cmd);
-        emit sendCmd();
+        /* Send macro text */
+        emit sendCmd(m_macros[idx]->cmd->text());
+        TRACE << "[MacroSettings] macroPress " << m_macros[idx]->button->objectName() << " : "
+              << m_macros[idx]->cmd->text();
     }
 }
 
@@ -155,7 +162,7 @@ void MacroSettings::loadFile(QString fname)
     QFile file(fname);
 
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Could not open file", file.errorString());
+        QMessageBox::critical(this, tr("Could not open file"), file.errorString());
         return;
     }
     QTextStream in(&file);
@@ -172,7 +179,7 @@ void MacroSettings::loadFile(QString fname)
 
 void MacroSettings::openFile()
 {
-    QString fname = QFileDialog::getOpenFileName(this, "Open a bray's terminal macro settings file", QDir::homePath(),
+    QString fname = QFileDialog::getOpenFileName(this, tr("Open a bray's terminal macro settings file"), QDir::homePath(),
                                                  "Macros (*.tmf)");
     if (!fname.isEmpty())
         loadFile(fname);
@@ -198,7 +205,7 @@ bool MacroSettings::parseFile(QTextStream &in)
             m_macros[i]->cmd->setText(line);
         }
     } else {
-        QMessageBox::warning(this, "Error", "Unsupported macro file!");
+        QMessageBox::warning(this, tr("Error"), tr("Unsupported macro file!"));
         return false;
     }
     return true;
@@ -207,15 +214,16 @@ bool MacroSettings::parseFile(QTextStream &in)
 void MacroSettings::saveFile()
 {
     QDir dir(QDir::homePath());
-    QString fname = QFileDialog::getSaveFileName(this, "Open a bray's terminal macro settings file",
+    QString fname = QFileDialog::getSaveFileName(this,
+                                                 tr("Open a bray's terminal macro settings file"),
                                                  dir.filePath(m_macroFilename), "Macros (*.tmf)");
     if (fname.isEmpty())
         return;
 
-    qDebug() << "Save to: " << fname;
+    TRACE << "Save to: " << fname;
     QFile file(fname);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Could not open file", file.errorString());
+        QMessageBox::warning(this, tr("Could not open file"), file.errorString());
         return;
     }
     QTextStream out(&file);
@@ -235,7 +243,7 @@ void MacroSettings::saveFile()
 
 void MacroSettings::helpMsg(void)
 {
-    QString help_str = "In order to use macros you need to need to\n"
+    QString help_str = tr("In order to use macros you need to need to\n"
                        "fill the serial command you want to send in\n"
                        "the first column. Then you can name the macro\n"
                        "in the second column. This name will also be\n"
@@ -248,7 +256,7 @@ void MacroSettings::helpMsg(void)
                        "using the checkbox. Note that each timer is\n"
                        "autonomous.\n\n"
                        "The macro format is compatible with the tmf\n"
-                       "format of Bray's terminal.";
+                       "format of Bray's terminal.");
 
-    QMessageBox::information(this, "How to use", help_str);
+    QMessageBox::information(this, tr("How to use"), help_str);
 }

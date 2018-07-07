@@ -229,21 +229,22 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     connect(controlPanel->m_rts_line, &QCheckBox::stateChanged, this, &MainWindow::setRTSLineState);
     connect(controlPanel->m_dtr_line, &QCheckBox::stateChanged, this, &MainWindow::setDTRLineState);
 
-    QPushButton **macro_buttons = new QPushButton *[MacroSettings::NUM_OF_BUTTONS] {
-        m_bt_macro_1, m_bt_macro_2, m_bt_macro_3, m_bt_macro_4, m_bt_macro_5, m_bt_macro_6, m_bt_macro_7, m_bt_macro_8,
-            m_bt_macro_9, m_bt_macro_10, m_bt_macro_11, m_bt_macro_12, m_bt_macro_13, m_bt_macro_14, m_bt_macro_15,
-            m_bt_macro_16,
-    };
-    m_macroSettings = new MacroSettings(m_input_edit, macro_buttons, this);
-    m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
-    connect(m_macroSettings, &MacroSettings::sendCmd, this, &MainWindow::execCmd);
-    connect(m_bt_set_macros, SIGNAL(clicked(bool)), m_macroSettings, SLOT(show()));
-    connect(m_macroSettings, &MacroSettings::fileChanged, m_settings, [=]() {
-        m_settings->settingChanged(Settings::MacroFile, m_macroSettings->getMacroFilename());
-        m_macroSettings->loadFile(m_macroSettings->getMacroFilename());
-        qDebug() << "L1 session: " << m_settings->getCurrentSessionName()
-                 << ", fname: " << m_macroSettings->getMacroFilename()
-                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
+    /* Load plugin manager */
+    m_plugin_manager = new PluginManager(this->frame_output, this->m_pluginsLayout, m_settings);
+
+    /* add signal for adding new plugins. Every plugin must have an action to the app menu */
+    connect(m_actionAddPluginMacros, &QAction::triggered, this, [=]() {
+        m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_MACROS);
+    });
+    connect(m_actionAddPluginIpProxy, &QAction::triggered, this, [=]() {
+        m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_NET_PROXY);
+    });
+    /* connect plugins sendCmd with the main window interface. As it is now, for the cmd history to
+    * work properly, we must involve m_input_edit and then run execCmd();
+    */
+    connect(m_plugin_manager, &PluginManager::sendCmd, this, [=](QString cmd) {
+        this->m_input_edit->setText(cmd);
+        this->execCmd();
     });
 }
 
@@ -611,7 +612,6 @@ void MainWindow::execCmd()
     if (!m_device->isOpen()) {
         return;
     }
-
     sendString(cmd);
 }
 
@@ -920,10 +920,6 @@ void MainWindow::switchSession(const QString &session)
         closeDevice();
     m_settings->settingChanged(Settings::CurrentSession, session);
     controlPanel->applySessionSettings(m_settings->getCurrentSession());
-    m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
-    qDebug() << "L2 session: " << m_settings->getCurrentSessionName()
-             << ", fname: " << m_macroSettings->getMacroFilename()
-             << ", sfname: " << m_settings->getCurrentSession().macroFile;
     m_command_history->clear();
     QStringList history = m_settings->getCurrentSession().command_history;
     if (!history.empty()) {
@@ -1016,6 +1012,7 @@ void MainWindow::processData()
         m_logFile.flush();
     }
     m_output_display->displayData(data);
+    emit m_plugin_manager->recvCmd(data);
 }
 
 void MainWindow::removeSelectedInputItems(bool checked)

@@ -32,7 +32,7 @@ class MacroSettings : public QDialog, private Ui::MacroSettings
 
 public:
     enum { NUM_OF_BUTTONS = 16 };
-    explicit MacroSettings(QLineEdit *inputEdit, QPushButton **mainButtons, QWidget *parent = 0);
+    explicit MacroSettings(QPushButton **mainButtons, QWidget *parent = 0);
     virtual ~MacroSettings();
     void showPanel(bool setVisible);
     QString getMacroFilename(void) { return m_macroFilename; }
@@ -47,7 +47,7 @@ protected slots:
 
 signals:
     void closing();
-    void sendCmd();
+    void sendCmd(QString);
     void fileChanged(QString);
 
 private:
@@ -73,7 +73,6 @@ private:
     int getButtonIndex(QString btnName);
     bool parseFile(QTextStream &in);
     QWidget *m_mainForm;
-    QLineEdit *m_inputEdit;
     QString m_macroFilename;
     struct macro_item **m_macros;
     void helpMsg(void);

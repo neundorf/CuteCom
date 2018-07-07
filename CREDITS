@@ -67,7 +67,9 @@ Support of Qt5>=5.11
 
 Dimitris Tassopoulos <dimtass@gmail.com>
 https://github.com/dimtass/CuteCom
-Added macros
+Added a plugin system
+Added macro plugin
+Added netproxy plugin
 
 IDEAS - still a ToDo:
 ====================================

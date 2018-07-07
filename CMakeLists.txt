@@ -24,11 +24,14 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5SerialPort REQUIRED)
+find_package(Qt5Network REQUIRED)
 
-qt5_wrap_ui(uiHeaders controlpanel.ui  mainwindow.ui statusbar.ui sessionmanager.ui searchpanel.ui macrosettings.ui)
+qt5_wrap_ui(uiHeaders controlpanel.ui  mainwindow.ui statusbar.ui sessionmanager.ui searchpanel.ui
+    macroplugin.ui macrosettings.ui netproxyplugin.ui netproxysettings.ui)
 set(cutecomSrcs main.cpp mainwindow.cpp controlpanel.cpp  devicecombo.cpp
     serialdevicelistmodel.cpp  settings.cpp statusbar.cpp sessionmanager.cpp
-    datadisplay.cpp datahighlighter.cpp searchpanel.cpp timeview.cpp ctrlcharacterspopup.cpp macrosettings.cpp)
+    datadisplay.cpp datahighlighter.cpp searchpanel.cpp timeview.cpp ctrlcharacterspopup.cpp 
+    plugin.cpp pluginmanager.cpp macroplugin.cpp macrosettings.cpp netproxyplugin.cpp netproxysettings.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # C++14: set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
@@ -45,7 +48,7 @@ endif(APPLE)
 add_executable(cutecom ${exeType} ${cutecomSrcs} ${uiHeaders} resources.qrc)
 
 
-target_link_libraries(cutecom Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort)
+target_link_libraries(cutecom Qt5::Core Qt5::Gui Qt5::Widgets Qt5::SerialPort Qt5::Network)
 
 if (APPLE)
    set_target_properties(cutecom PROPERTIES OUTPUT_NAME CuteCom)

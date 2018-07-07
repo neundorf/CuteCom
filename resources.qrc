@@ -4,5 +4,10 @@
         <file>images/terminal.svg</file>
         <file>close.png</file>
         <file>close_over.png</file>
+        <file>images/led-circle-green-md.png</file>
+        <file>images/led-circle-grey-md.png</file>
+        <file>images/led-circle-orange-md.png</file>
+        <file>images/led-circle-red-md.png</file>
+        <file>images/led-circle-yellow-md.png</file>
     </qresource>
 </RCC>
