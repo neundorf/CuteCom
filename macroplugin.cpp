@@ -65,7 +65,7 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings *settings)
         //                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
     });
     /* send serial string */
-    connect(m_macroSettings, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
+    connect(m_macroSettings, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
     /* unload */
     connect(ui->m_bt_unload, SIGNAL(clicked(bool)), this, SLOT(removePlugin(bool)));
 }

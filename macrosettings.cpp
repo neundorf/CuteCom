@@ -100,7 +100,7 @@ MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
             }
         });
         /* timer events */
-        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() { emit sendCmd(m_macros[i]->cmd->text()); });
+        connect(m_macros[i]->tmr, &QTimer::timeout, [=]() { emit sendCmd(m_macros[i]->cmd->text().toLatin1()); });
     }
     connect(m_bt_load_macros, &QPushButton::clicked, this, &MacroSettings::openFile);
     connect(m_bt_save_macros, &QPushButton::clicked, this, &MacroSettings::saveFile);
@@ -144,7 +144,7 @@ void MacroSettings::macroPress()
             return;
 
         /* Send macro text */
-        emit sendCmd(m_macros[idx]->cmd->text());
+        emit sendCmd(m_macros[idx]->cmd->text().toLatin1());
         TRACE << "[MacroSettings] macroPress " << m_macros[idx]->button->objectName() << " : "
               << m_macros[idx]->cmd->text();
     }

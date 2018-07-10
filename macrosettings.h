@@ -47,7 +47,7 @@ protected slots:
 
 signals:
     void closing();
-    void sendCmd(QString);
+    void sendCmd(QByteArray);
     void fileChanged(QString);
 
 private:

@@ -44,7 +44,7 @@ public:
     int processCmd(const QString *text);
 
 signals:
-    void sendCmd(QString);
+    void sendCmd(QByteArray);
     void unload(Plugin *);
 
 public slots:
