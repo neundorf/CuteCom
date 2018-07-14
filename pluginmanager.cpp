@@ -25,7 +25,7 @@
     if (!debug) {                                                                                                      \
     } else                                                                                                             \
         qDebug()
-static bool debug = false;
+static bool debug = true;
 
 PluginManager::PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings)
     : m_parent(parent)
@@ -39,7 +39,8 @@ PluginManager::~PluginManager()
     QListIterator<Plugin *> i(m_list);
     while (i.hasNext()) {
         Plugin *item = static_cast<Plugin *>(i.next());
-        removePlugin(item);
+        if (item)
+            removePlugin(item);
     }
 }
 
@@ -64,6 +65,12 @@ void PluginManager::addPluginType(en_plugin_type type)
         connect(this, SIGNAL(recvCmd(QByteArray)), proxy, SIGNAL(proxyCmd(QByteArray)));
         /* common plugin initialization */
         addPlugin((Plugin *)proxy->plugin());
+    } else if (type == en_plugin_type::PLUGIN_TYPE_BYTE_COUNTER) {
+        CounterPlugin *counter = new CounterPlugin(m_parent, m_settings);
+        connect(counter, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
+        connect(this, SIGNAL(recvCmd(QByteArray)), counter, SLOT(rxBytes(QByteArray)));
+        /* common plugin initialization */
+        addPlugin((Plugin *)counter->plugin());
     }
 }
 
@@ -81,6 +88,8 @@ void PluginManager::removePlugin(Plugin *plugin)
         plugin->frame->close();
     }
     plugin->deleteLater();
+    m_list.removeOne(plugin);
+    plugin = NULL;
 }
 
 /**
@@ -110,14 +119,14 @@ void PluginManager::addPlugin(Plugin *item)
  */
 void PluginManager::processCmd(QString *cmd)
 {
-    TRACE << "[PluginManager] process: " << cmd;
+    TRACE << "[PluginManager] process: " << *cmd;
     QListIterator<Plugin *> i(m_list);
     while (i.hasNext()) {
         const Plugin *item = static_cast<const Plugin *>(i.next());
         if (item->processCmd) {
             QString new_cmd;
             if (item->processCmd(cmd, &new_cmd)) {
-                //                new_cmd = cmd + QString("_ADD");
+                TRACE << "[PluginManager::processCmd]: " << cmd->toLatin1();
                 *cmd = new_cmd;
             }
         }

@@ -320,6 +320,7 @@
     </property>
     <addaction name="m_actionAddPluginMacros"/>
     <addaction name="m_actionAddPluginIpProxy"/>
+    <addaction name="m_actionAddPluginByteCounter"/>
    </widget>
    <addaction name="menuSessions"/>
    <addaction name="menuEdit"/>
@@ -386,6 +387,11 @@
   <action name="m_actionAddPluginIpProxy">
    <property name="text">
     <string>New IP Proxy</string>
+   </property>
+  </action>
+  <action name="m_actionAddPluginByteCounter">
+   <property name="text">
+    <string>New byte counter</string>
    </property>
   </action>
  </widget>
