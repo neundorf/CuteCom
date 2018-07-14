@@ -1,4 +1,5 @@
 0.50.0, tba , 2018
+-added the byte counter plugin
 -added a plugin manager
 -added macros plugin to support similar to br@y's terminal
 -added netproxy plugin
