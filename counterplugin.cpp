@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 208 Dimitris Tassopoulos <dimtass@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * For more information on the GPL, please go to:
+ * http://www.gnu.org/copyleft/gpl.html
+ */
+
 #include "counterplugin.h"
 #include "ui_counterplugin.h"
 #include <QMessageBox>
@@ -51,6 +72,13 @@ CounterPlugin::~CounterPlugin()
         m_counter = NULL;
 }
 
+/**
+ * @brief Static function to use as proxy to call public
+ *          member funtions from this object
+ * @param text The data that are about to be sent
+ * @param new_text The new data
+ * @return int Always retutn 0 in this case
+ */
 int processCmd(const QString *text, QString *new_text)
 {
     m_counter->txBytes(text->length());
@@ -59,6 +87,10 @@ int processCmd(const QString *text, QString *new_text)
     return 0;
 }
 
+/**
+ * @brief Handle Tx bytes.
+ * @param len The number of received bytes
+ */
 void CounterPlugin::txBytes(int len)
 {
     int value = m_counter->ui->m_lbl_tx_value->text().toInt();
