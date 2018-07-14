@@ -73,8 +73,6 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings *settings)
 MacroPlugin::~MacroPlugin()
 {
     TRACE << "[MacroPlugin] ~()";
-    if (m_plugin)
-        delete m_plugin;
     delete ui;
 }
 
