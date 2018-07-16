@@ -316,7 +316,7 @@
    </widget>
    <widget class="QMenu" name="menuPlugins">
     <property name="title">
-     <string>Plugins</string>
+     <string>&amp;Plugins</string>
     </property>
     <addaction name="m_actionAddPluginMacros"/>
     <addaction name="m_actionAddPluginIpProxy"/>
@@ -324,8 +324,8 @@
    </widget>
    <addaction name="menuSessions"/>
    <addaction name="menuEdit"/>
-   <addaction name="menu_Help"/>
    <addaction name="menuPlugins"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="m_statusBar"/>
   <action name="actionOpen">
