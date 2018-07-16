@@ -40,7 +40,8 @@ private slots:
     void addTcpClient();
     void removeTcpClient();
     void recvTCP();
-    void errorSocket(QAbstractSocket::SocketError);
+    void errorUdpSocket(QAbstractSocket::SocketError);
+    void errorTcpSocket(QAbstractSocket::SocketError);
 
 private:
     Settings *m_settings;

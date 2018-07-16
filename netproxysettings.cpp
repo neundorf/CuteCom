@@ -1,8 +1,8 @@
 #include "netproxysettings.h"
 #include "ui_netproxysettings.h"
+#include <QAbstractSocket>
 #include <QCloseEvent>
 #include <QMessageBox>
-#include <QNetworkDatagram>
 #include <QNetworkInterface>
 #include <QPushButton>
 #include <QTextCodec>
@@ -44,7 +44,8 @@ NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
     });
     connect(ui->m_bt_udp_help, &QPushButton::clicked, this, &NetProxySettings::helpMsgUdp);
     connect(ui->m_bt_tcp_help, &QPushButton::clicked, this, &NetProxySettings::helpMsgTcp);
-    connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorSocket(QAbstractSocket::SocketError)));
+    connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this,
+            SLOT(errorUdpSocket(QAbstractSocket::SocketError)));
 
     /* Initialise TCP socket */
     m_tcp = new QTcpServer(this);
@@ -58,7 +59,7 @@ NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
     });
     connect(m_tcp, SIGNAL(newConnection()), this, SLOT(addTcpClient()));
     connect(m_tcp, SIGNAL(acceptError(QAbstractSocket::SocketError)), this,
-            SLOT(errorSocket(QAbstractSocket::SocketError)));
+            SLOT(errorTcpSocket(QAbstractSocket::SocketError)));
 
     /* update controls with the saved settings */
     ui->m_sb_udp_port_local->setValue(m_settings->getCurrentSession().udpLocalPort);
@@ -115,11 +116,23 @@ bool NetProxySettings::CheckPort(quint16 port)
  * @brief UDP socket errors
  * @param err The error that occured
  */
-void NetProxySettings::errorSocket(QAbstractSocket::SocketError err)
+void NetProxySettings::errorUdpSocket(QAbstractSocket::SocketError err)
 {
     unbindUdp();
     if (err) {
         QMessageBox::critical(this, tr("Error"), tr("UDP socket error: %1.").arg(m_udp->errorString()));
+    }
+}
+
+/**
+ * @brief TCP socket errors
+ * @param err The error that occured
+ */
+void NetProxySettings::errorTcpSocket(QAbstractSocket::SocketError err)
+{
+    stopTcpServer();
+    if (err) {
+        QMessageBox::critical(this, tr("Error"), tr("TCP socket error: %1.").arg(m_tcp->errorString()));
     }
 }
 
@@ -149,7 +162,8 @@ void NetProxySettings::bindUdp()
 
     if (m_udp->bind(l_addr, l_port)) {
         connect(m_udp, SIGNAL(readyRead()), this, SLOT(recvUDP()));
-        connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorUdp(QAbstractSocket::SocketError)));
+        connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this,
+                SLOT(errorUdpSocket(QAbstractSocket::SocketError)));
         ui->m_btn_udp->setText("Close");
         /* store udp details */
         m_udp_remote_addr = r_addr;
@@ -186,7 +200,14 @@ void NetProxySettings::unbindUdp()
 void NetProxySettings::recvUDP()
 {
     while (m_udp->hasPendingDatagrams()) {
-        emit sendCmd(m_udp->receiveDatagram().data());
+        QByteArray datagram;
+        QHostAddress sender;
+        quint16 senderPort;
+
+        datagram.resize(m_udp->pendingDatagramSize());
+        m_udp->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+        emit sendCmd(datagram);
         emit ledSetValue(en_led::LED_UDP_RX, true);
     }
 }
