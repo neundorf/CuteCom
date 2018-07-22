@@ -25,7 +25,7 @@
     if (!debug) {                                                                                                      \
     } else                                                                                                             \
         qDebug()
-static bool debug = true;
+static bool debug = false;
 
 PluginManager::PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings)
     : m_parent(parent)
@@ -54,21 +54,21 @@ void PluginManager::addPluginType(en_plugin_type type)
     if (type == en_plugin_type::PLUGIN_TYPE_MACROS) {
         /* specific plugin initialization */
         MacroPlugin *macro = new MacroPlugin(m_parent, m_settings);
-        connect(macro, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
-        connect(macro, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
+        connect(macro, &MacroPlugin::unload, this, &PluginManager::removePlugin);
+        connect(macro, &MacroPlugin::sendCmd, this, &PluginManager::sendCmd);
         /* common plugin initialization */
         addPlugin((Plugin *)macro->plugin());
     } else if (type == en_plugin_type::PLUGIN_TYPE_NET_PROXY) {
         NetProxyPlugin *proxy = new NetProxyPlugin(m_parent, m_settings);
-        connect(proxy, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
-        connect(proxy, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
-        connect(this, SIGNAL(recvCmd(QByteArray)), proxy, SIGNAL(proxyCmd(QByteArray)));
+        connect(proxy, &NetProxyPlugin::unload, this, &PluginManager::removePlugin);
+        connect(proxy, &NetProxyPlugin::sendCmd, this, &PluginManager::sendCmd);
+        connect(this, &PluginManager::recvCmd, proxy, &NetProxyPlugin::proxyCmd);
         /* common plugin initialization */
         addPlugin((Plugin *)proxy->plugin());
     } else if (type == en_plugin_type::PLUGIN_TYPE_BYTE_COUNTER) {
         CounterPlugin *counter = new CounterPlugin(m_parent, m_settings);
-        connect(counter, SIGNAL(unload(Plugin *)), this, SLOT(removePlugin(Plugin *)));
-        connect(this, SIGNAL(recvCmd(QByteArray)), counter, SLOT(rxBytes(QByteArray)));
+        connect(counter, &CounterPlugin::unload, this, &PluginManager::removePlugin);
+        connect(this, &PluginManager::recvCmd, counter, &CounterPlugin::rxBytes);
         /* common plugin initialization */
         addPlugin((Plugin *)counter->plugin());
     }
