@@ -48,19 +48,18 @@ NetProxyPlugin::NetProxyPlugin(QFrame *parent, Settings *settings)
 
     m_proxySettings = new NetProxySettings(settings, this);
     /* event to show the macro dialog */
-    connect(ui->m_bt_settings, SIGNAL(clicked(bool)), m_proxySettings, SLOT(show()));
+    connect(ui->m_bt_settings, &QPushButton::clicked, m_proxySettings, &NetProxySettings::show);
     /* unload */
-    connect(ui->m_bt_unload, SIGNAL(clicked(bool)), this, SLOT(removePlugin(bool)));
+    connect(ui->m_bt_unload, &QPushButton::clicked, this, &NetProxyPlugin::removePlugin);
     /* handle LEDs */
-    connect(m_proxySettings, SIGNAL(ledSetValue(NetProxySettings::en_led, bool)), this,
-            SLOT(ledSetValue(NetProxySettings::en_led, bool)));
+    connect(m_proxySettings, &NetProxySettings::ledSetValue, this, &NetProxyPlugin::ledSetValue);
     /* data from netproxy -> plugin manager*/
-    connect(m_proxySettings, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
+    connect(m_proxySettings, &NetProxySettings::sendCmd, this, &NetProxyPlugin::sendCmd);
     /* data from plugin manager -> netproxy */
-    connect(this, SIGNAL(proxyCmd(QByteArray)), m_proxySettings, SLOT(proxyCmd(QByteArray)));
+    connect(this, &NetProxyPlugin::proxyCmd, m_proxySettings, &NetProxySettings::proxyCmd);
     /* connect status labels */
-    connect(m_proxySettings, SIGNAL(udpStatus(bool, QString)), this, SLOT(setUdpStatusText(bool, QString)));
-    connect(m_proxySettings, SIGNAL(tcpStatus(bool, QString)), this, SLOT(setTcpStatusText(bool, QString)));
+    connect(m_proxySettings, &NetProxySettings::udpStatus, this, &NetProxyPlugin::setUdpStatusText);
+    connect(m_proxySettings, &NetProxySettings::tcpStatus, this, &NetProxyPlugin::setTcpStatusText);
     ui->m_lbl_udp_status->setText(tr("Not used"));
     ui->m_lbl_tcp_status->setText(tr("Not used"));
 
@@ -78,7 +77,7 @@ NetProxyPlugin::NetProxyPlugin(QFrame *parent, Settings *settings)
         if ((m_leds[i]->m_index != NetProxySettings::en_led::LED_UDP_EN)
             && (m_leds[i]->m_index != NetProxySettings::en_led::LED_TCP_EN)) {
             m_leds[i]->m_tmr = new QTimer(m_leds[i]);
-            connect(m_leds[i]->m_tmr, SIGNAL(timeout()), this, SLOT(tmrInterrupt()));
+            connect(m_leds[i]->m_tmr, &QTimer::timeout, this, &NetProxyPlugin::tmrInterrupt);
         }
     }
     /* Checkbox enable event for UDP */

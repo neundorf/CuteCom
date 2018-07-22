@@ -233,15 +233,15 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     m_plugin_manager = new PluginManager(this->frame_output, this->m_pluginsLayout, m_settings);
 
     /* add signal for adding new plugins. Every plugin must have an action to the app menu */
-    connect(m_actionAddPluginMacros, &QAction::triggered, this, [=]() {
-        m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_MACROS);
-    });
-    connect(m_actionAddPluginIpProxy, &QAction::triggered, this, [=]() {
-        m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_NET_PROXY);
-    });
+    connect(m_actionAddPluginMacros, &QAction::triggered, this,
+            [=]() { m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_MACROS); });
+    connect(m_actionAddPluginIpProxy, &QAction::triggered, this,
+            [=]() { m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_NET_PROXY); });
+    connect(m_actionAddPluginByteCounter, &QAction::triggered, this,
+            [=]() { m_plugin_manager->addPluginType(PluginManager::en_plugin_type::PLUGIN_TYPE_BYTE_COUNTER); });
     /* connect plugins sendCmd with the main window interface. As it is now, for the cmd history to
-    * work properly, we must involve m_input_edit and then run execCmd();
-    */
+     * work properly, we must involve m_input_edit and then run execCmd();
+     */
     connect(m_plugin_manager, &PluginManager::sendCmd, this, [=](QString cmd) {
         this->m_input_edit->setText(cmd);
         this->execCmd();
@@ -456,8 +456,7 @@ void MainWindow::toggleLogging(bool start)
 {
     QString currentLogFileName = m_lb_logfile->text();
 
-    if (m_logFile.isOpen() == start
-        && m_logFile.fileName() == currentLogFileName) {
+    if (m_logFile.isOpen() == start && m_logFile.fileName() == currentLogFileName) {
         return;
     }
 
@@ -637,6 +636,9 @@ bool MainWindow::sendString(const QString &s)
     Settings::LineTerminator lineMode = m_combo_lineterm->currentData().value<Settings::LineTerminator>();
     // ToDo
     unsigned int charDelay = m_spinner_chardelay->value();
+
+    /* allow plugins to process the output data */
+    m_plugin_manager->processCmd((QString *)&s);
 
     if (lineMode == Settings::HEX) // hex
     {

@@ -43,6 +43,7 @@
 #ifndef PLUGINMANAGER_H
 #define PLUGINMANAGER_H
 
+#include "counterplugin.h"
 #include "macroplugin.h"
 #include "netproxyplugin.h"
 #include "plugin.h"
@@ -58,9 +59,14 @@ class PluginManager : public QObject
 
 public:
     /* Every plug in has its own type */
-    enum en_plugin_type { PLUGIN_TYPE_MACROS, PLUGIN_TYPE_NET_PROXY };
+    enum en_plugin_type {
+        PLUGIN_TYPE_MACROS,
+        PLUGIN_TYPE_NET_PROXY,
+        PLUGIN_TYPE_BYTE_COUNTER,
+    };
     PluginManager(QFrame *parent, QVBoxLayout *layout, Settings *settings);
     virtual ~PluginManager();
+    void processCmd(QString *text);
 
 public slots:
     void addPluginType(en_plugin_type);
@@ -72,7 +78,6 @@ signals:
 
 protected:
     void addPlugin(Plugin *item);
-    void processCmd(QString *text);
 
 private:
     QFrame *m_parent;

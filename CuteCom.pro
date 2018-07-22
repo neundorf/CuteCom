@@ -25,7 +25,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    controlpanel.cpp \
     settings.cpp \
     devicecombo.cpp \
     serialdevicelistmodel.cpp \
@@ -41,7 +40,9 @@ SOURCES += main.cpp\
     macroplugin.cpp \
     macrosettings.cpp \
     netproxyplugin.cpp \
-    netproxysettings.cpp
+    netproxysettings.cpp \
+    counterplugin.cpp \
+    controlpanel.cpp
 
 HEADERS  += mainwindow.h \
     controlpanel.h \
@@ -60,7 +61,9 @@ HEADERS  += mainwindow.h \
     macroplugin.h \
     macrosettings.h \
     netproxyplugin.h \
-    netproxysettings.h
+    netproxysettings.h \
+    counterplugin.h \
+    counterplugin.h
 
 
 FORMS    += mainwindow.ui \
@@ -71,7 +74,8 @@ FORMS    += mainwindow.ui \
     macroplugin.ui \
     netproxyplugin.ui \
     macrosettings.ui \
-    netproxysettings.ui
+    netproxysettings.ui \
+    counterplugin.ui
 
 RESOURCES += \
     resources.qrc

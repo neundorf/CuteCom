@@ -53,7 +53,7 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings *settings)
     /* Load the macro settings file that is pointed in the current session */
     m_macroSettings->loadFile(m_settings->getCurrentSession().macroFile);
     /* event to show the macro dialog */
-    connect(ui->m_bt_set_macros, SIGNAL(clicked(bool)), m_macroSettings, SLOT(show()));
+    connect(ui->m_bt_set_macros, &QPushButton::clicked, m_macroSettings, &MacroSettings::show);
     /* event for when session changes and a new file needs to be loaded */
     connect(m_macroSettings, &MacroSettings::fileChanged, m_settings, [=]() {
         /* get the new macro settings file */
@@ -65,16 +65,14 @@ MacroPlugin::MacroPlugin(QFrame *parent, Settings *settings)
         //                 << ", sfname: " << m_settings->getCurrentSession().macroFile;
     });
     /* send serial string */
-    connect(m_macroSettings, SIGNAL(sendCmd(QByteArray)), this, SIGNAL(sendCmd(QByteArray)));
+    connect(m_macroSettings, &MacroSettings::sendCmd, this, &MacroPlugin::sendCmd);
     /* unload */
-    connect(ui->m_bt_unload, SIGNAL(clicked(bool)), this, SLOT(removePlugin(bool)));
+    connect(ui->m_bt_unload, &QPushButton::clicked, this, &MacroPlugin::removePlugin);
 }
 
 MacroPlugin::~MacroPlugin()
 {
     TRACE << "[MacroPlugin] ~()";
-    if (m_plugin)
-        delete m_plugin;
     delete ui;
 }
 

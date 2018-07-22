@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CounterPlugin</class>
+ <widget class="QFrame" name="CounterPlugin">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>668</width>
+    <height>74</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>56</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Byte counter</string>
+     </property>
+     <widget class="QPushButton" name="m_bt_unload">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>25</y>
+        <width>80</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Uload module</string>
+      </property>
+      <property name="text">
+       <string>Unload</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="m_bt_clear">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>25</y>
+        <width>31</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Clear Tx/Rx</string>
+      </property>
+      <property name="text">
+       <string>C</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="m_bt_memory">
+      <property name="geometry">
+       <rect>
+        <x>145</x>
+        <y>25</y>
+        <width>31</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Keep Tx/Rx to MTx/MRx</string>
+      </property>
+      <property name="text">
+       <string>M</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_tx">
+      <property name="geometry">
+       <rect>
+        <x>228</x>
+        <y>30</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Tx:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_tx_value">
+      <property name="geometry">
+       <rect>
+        <x>250</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>000000</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_rx">
+      <property name="geometry">
+       <rect>
+        <x>308</x>
+        <y>30</y>
+        <width>21</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Rx:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_rx_value">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>000000</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_mtx">
+      <property name="geometry">
+       <rect>
+        <x>404</x>
+        <y>30</y>
+        <width>31</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MTx:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_mtx_value">
+      <property name="geometry">
+       <rect>
+        <x>438</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>000000</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_mrx">
+      <property name="geometry">
+       <rect>
+        <x>495</x>
+        <y>30</y>
+        <width>33</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MRx:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="m_lbl_mrx_value">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>30</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>000000</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="m_bt_clear_memory">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>25</y>
+        <width>31</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Clear MTx/MRx</string>
+      </property>
+      <property name="text">
+       <string>CM</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="m_bt_help">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>25</y>
+        <width>16</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>Help</string>
+      </property>
+      <property name="text">
+       <string>?</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
