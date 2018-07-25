@@ -44,8 +44,8 @@ NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
     });
     connect(ui->m_bt_udp_help, &QPushButton::clicked, this, &NetProxySettings::helpMsgUdp);
     connect(ui->m_bt_tcp_help, &QPushButton::clicked, this, &NetProxySettings::helpMsgTcp);
-    connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this,
-            SLOT(errorUdpSocket(QAbstractSocket::SocketError)));
+    connect(m_udp, static_cast<void (QUdpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this,
+            &NetProxySettings::errorUdpSocket);
 
     /* Initialise TCP socket */
     m_tcp = new QTcpServer(this);
@@ -57,16 +57,15 @@ NetProxySettings::NetProxySettings(Settings *settings, QWidget *parent)
             startTcpServer();
         }
     });
-    connect(m_tcp, SIGNAL(newConnection()), this, SLOT(addTcpClient()));
-    connect(m_tcp, SIGNAL(acceptError(QAbstractSocket::SocketError)), this,
-            SLOT(errorTcpSocket(QAbstractSocket::SocketError)));
+    connect(m_tcp, &QTcpServer::newConnection, this, &NetProxySettings::addTcpClient);
+    connect(m_tcp, &QTcpServer::acceptError, this, &NetProxySettings::errorTcpSocket);
 
     /* update controls with the saved settings */
     ui->m_sb_udp_port_local->setValue(m_settings->getCurrentSession().udpLocalPort);
     ui->m_le_udp_remote_host->setText(m_settings->getCurrentSession().udpRemoteHost);
     ui->m_sb_udp_port_remote->setValue(m_settings->getCurrentSession().udpRemotePort);
     ui->m_sb_tcp_port_local->setValue(m_settings->getCurrentSession().tcpLocalPort);
-    connect(this, SIGNAL(rejected()), this, SLOT(formClose()));
+    connect(this, &NetProxySettings::rejected, this, &NetProxySettings::formClose);
 }
 
 NetProxySettings::~NetProxySettings() { delete ui; }
@@ -161,9 +160,7 @@ void NetProxySettings::bindUdp()
     }
 
     if (m_udp->bind(l_addr, l_port)) {
-        connect(m_udp, SIGNAL(readyRead()), this, SLOT(recvUDP()));
-        connect(m_udp, SIGNAL(error(QAbstractSocket::SocketError)), this,
-                SLOT(errorUdpSocket(QAbstractSocket::SocketError)));
+        connect(m_udp, &QUdpSocket::readyRead, this, &NetProxySettings::recvUDP);
         ui->m_btn_udp->setText("Close");
         /* store udp details */
         m_udp_remote_addr = r_addr;
@@ -247,8 +244,8 @@ void NetProxySettings::stopTcpServer()
 void NetProxySettings::addTcpClient()
 {
     QTcpSocket *client = m_tcp->nextPendingConnection();
-    connect(client, SIGNAL(disconnected()), this, SLOT(removeTcpClient()));
-    connect(client, SIGNAL(readyRead()), this, SLOT(recvTCP()));
+    connect(client, &QTcpSocket::disconnected, this, &NetProxySettings::removeTcpClient);
+    connect(client, &QTcpSocket::readyRead, this, &NetProxySettings::recvTCP);
     /* add client to the list */
     m_tcpClients.append(client);
     TRACE << "Connected: " << client->localAddress();

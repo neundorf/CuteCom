@@ -28,7 +28,7 @@
     } else                                                                                                             \
         qDebug()
 
-static bool debug = true;
+static bool debug = false;
 static CounterPlugin *m_counter = NULL;
 static int processCmd(const QString *text, QString *new_text);
 
@@ -46,8 +46,8 @@ CounterPlugin::CounterPlugin(QFrame *parent, Settings *settings)
     ui->m_lbl_mrx_value->setText("0");
     ui->m_lbl_mtx_value->setText("0");
 
-    connect(ui->m_bt_unload, SIGNAL(clicked(bool)), this, SLOT(removePlugin(bool)));
-    connect(ui->m_bt_help, SIGNAL(clicked(bool)), this, SLOT(helpMsg()));
+    connect(ui->m_bt_unload, &QPushButton::clicked, this, &CounterPlugin::removePlugin);
+    connect(ui->m_bt_help, &QPushButton::clicked, this, &CounterPlugin::helpMsg);
     connect(ui->m_bt_clear, &QPushButton::clicked, this, [=]() {
         ui->m_lbl_rx_value->setText("0");
         ui->m_lbl_tx_value->setText("0");

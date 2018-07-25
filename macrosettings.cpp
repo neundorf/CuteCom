@@ -78,7 +78,7 @@ MacroSettings::MacroSettings(QPushButton **mainButtons, QWidget *parent)
     /* Setup signal/slots */
     for (size_t i = 0; i < NUM_OF_BUTTONS; i++) {
         /* Click events from the panel in the main menu */
-        connect(mainButtons[i], SIGNAL(clicked(bool)), this, SLOT(macroPress()));
+        connect(mainButtons[i], &QPushButton::clicked, this, &MacroSettings::macroPress);
         /* events to change this dialog's buttons text */
         connect(m_macros[i]->name, &QLineEdit::textChanged, this,
                 [=]() { m_macros[i]->button->setText(m_macros[i]->name->text()); });
@@ -179,8 +179,8 @@ void MacroSettings::loadFile(QString fname)
 
 void MacroSettings::openFile()
 {
-    QString fname = QFileDialog::getOpenFileName(this, tr("Open a bray's terminal macro settings file"), QDir::homePath(),
-                                                 "Macros (*.tmf)");
+    QString fname = QFileDialog::getOpenFileName(this, tr("Open a bray's terminal macro settings file"),
+                                                 QDir::homePath(), "Macros (*.tmf)");
     if (!fname.isEmpty())
         loadFile(fname);
 }
@@ -214,8 +214,7 @@ bool MacroSettings::parseFile(QTextStream &in)
 void MacroSettings::saveFile()
 {
     QDir dir(QDir::homePath());
-    QString fname = QFileDialog::getSaveFileName(this,
-                                                 tr("Open a bray's terminal macro settings file"),
+    QString fname = QFileDialog::getSaveFileName(this, tr("Open a bray's terminal macro settings file"),
                                                  dir.filePath(m_macroFilename), "Macros (*.tmf)");
     if (fname.isEmpty())
         return;
@@ -244,19 +243,19 @@ void MacroSettings::saveFile()
 void MacroSettings::helpMsg(void)
 {
     QString help_str = tr("In order to use macros you need to need to\n"
-                       "fill the serial command you want to send in\n"
-                       "the first column. Then you can name the macro\n"
-                       "in the second column. This name will also be\n"
-                       "applied on the button label.\n\n"
-                       "To trigger the macro you can press the button\n"
-                       "on this dialog or in the main interface.\n\n"
-                       "If you want to auto-trigger the macro on time\n"
-                       "intervals then you can set the (msec) timer\n"
-                       "interval and then enable/disable the macro timer\n"
-                       "using the checkbox. Note that each timer is\n"
-                       "autonomous.\n\n"
-                       "The macro format is compatible with the tmf\n"
-                       "format of Bray's terminal.");
+                          "fill the serial command you want to send in\n"
+                          "the first column. Then you can name the macro\n"
+                          "in the second column. This name will also be\n"
+                          "applied on the button label.\n\n"
+                          "To trigger the macro you can press the button\n"
+                          "on this dialog or in the main interface.\n\n"
+                          "If you want to auto-trigger the macro on time\n"
+                          "intervals then you can set the (msec) timer\n"
+                          "interval and then enable/disable the macro timer\n"
+                          "using the checkbox. Note that each timer is\n"
+                          "autonomous.\n\n"
+                          "The macro format is compatible with the tmf\n"
+                          "format of Bray's terminal.");
 
     QMessageBox::information(this, tr("How to use"), help_str);
 }
