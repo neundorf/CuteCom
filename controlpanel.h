@@ -32,6 +32,8 @@ class ControlPanel : public QFrame, public Ui::ControlPanel
 {
     Q_OBJECT
 
+    friend class MainWindow;
+
 signals:
     void openDeviceClicked();
     void closeDeviceClicked();
@@ -47,8 +49,8 @@ public:
      * @return
      */
     int hiddenHeight() { return height() + m_y; }
-    void printPosition();
     void collapse();
+    void resize(int w, int h);
     void slideOut();
     /**
      * @brief setLeftMargin
@@ -74,6 +76,11 @@ private:
     void fillOpenModeCombo();
 
     // slots
+    void tabClicked(int i)
+    {
+        Q_UNUSED(i);
+        toggleMenu();
+    }
     void toggleMenu();
     void toggleDevice(bool open);
     void customBaudRate(int index);
@@ -95,6 +102,8 @@ private:
     bool m_menuVisible;
     QIntValidator *m_baudValidator;
     QLineEdit *m_baud_edit;
+    QIcon showIcon;
+    QIcon hideIcon;
 };
 
 #endif // CONTROLPANEL_H

@@ -38,6 +38,7 @@
 #include <QProgressDialog>
 #include <QResizeEvent>
 #include <QScrollBar>
+#include <QShortcut>
 #include <QSpinBox>
 #include <QThread>
 #include <QTime>
@@ -171,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
     // make sure there is enough space for the collapsed panel
     // above all other widgets
     int hHeight = controlPanel->hiddenHeight();
-    qDebug() << Q_FUNC_INFO << "calculated height: " << hHeight;
+    //    qDebug() << Q_FUNC_INFO << "calculated height: " << hHeight;
     mainMargins.setTop(hHeight);
     m_verticalLayout->setContentsMargins(mainMargins);
     m_mainSplitter->installEventFilter(this);
@@ -246,6 +247,8 @@ MainWindow::MainWindow(QWidget *parent, const QString &session)
         this->m_input_edit->setText(cmd);
         this->execCmd();
     });
+    QShortcut *shortcutToggleControlPanel = new QShortcut(QKeySequence(tr("Alt+S", "shortcut")), this);
+    connect(shortcutToggleControlPanel, &QShortcut::activated, controlPanel, &ControlPanel::toggleMenu);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
