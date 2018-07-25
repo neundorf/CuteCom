@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>628</width>
-    <height>130</height>
+    <width>660</width>
+    <height>179</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -16,23 +22,53 @@
   <property name="frameShape">
    <enum>QFrame::StyledPanel</enum>
   </property>
-  <layout class="QVBoxLayout" name="m_verticalLayout">
-   <property name="spacing">
-    <number>5</number>
+  <property name="frameShadow">
+   <enum>QFrame::Plain</enum>
+  </property>
+  <property name="lineWidth">
+   <number>0</number>
+  </property>
+  <widget class="QTabWidget" name="m_panel_settings">
+   <property name="geometry">
+    <rect>
+     <x>2</x>
+     <y>7</y>
+     <width>655</width>
+     <height>158</height>
+    </rect>
    </property>
-   <property name="leftMargin">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::RightToLeft</enum>
+   </property>
+   <property name="tabPosition">
+    <enum>QTabWidget::South</enum>
+   </property>
+   <property name="currentIndex">
     <number>0</number>
    </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <item>
+   <widget class="QWidget" name="m_tab_settings">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <attribute name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/images/show.svg</normaloff>:/images/show.svg</iconset>
+    </attribute>
+    <attribute name="title">
+     <string>Settings</string>
+    </attribute>
     <layout class="QGridLayout" name="gridLayout">
      <property name="leftMargin">
       <number>5</number>
@@ -43,7 +79,7 @@
      <item row="1" column="2">
       <widget class="QLabel" name="label_parity">
        <property name="text">
-        <string>&amp;Parity</string>
+        <string>Parit&amp;y</string>
        </property>
        <property name="buddy">
         <cstring>m_combo_parity</cstring>
@@ -216,93 +252,76 @@
       <widget class="QComboBox" name="m_combo_Mode"/>
      </item>
     </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>6</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="m_bt_open">
-       <property name="text">
-        <string>&amp;Open</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_device">
-       <property name="text">
-        <string>&amp;Device:</string>
-       </property>
-       <property name="buddy">
-        <cstring>m_combo_device</cstring>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="DeviceCombo" name="m_combo_device" native="true"/>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="m_rts_line">
-       <property name="toolTip">
-        <string>The RTS line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>RTS</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="m_dtr_line">
-       <property name="toolTip">
-        <string>The DTR line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
-       </property>
-       <property name="locale">
-        <locale language="English" country="UnitedStates"/>
-       </property>
-       <property name="text">
-        <string>DTR</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QToolButton" name="m_bt_settings">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>35</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>&amp;Settings</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-  </layout>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="m_device_control_bar">
+   <property name="geometry">
+    <rect>
+     <x>2</x>
+     <y>140</y>
+     <width>561</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>6</number>
+    </property>
+    <item>
+     <widget class="QPushButton" name="m_bt_open">
+      <property name="text">
+       <string>&amp;Open</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_device">
+      <property name="text">
+       <string>De&amp;vice:</string>
+      </property>
+      <property name="buddy">
+       <cstring>m_combo_device</cstring>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="DeviceCombo" name="m_combo_device" native="true"/>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="m_rts_line">
+      <property name="toolTip">
+       <string>The RTS line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
+      </property>
+      <property name="text">
+       <string>RTS</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="m_dtr_line">
+      <property name="toolTip">
+       <string>The DTR line is set to logic HIGH when checked. Note that in RS232C the negative logic is used.</string>
+      </property>
+      <property name="text">
+       <string>DTR</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
@@ -325,8 +344,9 @@
   <tabstop>m_check_appendLog</tabstop>
   <tabstop>m_combo_device</tabstop>
   <tabstop>m_bt_open</tabstop>
-  <tabstop>m_bt_settings</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

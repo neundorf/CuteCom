@@ -9,5 +9,7 @@
         <file>images/led-circle-orange-md.png</file>
         <file>images/led-circle-red-md.png</file>
         <file>images/led-circle-yellow-md.png</file>
+        <file>images/hide.svg</file>
+        <file>images/show.svg</file>
     </qresource>
 </RCC>

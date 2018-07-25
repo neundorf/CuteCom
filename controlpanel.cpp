@@ -26,6 +26,7 @@
 #include <QLineEdit>
 #include <QPropertyAnimation>
 #include <QSerialPortInfo>
+#include <QShortcut>
 #include <QtWidgets/QComboBox>
 
 #include "qdebug.h"
@@ -36,6 +37,9 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
     , m_x(3)
 {
     this->setupUi(this);
+
+    showIcon = m_panel_settings->tabIcon(0);
+    hideIcon.addFile(QStringLiteral(":/images/hide.svg"));
 
     m_baudValidator = new QIntValidator(0, 9999999, this);
     m_combo_Baud->setInsertPolicy(QComboBox::NoInsert);
@@ -69,22 +73,38 @@ ControlPanel::ControlPanel(QWidget *parent, Settings *settings)
     m_dtr_line->setEnabled(false);
 
     // Connect button signal to slot
-    connect(m_bt_settings, &QPushButton::clicked, this, &ControlPanel::toggleMenu);
+    connect(m_panel_settings, &QTabWidget::tabBarClicked, this, &ControlPanel::tabClicked);
     connect(m_bt_open, &QPushButton::clicked, this, &ControlPanel::toggleDevice);
     connect(m_combo_Baud, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), this,
             &ControlPanel::customBaudRate);
 }
 
 /**
+ * Overriden from QWidget
+ * @brief ControlPanel::resize
+ * @param w
+ * @param h
+ */
+void ControlPanel::resize(int w, int h)
+{
+    QWidget::resize(w, h);
+    m_panel_settings->resize(w - m_x, m_panel_settings->height());
+}
+
+/**
+ * This method "hides" the control panel when called.
+ * It needs to be called once initially right after the programs start.
  *
  * @brief ControlPanel::collapse
  */
 void ControlPanel::collapse()
 {
-    QPoint btnPosition = m_bt_settings->mapToParent(m_bt_settings->rect().topLeft());
+    QPoint cornerPosition = m_device_control_bar->mapToParent(m_device_control_bar->rect().topLeft());
 
-    m_y = -(btnPosition.y() + 5);
-    //    qDebug() << Q_FUNC_INFO << m_y << " : " << m_x;
+    // the 4 additional pixel will make the tab widget's lower edge visible
+    // indicating that the settings "button" will reveal more when clicked
+    m_y = -(cornerPosition.y() - 4);
+    //    qDebug() << Q_FUNC_INFO << m_x << " : " << m_y;
     move(m_x, m_y);
     m_menuVisible = false;
 }
@@ -101,29 +121,20 @@ void ControlPanel::slideOut()
 
 ControlPanel::~ControlPanel() {}
 
-// for debugging
-void ControlPanel::printPosition()
-{
-    qDebug() << "toParent pos" << m_bt_settings->mapToParent(m_bt_settings->pos());
-    qDebug() << "toParten topRight" << m_bt_settings->mapToParent(m_bt_settings->rect().topLeft());
-}
-
 void ControlPanel::toggleMenu()
 {
     // Create animation
     QPropertyAnimation *animation = new QPropertyAnimation(this, "pos");
-    // bool m_menuVisible = (y() < -3);
-    QPoint endPos = m_menuVisible ? QPoint(m_x, m_y) : QPoint(m_x, -3);
+    QPoint endPos = m_menuVisible ? QPoint(m_x, m_y) : QPoint(m_x, -13);
     //    qDebug() << m_menuVisible << endPos;
     animation->setStartValue(pos());
     animation->setEndValue(endPos);
     animation->start();
     if (m_menuVisible) {
-        m_bt_settings->setText("&Settings");
+        m_panel_settings->setTabIcon(0, showIcon);
         m_menuVisible = false;
     } else {
-        m_bt_settings->setText("^");
-        m_bt_settings->setShortcut(Qt::KeyboardModifier::AltModifier + Qt::Key_S);
+        m_panel_settings->setTabIcon(0, hideIcon);
         m_menuVisible = true;
         m_combo_Baud->setFocus();
     }
@@ -139,7 +150,7 @@ void ControlPanel::toggleDevice(bool open)
         m_rts_line->setEnabled(true);
         m_dtr_line->setEnabled(true);
 
-        m_bt_settings->setEnabled(false);
+        m_panel_settings->setEnabled(false);
         m_bt_open->setText(tr("Cl&ose"));
         emit openDeviceClicked();
     } else {
@@ -147,7 +158,7 @@ void ControlPanel::toggleDevice(bool open)
         m_rts_line->setEnabled(false);
         m_dtr_line->setEnabled(false);
 
-        m_bt_settings->setEnabled(true);
+        m_panel_settings->setEnabled(true);
         emit closeDeviceClicked();
         m_bt_open->setText(tr("&Open"));
     }
