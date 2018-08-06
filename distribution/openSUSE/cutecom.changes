@@ -1,5 +1,16 @@
 -------------------------------------------------------------------
-Thu Jun 17 19:44:34 UTC 2017 - cyc1ingsir@gmail.com 
+Mon Aug 06 15:48:14 UTC 2018 - cyc1ingsir@gmail.com 
+
+-update to release 0.50.0
+ * added the byte counter plugin
+ * added a plugin manager
+ * added macros plugin to support similar to br@y's terminal
+ * added netproxy plugin
+ * improved logfile handling
+ * redesign control panel's opening button
+
+-------------------------------------------------------------------
+Thu Jun 17 19:44:34 UTC 2018 - cyc1ingsir@gmail.com 
 
 -update to release 0.45.0
  * Enable input of Crl characters using a popup or Ctrl+<x>

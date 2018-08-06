@@ -1,5 +1,9 @@
 [![Build status](https://api.travis-ci.org/cyc1ingsir/cutecom.svg?branch=master)](https://travis-ci.org/cyc1ingsir/cutecom)
 
+*Important* CuteCom development is moving over to GitLab. Starting from the next release CuteCom will be available at
+[GitLab](https://gitlab.com/cutecom/cutecom/)
+Please refer to [#58](https://github.com/neundorf/CuteCom/issues/58) for the details.
+
 ## Welcome to _CuteCom_
 
 CuteCom is a graphical serial terminal, like minicom. 
@@ -23,7 +27,7 @@ Version 0.30.0 is the first public release after the reimplementation.
 *   easy to use GUI
 *   no cryptic keyboard shortcuts
 *   lineoriented interface instead of character-oriented
-*   Ctrl+C, Ctrl+Q and Ctrl+S control sequences work
+*   Ctrl+C, Ctrl+Q and Ctrl+S control sequences work (use CMD+<Key> on MacOS)
 *   input history
 *   a cute GUI ;-)
 *   session support via -s <session name> specified at the command line
