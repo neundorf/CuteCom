@@ -1,0 +1,5 @@
+job01:
+  script: 
+    - cmake .
+    - make
+  image: cutecom/jessie-qt5-devel
